@@ -43,13 +43,13 @@ def main():
 
         elif mensaje_recibido == b'A':
             print("A")
-            if(i <= len(instruccion)):
-                i = i+1
+            i = i+1
+            if(i < len(instruccion)):
                 mensaje = instruccion[i] + '\0'
                 MDK2_Port.write(mensaje.encode())
             else:
                 acabado = 1
-
+    print("Programa acabado")
     MDK2_Port.close()  # Cierro el puerto al finalizar el programa
 
 
