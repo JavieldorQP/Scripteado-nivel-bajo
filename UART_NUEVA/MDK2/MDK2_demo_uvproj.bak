@@ -445,6 +445,16 @@
               <FileType>1</FileType>
               <FilePath>.\pantalla.c</FilePath>
             </File>
+            <File>
+              <FileName>AsciiLib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\GLCD\AsciiLib.c</FilePath>
+            </File>
+            <File>
+              <FileName>GLCD.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\GLCD\GLCD.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

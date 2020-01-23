@@ -39,8 +39,6 @@ def main():
             MDK2_Port.write(mensaje.encode())
             print("S")
 
-        # elif mensaje_recibido == 'R':
-
         elif mensaje_recibido == b'A':
             print("A")
             i = i+1

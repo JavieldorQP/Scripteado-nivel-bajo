@@ -2,11 +2,10 @@
 ".\startup_lpc17xx.o"
 ".\system_lpc17xx.o"
 ".\main.o"
-".\servo.o"
-".\uart.o"
 ".\pantalla.o"
 ".\asciilib.o"
 ".\glcd.o"
+".\eurouart.o"
 --strict --scatter "MDK2_demo.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

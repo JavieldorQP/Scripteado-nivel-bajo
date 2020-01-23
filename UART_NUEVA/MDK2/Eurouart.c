@@ -1,5 +1,14 @@
+/*
+    En esta biblioteca incluyo las funciones clásicas de la UART y las propias del protocolo de este año(Eurobot 2020).
+    Las funciones de este año se encuentran al final del documento
 
-#include "uart.h" //Enlazo con la biblioteca
+    Autor: Javier Ortiz Perez-Jaraiz    (Trompiz, el que no gestiona)
+    Año: 2020
+
+
+*/
+
+#include "Eurouart.h" //Enlazo con la biblioteca
 #include <LPC17xx.h>
 
 //Configuraci�n de la Baudrate
@@ -140,3 +149,28 @@ void transmitir_cadenaUART0(char *cadena)
     tx_completa = 0;
     LPC_UART0->THR = *ptr_tx++; // IMPORTANTE: Introducir un car�cter al comienzo para iniciar TX o
 } // activar flag interrupci�n por registro transmisor vacio
+
+//Funciones nuevas:
+void traduccion_de_variables() //Se encarga de leer el mensaje recibido, actualizar las variables y levantar los flags.
+{
+    switch (T_INSTRUCCION)
+    {
+    case ('G'):
+        estado = T_INSTRUCCION;
+        grados_giro = (buffer[1] - '0') * 100 + (buffer[2] - '0') * 10 + (buffer[3] - '0');
+        break;
+    case ('D'):
+        estado = T_INSTRUCCION;
+        distancia = (buffer[1] - '0') * 1000 + (buffer[2] - '0') * 100 + (buffer[3] - '0') * 10 + (buffer[4] - '0');
+        velocidad = (buffer[5] - '0') * 1000 + (buffer[6] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[8] - '0');
+        velocidad_maxima = (buffer[9] - '0') * 1000 + (buffer[10] - '0') * 100 + (buffer[11] - '0') * 10 + (buffer[12] - '0');
+        break;
+    case ('C'):
+        estado = T_INSTRUCCION;
+        distancia = (buffer[1] - '0') * 1000 + (buffer[2] - '0') * 100 + (buffer[3] - '0') * 10 + (buffer[4] - '0');
+        velocidad = (buffer[5] - '0') * 1000 + (buffer[6] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[8] - '0');
+        velocidad_maxima = (buffer[9] - '0') * 1000 + (buffer[10] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[11] - '0');
+        radio = (buffer[12] - '0') * 1000 + (buffer[13] - '0') * 100 + (buffer[14] - '0') * 10 + (buffer[15] - '0');
+        break;
+    }
+}

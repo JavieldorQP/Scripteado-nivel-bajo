@@ -1,26 +1,8 @@
-/*
-    En esta demo se implementan las funciones necesarias para la comuncación desde la 
-    MDK2 con la Raspberry. A falta de concretar la cantidad de mensajes que se necesitan 
-    a nivel bajo y a nivel alto en esta demo se trabaja con los siguientes datos: Posición
-    del objetivo, ángulo al que tiene que estar un pequeño actuador (servo) y la odometria del robot 
-    que es enviada desde la MDK2. Ademas se enviara desde la MDK2 un mensaje a la Raspberry indicando 
-    los siguientes errors:
-        EG--------->Error en el mensaje de grados, se ha superado el máximo/el minimo
-        ESOX------->Error en el signo de la posición X del objetivo 
-        EPOX------->Error en la posción X, excede el máximo del campo
-        ESOY------->Error en el signo de la posición Y del objetivo 
-        EPOY------->Error en la posción Y, excede el máximo del campo
-        EL--------->Erro mensaje más largo de lo esperado  
-
-    Si se carga este programa en la Raspberry y su homologo en la MDK2, seremos capaces de observar
-    como un rectángulo pasa por la pantalla de la MDK2, un servo gira y leemos el valor 00 por la 
-    pantalla simulando la odometria. 
-    
-*/
+//Segunda demo
 
 //Incluimos bibliotecas:
 #include <LPC17xx.H>
-#include "uart.h"
+#include "Eurouart.h"
 #include "./GLCD/GLCD.h"
 #include <stdio.h>
 //Definiciones utiles:
@@ -48,35 +30,8 @@ int radio = 0;
 int grados_giro = 0;
 int posx = -1500;
 int posy = 500;
-uint8_t flag_grados = 0;
-uint8_t flag_objetivo = 0;
-uint8_t flag_velocidad = 0;
-int error_longitud = 0;
 
 //Declaración de funciones:
-void traduccion_de_variables() //Se encarga de leer el mensaje recibido, actualizar las variables y levantar los flags.
-{
-    switch (T_INSTRUCCION)
-    {
-    case ('G'):
-        estado = T_INSTRUCCION;
-        grados_giro = (buffer[1] - '0') * 100 + (buffer[2] - '0') * 10 + (buffer[3] - '0');
-        break;
-    case ('D'):
-        estado = T_INSTRUCCION;
-        distancia = (buffer[1] - '0') * 1000 + (buffer[2] - '0') * 100 + (buffer[3] - '0') * 10 + (buffer[4] - '0');
-        velocidad = (buffer[5] - '0') * 1000 + (buffer[6] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[8] - '0');
-        velocidad_maxima = (buffer[9] - '0') * 1000 + (buffer[10] - '0') * 100 + (buffer[11] - '0') * 10 + (buffer[12] - '0');
-        break;
-    case ('C'):
-        estado = T_INSTRUCCION;
-        distancia = (buffer[1] - '0') * 1000 + (buffer[2] - '0') * 100 + (buffer[3] - '0') * 10 + (buffer[4] - '0');
-        velocidad = (buffer[5] - '0') * 1000 + (buffer[6] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[8] - '0');
-        velocidad_maxima = (buffer[9] - '0') * 1000 + (buffer[10] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[11] - '0');
-        radio = (buffer[12] - '0') * 1000 + (buffer[13] - '0') * 100 + (buffer[14] - '0') * 10 + (buffer[15] - '0');
-        break;
-    }
-}
 
 int main() //Función principal con maquina de estados sencillita para la demo
 {

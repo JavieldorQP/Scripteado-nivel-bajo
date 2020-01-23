@@ -431,16 +431,6 @@
           <GroupName>fuentes de los .h</GroupName>
           <Files>
             <File>
-              <FileName>servo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\servo.c</FilePath>
-            </File>
-            <File>
-              <FileName>uart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\uart.c</FilePath>
-            </File>
-            <File>
               <FileName>pantalla.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\pantalla.c</FilePath>
@@ -454,6 +444,11 @@
               <FileName>GLCD.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\GLCD\GLCD.c</FilePath>
+            </File>
+            <File>
+              <FileName>Eurouart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Eurouart.c</FilePath>
             </File>
           </Files>
         </Group>

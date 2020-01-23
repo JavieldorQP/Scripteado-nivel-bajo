@@ -9,49 +9,34 @@ Project File Date:  01/17/2020
 <h2>Output:</h2>
 Build target 'Target 1'
 compiling main.c...
-main.c(43): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(25): warning:  #2548-D: multicharacter character literal (potential portability problem)
   char estado = 'NULL';
-main.c(43): warning:  #69-D: integer conversion resulted in truncation
+main.c(25): warning:  #69-D: integer conversion resulted in truncation
   char estado = 'NULL';
-main.c(149): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(50): warning:  #223-D: function "traduccion_de_variables" declared implicitly
+              traduccion_de_variables();
+main.c(104): warning:  #2548-D: multicharacter character literal (potential portability problem)
                   estado = 'NULL';
-main.c(149): warning:  #69-D: integer conversion resulted in truncation
+main.c(104): warning:  #69-D: integer conversion resulted in truncation
                   estado = 'NULL';
-main.c: 4 warnings, 0 errors
-compiling uart.c...
+main.c: 5 warnings, 0 errors
+compiling pantalla.c...
+pantalla.h(19): warning:  #1-D: last line of file ends without a newline
+  void LCD_mostrar_variable(float numero, char tipo);
+pantalla.c: 1 warning, 0 errors
+compiling AsciiLib.c...
+compiling GLCD.c...
+compiling Eurouart.c...
+Eurouart.c(176): warning:  #1-D: last line of file ends without a newline
+  }
+Eurouart.c: 1 warning, 0 errors
 linking...
-Program Size: Code=16264 RO-data=1756 RW-data=68 ZI-data=684  
-".\MDK2_demo.axf" - 0 Error(s), 4 Warning(s).
+Program Size: Code=16284 RO-data=1756 RW-data=56 ZI-data=680  
+".\MDK2_demo.axf" - 0 Error(s), 7 Warning(s).
 Load "D:\\Carpetas\\Eurobot\\Scripteado-nivel-bajo\\UART_NUEVA\\MDK2\\MDK2_demo.axf" 
 Erase Done.
 Programming Done.
 Verify OK.
-cos(angulo)) / 10, (posy + sin(angulo)) / 10, 40);
-main.c(136): warning:  #2548-D: multicharacter character literal (potential portability problem)
-                  estado = 'NULL';
-main.c(136): warning:  #69-D: integer conversion resulted in truncation
-                  estado = 'NULL';
-main.c: 8 warnings, 0 errors
-linking...
-Program Size: Code=20544 RO-data=2048 RW-data=68 ZI-data=684  
-".\MDK2_demo.axf" - 0 Error(s), 8 Warning(s).
-Load "D:\\Carpetas\\Eurobot\\Scripteado-nivel-bajo\\UART_NUEVA\\MDK2\\MDK2_demo.axf" 
-Erase Done.
-Programming Done.
-Verify OK.
-ain.c(43): warning:  #69-D: integer conversion resulted in truncation
-  char estado = 'NULL';
-main.c(81): warning:  #1294-D: Old-style function dibujar_cuadrado
-  void dibujar_cuadrado(CX, CY) //Dibuja un cuadrado por pantalla para la demo:
-main.c(93): warning:  #1294-D: Old-style function dibujar_flecha
-  void dibujar_flecha(angulo) //Dibuja un cuadrado por pantalla para la demo:
-main.c(98): warning:  #223-D: function "cos" declared implicitly
-          LCD_SetPoint((posx + i * cos(angulo)) / 10, (posy + sin(angulo)) / 10, 40);
-main.c(98): warning:  #223-D: function "sin" declared implicitly
-          LCD_SetPoint((posx + i * cos(angulo)) / 10, (posy + sin(angulo)) / 10, 40);
-main.c(123): error:  #29: expected an expression
-                  sprintf(mensaje_enviado, % d, grados_giro);
-main.c(124): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
-                  GUI_Text(160, 100, mensaje_enviado, 10, 10);
-main.c: 7 warnings, 1 error
-"main.c" - 1 Error(s), 7 Warning(s).
+</pre>
+</body>
+</html>
