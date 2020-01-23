@@ -1,0 +1,11 @@
+.\main.o: main.c
+.\main.o: D:\Programas_Universidad\Keil\ARM\Inc\NXP\LPC17xx\LPC17xx.H
+.\main.o: D:\Programas_Universidad\Keil\ARM\CMSIS\Include\core_cm3.h
+.\main.o: D:\Programas_Universidad\Keil\ARM\ARMCC\bin\..\include\stdint.h
+.\main.o: D:\Programas_Universidad\Keil\ARM\CMSIS\Include\core_cmInstr.h
+.\main.o: D:\Programas_Universidad\Keil\ARM\CMSIS\Include\core_cmFunc.h
+.\main.o: D:\Programas_Universidad\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h
+.\main.o: servo.h
+.\main.o: uart.h
+.\main.o: ./GLCD/GLCD.h
+.\main.o: D:\Programas_Universidad\Keil\ARM\ARMCC\bin\..\include\stdio.h

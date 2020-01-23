@@ -1,0 +1,11 @@
+.\pantalla.o: pantalla.c
+.\pantalla.o: pantalla.h
+.\pantalla.o: ./GLCD/GLCD.h
+.\pantalla.o: D:\Programas_Universidad\Keil\ARM\Inc\NXP\LPC17xx\LPC17xx.H
+.\pantalla.o: D:\Programas_Universidad\Keil\ARM\CMSIS\Include\core_cm3.h
+.\pantalla.o: D:\Programas_Universidad\Keil\ARM\ARMCC\bin\..\include\stdint.h
+.\pantalla.o: D:\Programas_Universidad\Keil\ARM\CMSIS\Include\core_cmInstr.h
+.\pantalla.o: D:\Programas_Universidad\Keil\ARM\CMSIS\Include\core_cmFunc.h
+.\pantalla.o: D:\Programas_Universidad\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h
+.\pantalla.o: D:\Programas_Universidad\Keil\ARM\ARMCC\bin\..\include\stdio.h
+.\pantalla.o: D:\Programas_Universidad\Keil\ARM\ARMCC\bin\..\include\stdlib.h
