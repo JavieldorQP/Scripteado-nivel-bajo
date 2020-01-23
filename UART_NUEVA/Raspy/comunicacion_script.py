@@ -15,33 +15,42 @@ import serial  # Necesaria
 import time  # Añadida para la demo
 from serialpacking import POSE_TO_MSG
 
+
 def main():
     # Puertos usados en la demo:
     # MDK2_Port = serial.Serial('/dev/ttyUSB0', 9600, timeout=1) #Si estamos en la Raspberry py y conectamos la MDK2 por el puerto de arriba a la derecha.
     # Puerto usado en la demo para probar cosas
     MDK2_Port = serial.Serial('COM3', 115200, timeout=0.02)
 
-    #Modo de selección de instrucciones Manual/Predefinidas en Z:
-    #Scaneo
-        #Seleccion de instrucciones
+    # Modo de selección de instrucciones Manual/Predefinidas en Z:
+    # Scaneo
+    # Seleccion de instrucciones
 
-        #Opciones predefinidas:
-    instruccion="D10000500"
-    
-    while acabado!=1:
-        
+    # Opciones predefinidas:
+    instruccion = ("G180", "D050010002000", "C4500100020004000")
+    acabado = 0
+    i = 0
+    while acabado != 1:
         mensaje_recibido = MDK2_Port.readline()  # Guardo lo que leo en un string
-        print(mensaje_recibido)
-        if  mensaje_recibido == 'S'     #Comienzo de rutina a nivel bajo
+
+        if(mensaje_recibido == b'S'):
             # ENVIAMOS MENSAJE:
-            mensaje = instruccion+ '\0'
+            mensaje = instruccion[i] + '\0'
             MDK2_Port.write(mensaje.encode())
-            print(mensaje)
-        elif mensaje_recibido == 'R':
-        
-        elif mensaje_recibido =='A':
-            acabado=1
-    
+            print("S")
+
+        # elif mensaje_recibido == 'R':
+
+        elif mensaje_recibido == b'A':
+            print("A")
+            if(i <= len(instruccion)):
+                i = i+1
+                mensaje = instruccion[i] + '\0'
+                MDK2_Port.write(mensaje.encode())
+            else:
+                acabado = 1
+
     MDK2_Port.close()  # Cierro el puerto al finalizar el programa
+
 
 main()

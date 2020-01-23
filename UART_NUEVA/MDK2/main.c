@@ -20,17 +20,10 @@
 
 //Incluimos bibliotecas:
 #include <LPC17xx.H>
-#include "servo.h"
 #include "uart.h"
 #include "./GLCD/GLCD.h"
 #include <stdio.h>
 //Definiciones utiles:
-
-//Parametros posicionales:
-#define MAXCAMPO_X 1500
-#define MAXCAMPO_Y 1000
-#define MINCAMPO_X -1500
-#define MINCAMPO_Y -1000
 
 //Parametros demo:
 #define MAXPANTALLA_X 310
@@ -38,9 +31,6 @@
 #define MINPANTALLA_X 10
 #define MINPANTALLA_Y 10
 #define R_CP 10
-#define MAX_GRADOS 180
-#define MIN_GRADOS 0
-
 //Variables globales:
 //Variables propias del protocolo:
 char buffer[70];  // Buffer de recepción de 50 caracteres
@@ -50,13 +40,14 @@ char *ptr_tx;     // puntero de transmisión
 char tx_completa; // Flag de transmisión de cadena que se activa al transmitir el caracter null (fin de cadena)
 
 //Variables de la demo que se esperan recibir
-uint32_t grados = 0; // Variable que indica los grados
-int Objetivo_x = 0;
-int Objetivo_y = 0;
-int posx = 0;
-int posy = 0;
-int odomx = 0;
-int odomy = 0;
+char estado = 'NULL';
+int distancia = 0;
+int velocidad = 0;
+int velocidad_maxima = 0;
+int radio = 0;
+int grados_giro = 0;
+int posx = -1500;
+int posy = 500;
 uint8_t flag_grados = 0;
 uint8_t flag_objetivo = 0;
 uint8_t flag_velocidad = 0;
@@ -65,138 +56,99 @@ int error_longitud = 0;
 //Declaración de funciones:
 void traduccion_de_variables() //Se encarga de leer el mensaje recibido, actualizar las variables y levantar los flags.
 {
-    //Declaración de variables
-    static int grados_ant;
-    static int Objetivo_x_ant = 0;
-    static int Objetivo_y_ant = 0;
-    int8_t signo = 0;
-    uint8_t flag_posicion = 0;
-    uint8_t flag_errosigno = 1;
-
-    //Calculo de los grados:
-    grados = BIT_CGrados * 100 + BIT_DGrados * 10 + BIT_UGrados;
-    if (grados_ant != grados)
+    switch (T_INSTRUCCION)
     {
-        if ((grados > MAX_GRADOS) || (grados < MIN_GRADOS))
-        {
-            transmitir_cadenaUART0("EG");
-            grados = grados_ant;
-        }
-        else
-        {
-            flag_grados = 1;
-            grados_ant = grados;
-        }
-    }
-
-    //Calculo de la posición X objetivo:
-    if (BIT_S_OX == '+') //Si recibo un mas es positivo
-        signo = 1;
-    else if (BIT_S_OX == '-') //Si recibo un menos es negativo
-        signo = -1;
-    else
-    {
-        flag_errosigno = 0;
-        transmitir_cadenaUART0("ESOX");
-    }
-    Objetivo_x = signo * (BIT_M_OX * 1000 + BIT_C_OX * 100 + BIT_D_OX * 10 + BIT_U_OX);
-    if (Objetivo_x_ant != Objetivo_x)
-    {
-        if ((Objetivo_x > MAXCAMPO_X) || (Objetivo_x < MINCAMPO_X))
-        {
-            transmitir_cadenaUART0("EPOX");
-            Objetivo_x = Objetivo_x_ant;
-        }
-        else
-        {
-            flag_posicion = 1;
-            Objetivo_x_ant = Objetivo_x;
-        }
-    }
-
-    //Calculo de la posición Y objetivo:
-    if (BIT_S_OY == '+') //Si recibo un mas es positivo
-        signo = 1;
-    else if (BIT_S_OY == '-') //Si recibo un menos es negativo
-        signo = -1;
-    else
-    {
-        flag_errosigno = 0;
-        transmitir_cadenaUART0("ESOY");
-    }
-    Objetivo_y = signo * (BIT_M_OY * 1000 + BIT_C_OY * 100 + BIT_D_OY * 10 + BIT_U_OY);
-    if (Objetivo_y_ant != Objetivo_y)
-    {
-        if ((Objetivo_y > MAXCAMPO_Y) || (Objetivo_y < MINCAMPO_Y))
-        {
-            transmitir_cadenaUART0("EPOY");
-            Objetivo_y = Objetivo_y_ant;
-        }
-        else
-        {
-            flag_posicion = 1;
-            Objetivo_y_ant = Objetivo_y;
-        }
-    }
-    //Activamos el flag
-    if (flag_posicion & flag_errosigno)
-        flag_objetivo = 1;
-}
-
-void dibujar_cuadrado(CX, CY) //Dibuja un cuadrado por pantalla para la demo:
-{
-    int i, j;
-    for (i = CX - 10; i <= CX + 10; i++)
-    {
-        for (j = CY - 10; j <= CY + 10; j++)
-        {
-            LCD_SetPoint(i, j, 40);
-        }
+    case ('G'):
+        estado = T_INSTRUCCION;
+        grados_giro = (buffer[1] - '0') * 100 + (buffer[2] - '0') * 10 + (buffer[3] - '0');
+        break;
+    case ('D'):
+        estado = T_INSTRUCCION;
+        distancia = (buffer[1] - '0') * 1000 + (buffer[2] - '0') * 100 + (buffer[3] - '0') * 10 + (buffer[4] - '0');
+        velocidad = (buffer[5] - '0') * 1000 + (buffer[6] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[8] - '0');
+        velocidad_maxima = (buffer[9] - '0') * 1000 + (buffer[10] - '0') * 100 + (buffer[11] - '0') * 10 + (buffer[12] - '0');
+        break;
+    case ('C'):
+        estado = T_INSTRUCCION;
+        distancia = (buffer[1] - '0') * 1000 + (buffer[2] - '0') * 100 + (buffer[3] - '0') * 10 + (buffer[4] - '0');
+        velocidad = (buffer[5] - '0') * 1000 + (buffer[6] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[8] - '0');
+        velocidad_maxima = (buffer[9] - '0') * 1000 + (buffer[10] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[11] - '0');
+        radio = (buffer[12] - '0') * 1000 + (buffer[13] - '0') * 100 + (buffer[14] - '0') * 10 + (buffer[15] - '0');
+        break;
     }
 }
 
 int main() //Función principal con maquina de estados sencillita para la demo
 {
     char mensaje_enviado[30];
-    int j = 0;
-    servo_config();
-    set_servo(0);
+    int i = 0;
     uart0_init(115200);
     LCD_Initializtion();
     LCD_Clear(White);
-    transmitir_cadenaUART0("START");
-    dibujar_cuadrado(155, 230);
+    transmitir_cadenaUART0("S");
+
     while (1)
     {
         if (rx_completa)
         {
             rx_completa = 0;
-            if (error_longitud)
+            traduccion_de_variables();
+        }
+        else
+        {
+            switch (estado)
             {
-                error_longitud = 0;
-                transmitir_cadenaUART0("EL");
+            case 'G':
+                LCD_Clear(White);
+                sprintf(mensaje_enviado, "Grados %d", grados_giro);
+                GUI_Text(130, 100, (uint8_t *)mensaje_enviado, Cyan, Black);
+                if (i == 100)
+                {
+                    estado = 'A';
+                    i = 0;
+                }
+                else
+                    i++;
+                break;
+            case 'D':
+                LCD_Clear(White);
+                sprintf(mensaje_enviado, "Distancia %d", distancia);
+                GUI_Text(130, 100, (uint8_t *)mensaje_enviado, Cyan, Black);
+                sprintf(mensaje_enviado, "Velocidad %d", velocidad);
+                GUI_Text(130, 80, (uint8_t *)mensaje_enviado, Cyan, Black);
+                sprintf(mensaje_enviado, "V_max %d", velocidad_maxima);
+                GUI_Text(130, 60, (uint8_t *)mensaje_enviado, Cyan, Black);
+                if (i == 100)
+                {
+                    estado = 'A';
+                    i = 0;
+                }
+                else
+                    i++;
+                break;
+            case 'C':
+                LCD_Clear(White);
+                sprintf(mensaje_enviado, "Distancia %d", distancia);
+                GUI_Text(130, 100, (uint8_t *)mensaje_enviado, Cyan, Black);
+                sprintf(mensaje_enviado, "Velocidad %d", velocidad);
+                GUI_Text(130, 80, (uint8_t *)mensaje_enviado, Cyan, Black);
+                sprintf(mensaje_enviado, "V_max %d", velocidad_maxima);
+                GUI_Text(130, 60, (uint8_t *)mensaje_enviado, Cyan, Black);
+                sprintf(mensaje_enviado, "Radop %d", radio);
+                GUI_Text(130, 40, (uint8_t *)mensaje_enviado, Cyan, Black);
+                if (i == 100)
+                {
+                    estado = 'A';
+                    i = 0;
+                }
+                else
+                    i++;
+                break;
+            case 'A':
+                transmitir_cadenaUART0("A");
+                estado = 'NULL';
+                break;
             }
-            else
-                traduccion_de_variables();
         }
-        if (flag_grados)
-        {
-            set_servo(grados);
-            flag_grados = 0;
-        }
-        if (flag_objetivo)
-        {
-            flag_objetivo = 0;
-            LCD_Clear(White);
-            dibujar_cuadrado((Objetivo_x - MINCAMPO_X) / 10, (Objetivo_y - MINCAMPO_Y) / R_CP);
-        }
-        if (tx_completa & (j == 1000000))
-        {
-            //Nota a la hora de enviar mensajes se puede hacer una estructura
-            sprintf(mensaje_enviado, "%d%d", odomx, odomy);
-            transmitir_cadenaUART0(mensaje_enviado);
-            j = 0;
-        }
-        j++;
     }
 }

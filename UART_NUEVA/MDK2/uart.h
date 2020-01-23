@@ -17,8 +17,7 @@
 #define CTI_INTERRUPT (6 << 1)
 
 //Parametros de mensaje
-#define bits_esperados 13             //Bits propios del mensaje
-#define BIT_CGrados (buffer[0] - '0') //Valor del bit en el que se indican las centenas de los grados.
+#define T_INSTRUCCION buffer[0]       //Primer char, es el que identifica la instrucción
 #define BIT_DGrados (buffer[1] - '0') //Valor del bit en el que se indican las decenas de los grados.
 #define BIT_UGrados (buffer[2] - '0') //Valor del bit en el que se indican las unidades de los grados.
 #define BIT_S_OX buffer[3]            //Posición del bit de signo del objetivo en x.
@@ -31,12 +30,13 @@
 #define BIT_C_OY (buffer[10] - '0')   //Valor del bit en el que se indican las centenas de la posición objetivo en y.
 #define BIT_D_OY (buffer[11] - '0')   //Valor del bit en el que se indican las decenas de la posición objetivo en y.
 #define BIT_U_OY (buffer[12] - '0')   //Valor del bit en el que se indican las unidades de la posición objetivo en y.
-extern char *ptr_rx;                  // Puntero de recepción
-extern char rx_completa;              // Flag de recepción de cadena que se activa a "1" al recibir la tecla return CR(ASCII=13)
-extern char *ptr_tx;                  // Puntero de transmisión
-extern char tx_completa;              // Flag de transmision completa
-extern char buffer[70];               // Buffer de recepción de caracteres
-extern int error_longitud;            // Flag visa de que se ha encontrado con un mensaje más grande de lo espeardo
+
+extern char *ptr_rx;       // Puntero de recepción
+extern char rx_completa;   // Flag de recepción de cadena que se activa a "1" al recibir la tecla return CR(ASCII=13)
+extern char *ptr_tx;       // Puntero de transmisión
+extern char tx_completa;   // Flag de transmision completa
+extern char buffer[70];    // Buffer de recepción de caracteres
+extern int error_longitud; // Flag visa de que se ha encontrado con un mensaje más grande de lo espeardo
 extern void uart0_init(int baudrate);
 extern void transmitir_cadenaUART0(char *cadena);
 

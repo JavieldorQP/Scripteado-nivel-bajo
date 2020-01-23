@@ -117,15 +117,10 @@ void UART0_IRQHandler(void)
 
         {
             transmitir_cadenaUART0("R");
-            //*ptr_rx=0;		/* A�adimos el caracter null para tratar los datos recibidos como una cadena*/
-            if (i != bits_esperados)
-                error_longitud = 1;
+            /*if (i != bits_esperados)
+                error_longitud = 1; */
             i = 0;
             rx_completa = 1; /* rx completa */
-            //ptr_rx=buffer;	/* puntero al inicio del buffer para nueva recepci�n */
-            //transmitir_cadenaUART0("Recibido"); //Reenvio el mensaje por UART al PC para asegurarme de que ha llegado
-            //LCD_mostrar_variable(1,5,'u');
-            //almaceno_instruccion();
         }
         else
             i++;
