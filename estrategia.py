@@ -1,4 +1,0 @@
-
-#Ejemplo de estrategia:
-
-robot=

@@ -2,7 +2,6 @@
 ".\startup_lpc17xx.o"
 ".\system_lpc17xx.o"
 ".\main.o"
-".\pantalla.o"
 ".\asciilib.o"
 ".\glcd.o"
 ".\eurouart.o"
