@@ -13,7 +13,7 @@
 # Importo las bibliotecas:
 import serial  # Necesaria
 import time  # Añadida para la demo
-from serialpacking import POSE_TO_MSG
+#from serialpacking import POSE_TO_MSG
 
 
 def main():

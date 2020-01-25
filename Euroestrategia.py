@@ -10,30 +10,75 @@
 
 
 """
+import time
+# Constantes
+VASO_1 = 'A'
+X = 0
+Y = 1
 
 
 class robot:
-    def __init__(self, posx, posy, vx, vy):
-        self.pos = [posx, posy]
+    def __init__(self):
+        self.pos = [-1500, -700]
         self.bandera = 0
-        self.velocidad = [vx, vy]
+        self.velocidad = [0, 0]
+        self.velocidadangular = [0]
+
+
+class vasos:
+    def __init__(self, estado, posx, posy, color):
+        self.estado = estado
+        self.pos = [posx, posy]
+        self.color = color
+
+
+class campo:
+    def __init__(self):
+        self.vaso1 = vasos(True, 7, 5, 'r')
+        self.vaso2 = vasos(True, 7, 5, 'r')
+        self.vaso3 = vasos(True, 7, 5, 'r')
 
 
 class game:
-    def __init__(self, t, posx, posy, vx, vy):
-        self.tiempo = [t]
-        self.robot = [posx, posy, vx, vy]
+    def __init__(self):
+        self.tiempo = 0
+        self.puntos = 0
+        self.robot = robot
+        self.campo = campo
+
+        #self.vaso1 = vaso(1, 15, 2, 'r')
         # self.campo
 
 
-def ejecutor(juego):
-    if(juego.tiempo <= 130):
-        print("Queda tiempo")
+# class planificador:
+
+
+def planificador(juego):
+    if(juego.tiempo <= 100):
+        print("Queda tiempo, vamos por la siguiente instruccion")
+    else:
+        print("Rapido pirate")
+    if juego.campo.vaso1.estado:
+        print("Vamos a por el vaso 1, hay que salir y girar")
+        ejecutor(VASO_1, juego)
+
+    juego.tiempo = juego.tiempo+1
+
+
+def ejecutor(instruccion, juego):
+    if(VASO_1):
+        distancia = juego.campo.vaso1.pos-juego.robot.pos
+        print(distancia)
 
 
 def main():
-    juego = game(0, -1500, -700, 0, 0)
-    ejecutor(juego)
+    juego = game
+    #vaso1 = vaso(1, 15, 2, 'r')
+    while game.tiempo < 140:
+        planificador(juego)
+        # print(juego.campo.vaso1.color)
+        # print(juego.campo)
+        time.sleep(0.5)
 
 
 main()
