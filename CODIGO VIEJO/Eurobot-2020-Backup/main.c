@@ -1,4 +1,4 @@
-/**** Inclusión de bibliotecas ****/
+/**** Inclusiï¿½n de bibliotecas ****/
 
 #include <LPC17xx.h>
 #include <stdio.h>
@@ -6,7 +6,7 @@
 #include "Eurouart.h"
 #include "GLCD.h"
 
-/**** Caracterización del robot ****/
+/**** Caracterizaciï¿½n del robot ****/
 
 typedef struct {
 
@@ -23,24 +23,25 @@ typedef struct {
 	
 } Robot;
 
-/**** Caracterización de los mensajes ****/
+/**** Caracterizaciï¿½n de los mensajes ****/
 
 typedef struct {
 
-	char Codigo;
-	char Prioridad;
-
+	char Codigo;                //Letra de la instrucciÃ³n
+	char Prioridad;             //Prioridad 1 ==> URGENTE
+                                //Prioridad 0 ==> Normal
 } Mensaje;
 
-/**** Variables de la comunicación por UART (by Lesmus Trompiz) ****/
+/**** Variables de la comunicaciï¿½n por UART (by Lesmus Trompiz) ****/
 
-char buffer[70];  // Buffer de recepción de 50 caracteres
-char *ptr_rx;     // puntero de recepción
-char rx_completa; // Flag de recepción de cadena que se activa a "1" al recibir la tecla return CR(ASCII=13)
-char *ptr_tx;     // puntero de transmisión
-char tx_completa; // Flag de transmisión de cadena que se activa al transmitir el caracter null (fin de cadena)
+char buffer[70];  // Buffer de recepciï¿½n de 70 caracteres
+char *ptr_rx;     // puntero de recepciï¿½n
+char rx_completa; // Flag de recepciï¿½n de cadena que se activa a "1" al recibir la tecla return CR(ASCII=13)
+char *ptr_tx;     // puntero de transmisiï¿½n
+char tx_completa; // Flag de transmisiï¿½n de cadena que se activa al transmitir el caracter null (fin de cadena)
+Mensaje instru;   //Hay que guardar aquÃ­ las instrucciones recibidas por UART
 
-char estado = 'NULL';
+//char estado = 'NULL';
 int distancia = 0;
 int velocidad = 0;
 int velocidad_maxima = 0;
@@ -49,112 +50,182 @@ int grados_giro = 0;
 int posx = -1500;
 int posy = 500;
 
-/**** Comandos del robot ****/
+int Siguiente_Estado = ST_INICIAL; 	
+int Estado = ST_INICIAL;				
 
+int flag_fin = 1;                           //La inicializo a 1 para que actualice Estado desde ST_INICIAL
+
+/**** Comandos del robot ****/
+/*
 #define		CMD_RECTA				0
 #define		CMD_GIRO				1
 #define		CMD_CURVA				2
+*/
+/**** Estados de la mï¿½quina de estados ****/
 
-/**** Estados de la máquina de estados ****/
-
-#define 	ST_INICIAL			0
+#define 	ST_INICIAL				0
 #define		ST_PARADO				1
 #define		ST_RECTA				2
 #define		ST_GIRO					3
 #define		ST_CURVA				4
 #define		ST_FRENO				5
-int Estado = 0;
 
-/**** Funciones de la máquina de estados ****/
 
-int ST_Inicial(void){
+
+/**** Funciones de la mï¿½quina de estados ****/
+
+int CMD_Inicial(void){
+//En el bucle general se llama a esta funciÃ³n que solo lee mensajes de la UART para arrancar hacia otro estado
+}
+
+int CMD_Parado(void){
+//FunciÃ³n de seguridad en el que llevamos todas las velocidades a 0 y miramos por la siguiente instrucciÃ³n
+//Seguramente estamos aquÃ­ por un mensaje de ABORTAR o EMERGENCIA
+}
+
+int CMD_Recta(void){
+//Avanzamos una distancia en lÃ­nea recta a velocidad mÃ¡xima definida
+
+
+
+//ESTRUCTURA GENERAL DE LOS COMANDOS
+
+/*
+static bool inicio = 1;
+
+if(inicio){
+    inicio = 0;
+    flag_fin = 0;
+    Cargo datos leÃ­dos por UART
+    Pongo el contador de odometrÃ­a a 0
+    Habilito los motores y a movernos
+}
+
+Leo UART cada 250 ms
+si no ha cambiado, la instrucciÃ³n entonces Siguiente_Estado=Estado
+EvalÃºo el error que tengo en cada ciclo hasta que "llego"
+    flag_fin = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
+    inicio = 1;
+
+*/
+}
+
+int CMD_Giro(void){
+//Giramos sobre el eje del robot un Ã¡ngulo definido a velocidad mÃ¡xima definida
+}
+
+int CMD_Curva(void){
+//Tomamos una curva de radio determinado y angulo de arco determinado a velocidad mÃ¡xima definida
+}
+
+int CMD_Freno(void){
 
 }
 
-int ST_Parado(void){
-
-}
-
-int ST_Recta(void){
-
-}
-
-int ST_Giro(void){
-
-}
-
-int ST_Curva(void){
-
-}
-
-int ST_Freno(void){
-
-}
-
-void Maquina_Estados (*Estado){
-	
-	int Siguiente_Estado;
-
-	Siguiente_Estado = ST_Inicial();
+int Maquina_Estados (*Estado){
+	//Siguiente_Estado = ST_Inicial(); 						
 	while(1) {
-		switch(Siguiente_Estado) {
+		switch(instru.Codigo) {
 			case ST_INICIAL:
-				Siguiente_Estado = ST_Inicial();
+				Siguiente_Estado = ST_INICIAL;
 				break;
-			default:
+			case 'D':
+				Siguiente_Estado = ST_RECTA;				
+				break;
+			case 'C':
+				Siguiente_Estado = ST_CURVA;				
+				break;
+			case 'G':
+				Siguiente_Estado = ST_GIRO;			
+				break;
+			case 'F':
+				Siguiente_Estado = ST_FRENO;				
+				break;
+			default:										
+				Siguiente_Estado = ST_PARADO;			
 				break;
 		}
 	}
 
 }
 
-/**** Función main ****/
+/**** Funciï¿½n main ****/
 
 int main(){
 
+//Configuramos TODO lo configurable
+
 		while(1){
-			
+															//Revisamos las nuevas instrucciones para actualizar el estado, de ser asÃ­ lo actualizamos
 			Maquina_Estados(Estado);
-			Estado = Siguiente_Estado;
-		
-		switch(Estado){
-			
-			/* En el estado inicial, esperamos la llegada de la primera instrucción	 
-			basado en la estrategia. */
-			case ST_INICIAL:
-				// nuevo_estado = estado_inicial(Estado)
-				break;
-			
-			/* Estado PARADO: nos quedamos a la espera de la siguiente instrucción.
-			Se puede llegar aquí por: ausencia de tareas, enemigo cercano. */
-			case ST_PARADO:
-				break;
-			
-			/* Estado RECTA: instrucción de movimiento en línea recta. Se evalua:
-			la vel. actual, la vel. máxima, la vel. final y la distancia */
-			case ST_RECTA:
-				break;
-			
-			/* Estado GIRO: instrucción de giro sobre el propio eje. Se evalua:
-			la vel. actual, la vel. final y ángulo de giro */
-			case ST_GIRO:
-				break;
-			
-			/* Estado CURVA: instrucción de movimiento tomando una curva. Se evalua:
-			ángulo, radio de curvatura, vel. actual y vel. final */
-			case ST_CURVA:
-				break;
-			
-			/* Estado FRENO: instrucción de frenada de emergencia. No se evalua nada.
-			Caso particular de RECTA */
-			case ST_FRENO:
-				break;
-			
-			default:
-				break;
-				
-		}
-		// estado = nuevo_estado
+			//Estado = Siguiente_Estado;
+            
+            if(instru.Prioridad | flag fin){
+                Estado = Siguiente_Estado;                  //Actualiza si no hay instrucciÃ³n en curso o hay URGENCIA
+            }
+
+            switch(Estado){	
+            
+                /* En el estado inicial, esperamos la llegada de la primera instrucciï¿½n	 
+                basado en la estrategia. */
+                case ST_INICIAL:
+                                                            // nuevo_estado = estado_inicial(Estado)
+                                                            //Hago una primera lectura de todos los sensores
+                                                            //Espero por la UART la primera instrucciÃ³n
+                    CMD_Inicial();
+                    traduccion_de_variables();                      //Leo la UART para saber si hay siguiente instrucciÃ³n
+
+                    break;
+                
+                /* Estado PARADO: nos quedamos a la espera de la siguiente instrucciï¿½n.
+                Se puede llegar aquï¿½ por: ausencia de tareas, enemigo cercano. */
+                case ST_PARADO:
+                                                            //PAREN LAS ROTATIVAS
+                                                            //Hago lo mismo que en INICIAL 
+                    CMD_Parado();    
+                    traduccion_de_variables();                      //Leo la UART para saber si hay siguiente instrucciÃ³n
+                            
+                    break;
+                
+                /* Estado RECTA: instrucciï¿½n de movimiento en lï¿½nea recta. Se evalua:
+                la vel. actual, la vel. mï¿½xima, la vel. final y la distancia */
+                case ST_RECTA:
+                    CMD_Recta();
+                                                            //SOLO EN EL PRIMER CICLO DEL ESTADO
+                                                                //Cargamos los valores de distancia y velocidades
+                                                                //Comenzamos la medida de odometrÃ­a
+                                                                //Habilitamos motores
+                                                            //TODOS LOS CICLOS
+                                                                //Controlamos lo que falta para llegar
+                    break;
+                
+                /* Estado GIRO: instrucciï¿½n de giro sobre el propio eje. Se evalua:
+                la vel. actual, la vel. final y ï¿½ngulo de giro */
+                case ST_GIRO:
+                    CMD_Giro();
+                    break;
+                
+                /* Estado CURVA: instrucciï¿½n de movimiento tomando una curva. Se evalua:
+                ï¿½ngulo, radio de curvatura, vel. actual y vel. final */
+                case ST_CURVA:
+                    CMD_Curva();
+                    break;
+                
+                /* Estado FRENO: instrucciï¿½n de frenada de emergencia. No se evalua nada.
+                Caso particular de RECTA */
+                case ST_FRENO:
+                    CMD_Freno();
+                    break;
+                
+                default:
+                                                            //PAREN LAS ROTATIVAS
+                                                            //Hago lo mismo que en INICIAL 
+                    CMD_Parado();
+                    Estado=ST_PARADO;
+                    traduccion_de_variables();                      //Leo la UART para saber si hay siguiente instrucciÃ³n
+
+                    break;
+            }
 	}
 }
 
