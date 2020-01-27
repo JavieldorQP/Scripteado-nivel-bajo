@@ -15,13 +15,17 @@ typedef struct {
 
 } Posicion;
 
+Posicion Pos;
+
 typedef struct {
 	
 	Posicion Pos_Inicial;
 	Posicion Pos_Final;
 	int Vel_Actual;																// Velocidad actual del robot en mm/s
 	
-} Robot;
+} Caracterizacion;
+
+Caracterizacion Robot;
 
 /**** Caracterizaci�n de los mensajes ****/
 
@@ -32,6 +36,9 @@ typedef struct {
                                 //Prioridad 0 ==> Normal
 } Mensaje;
 
+Mensaje Instruccion;   //Hay que guardar aquí las instrucciones recibidas por UART
+
+
 /**** Variables de la comunicaci�n por UART (by Lesmus Trompiz) ****/
 
 char buffer[70];  // Buffer de recepci�n de 70 caracteres
@@ -39,7 +46,6 @@ char *ptr_rx;     // puntero de recepci�n
 char rx_completa; // Flag de recepci�n de cadena que se activa a "1" al recibir la tecla return CR(ASCII=13)
 char *ptr_tx;     // puntero de transmisi�n
 char tx_completa; // Flag de transmisi�n de cadena que se activa al transmitir el caracter null (fin de cadena)
-Mensaje instru;   //Hay que guardar aquí las instrucciones recibidas por UART
 
 //char estado = 'NULL';
 int distancia = 0;
@@ -125,7 +131,7 @@ int CMD_Freno(void){
 int Maquina_Estados (*Estado){
 	//Siguiente_Estado = ST_Inicial(); 						
 	while(1) {
-		switch(instru.Codigo) {
+		switch(Instruccion.Codigo) {
 			case ST_INICIAL:
 				Siguiente_Estado = ST_INICIAL;
 				break;
@@ -160,7 +166,7 @@ int main(){
 			Maquina_Estados(Estado);
 			//Estado = Siguiente_Estado;
             
-            if(instru.Prioridad | flag fin){
+            if(Instruccion.Prioridad || flag_fin){
                 Estado = Siguiente_Estado;                  //Actualiza si no hay instrucción en curso o hay URGENCIA
             }
 
