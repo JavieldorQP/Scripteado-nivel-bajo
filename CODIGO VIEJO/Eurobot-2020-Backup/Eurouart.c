@@ -11,6 +11,35 @@
 #include "Eurouart.h" //Enlazo con la biblioteca
 #include <LPC17xx.h>
 
+/**** Caracterizaci�n del robot ****/
+
+typedef struct {
+
+	int X;																				// Coordenada X del robot en mm
+	int Y;																				// Coordenada Y del robot en mm
+
+} Posicion;
+
+typedef struct {
+	
+	Posicion Pos_Inicial;
+	Posicion Pos_Final;
+	int Vel_Actual;																// Velocidad actual del robot en mm/s
+	
+} Robot;
+
+/**** Caracterizaci�n de los mensajes ****/
+
+typedef struct {
+
+	char Codigo;
+	char Prioridad;
+
+} Mensaje;
+
+extern Mensaje instru;
+
+
 //Configuraci�n de la Baudrate
 static int uart0_set_baudrate(unsigned int baudrate) //Esta funci�n nos permite ajustar los registros de la MiniDK2 para ajustar al BAUDRATE con una gran precision. Funcion extraida de un ejemplo de la bb.
 {
@@ -156,21 +185,27 @@ void traduccion_de_variables() //Se encarga de leer el mensaje recibido, actuali
     switch (T_INSTRUCCION)
     {
     case ('G'):
-        estado = T_INSTRUCCION;
+        instru.Codigo = T_INSTRUCCION;
+        instru.Prioridad = 0;
         grados_giro = (buffer[1] - '0') * 100 + (buffer[2] - '0') * 10 + (buffer[3] - '0');
         break;
     case ('D'):
-        estado = T_INSTRUCCION;
+        instru.Codigo = T_INSTRUCCION;
+        instru.Prioridad = 0;
         distancia = (buffer[1] - '0') * 1000 + (buffer[2] - '0') * 100 + (buffer[3] - '0') * 10 + (buffer[4] - '0');
         velocidad = (buffer[5] - '0') * 1000 + (buffer[6] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[8] - '0');
         velocidad_maxima = (buffer[9] - '0') * 1000 + (buffer[10] - '0') * 100 + (buffer[11] - '0') * 10 + (buffer[12] - '0');
         break;
     case ('C'):
-        estado = T_INSTRUCCION;
+        instru.Codigo = T_INSTRUCCION;
+        instru.Prioridad = 0;
         distancia = (buffer[1] - '0') * 1000 + (buffer[2] - '0') * 100 + (buffer[3] - '0') * 10 + (buffer[4] - '0');
         velocidad = (buffer[5] - '0') * 1000 + (buffer[6] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[8] - '0');
         velocidad_maxima = (buffer[9] - '0') * 1000 + (buffer[10] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[11] - '0');
         radio = (buffer[12] - '0') * 1000 + (buffer[13] - '0') * 100 + (buffer[14] - '0') * 10 + (buffer[15] - '0');
         break;
+
+    //Hay que añadir el freno
+    //instru.Prioridad = 1;                 //URGENTE PARAR
     }
 }
