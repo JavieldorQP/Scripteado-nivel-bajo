@@ -4,39 +4,29 @@
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
 D:\Carpetas\Eurobot\Scripteado-nivel-bajo\UART_NUEVA\MDK2\MDK2_demo.uvproj
-Project File Date:  01/17/2020
+Project File Date:  01/23/2020
 
 <h2>Output:</h2>
 Build target 'Target 1'
-compiling main.c...
-main.c(25): warning:  #2548-D: multicharacter character literal (potential portability problem)
-  char estado = 'NULL';
-main.c(25): warning:  #69-D: integer conversion resulted in truncation
-  char estado = 'NULL';
-main.c(50): warning:  #223-D: function "traduccion_de_variables" declared implicitly
-              traduccion_de_variables();
-main.c(104): warning:  #2548-D: multicharacter character literal (potential portability problem)
+linking...
+Program Size: Code=16106 RO-data=1758 RW-data=56 ZI-data=680  
+".\MDK2_demo.axf" - 0 Error(s), 0 Warning(s).
+Load "D:\\Carpetas\\Eurobot\\Scripteado-nivel-bajo\\UART_NUEVA\\MDK2\\MDK2_demo.axf" 
+Erase Done.
+Programming Done.
+Verify OK.
+g(s).
+Load "D:\\Carpetas\\Eurobot\\Scripteado-nivel-bajo\\UART_NUEVA\\MDK2\\MDK2_demo.axf" 
+Erase Done.
+Programming Done.
+Verify OK.
+2548-D: multicharacter character literal (potential portability problem)
                   estado = 'NULL';
 main.c(104): warning:  #69-D: integer conversion resulted in truncation
                   estado = 'NULL';
 main.c: 5 warnings, 0 errors
 compiling pantalla.c...
-pantalla.h(19): warning:  #1-D: last line of file ends without a newline
-  void LCD_mostrar_variable(float numero, char tipo);
-pantalla.c: 1 warning, 0 errors
-compiling AsciiLib.c...
-compiling GLCD.c...
-compiling Eurouart.c...
-Eurouart.c(176): warning:  #1-D: last line of file ends without a newline
-  }
-Eurouart.c: 1 warning, 0 errors
-linking...
-Program Size: Code=16284 RO-data=1756 RW-data=56 ZI-data=680  
-".\MDK2_demo.axf" - 0 Error(s), 7 Warning(s).
-Load "D:\\Carpetas\\Eurobot\\Scripteado-nivel-bajo\\UART_NUEVA\\MDK2\\MDK2_demo.axf" 
-Erase Done.
-Programming Done.
-Verify OK.
-</pre>
-</body>
-</html>
+pantalla.c: Error:  #5: cannot open source input file "pantalla.c": No such file or directory
+pantalla.c: 0 warnings, 1 error
+".\MDK2_demo.axf" - 1 Error(s), 5 Warning(s).
+Target not created
