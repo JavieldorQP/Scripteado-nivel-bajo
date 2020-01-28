@@ -11,8 +11,6 @@
 #include "Eurouart.h" //Enlazo con la biblioteca
 #include <LPC17xx.h>
 
-
-
 //Configuraci�n de la Baudrate
 static int uart0_set_baudrate(unsigned int baudrate) //Esta funci�n nos permite ajustar los registros de la MiniDK2 para ajustar al BAUDRATE con una gran precision. Funcion extraida de un ejemplo de la bb.
 {
@@ -153,32 +151,51 @@ void transmitir_cadenaUART0(char *cadena)
 } // activar flag interrupci�n por registro transmisor vacio
 
 //Funciones nuevas:
-void Traduccion_Variables(void){ //Se encarga de leer el mensaje recibido, actualizar las variables y levantar los flags.
-
+void Traduccion_Variables(void)
+{ //Se encarga de leer el mensaje recibido, actualizar las variables y levantar los flags.
     switch (T_INSTRUCCION)
     {
     case ('G'):
         Instruccion_Codigo = T_INSTRUCCION;
         Instruccion_Prioridad = 0;
-        grados_giro = (buffer[1] - '0') * 100 + (buffer[2] - '0') * 10 + (buffer[3] - '0');
+        grados_giro = (BIT_C_GRADOS - '0') * 100 + (BIT_D_GRADOS - '0') * 10 + (BIT_U_GRADOS - '0');
+        if (BIT_SIGNO_GRADOS == '+')
+        {
+            grados_giro = grados_giro;
+        }
+        if (BIT_SIGNO_GRADOS == '-')
+        {
+            grados_giro = -1 * grados_giro;
+        }
+        else
+        {
+            transmitir_cadenaUART0("E");
+        }
+
         break;
     case ('D'):
         Instruccion_Codigo = T_INSTRUCCION;
         Instruccion_Prioridad = 0;
-        distancia = (buffer[1] - '0') * 1000 + (buffer[2] - '0') * 100 + (buffer[3] - '0') * 10 + (buffer[4] - '0');
-        velocidad = (buffer[5] - '0') * 1000 + (buffer[6] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[8] - '0');
-        velocidad_maxima = (buffer[9] - '0') * 1000 + (buffer[10] - '0') * 100 + (buffer[11] - '0') * 10 + (buffer[12] - '0');
+        distancia = (BIT_M_DISTANCIA - '0') * 1000 + (BIT_C_DISTANCIA - '0') * 100 + (BIT_D_DISTANCIA - '0') * 10 + (BIT_U_DISTANCIA - '0');
+        velocidad = (BIT_M_V - '0') * 1000 + (BIT_C_V - '0') * 100 + (BIT_D_V - '0') * 10 + (BIT_U_V - '0');
+        velocidad_maxima = (BIT_M_VMAX - '0') * 1000 + (BIT_C_VMAX - '0') * 100 + (BIT_D_VMAX - '0') * 10 + (BIT_U_VMAX - '0');
+        if (BIT_SIGNO_GRADOS == '+')
+            distancia = distancia;
+        if (BIT_SIGNO_GRADOS == '-')
+            distancia = -1 * distancia;
+        else
+            transmitir_cadenaUART0("E");
         break;
     case ('C'):
         Instruccion_Codigo = T_INSTRUCCION;
         Instruccion_Prioridad = 0;
-        distancia = (buffer[1] - '0') * 1000 + (buffer[2] - '0') * 100 + (buffer[3] - '0') * 10 + (buffer[4] - '0');
-        velocidad = (buffer[5] - '0') * 1000 + (buffer[6] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[8] - '0');
-        velocidad_maxima = (buffer[9] - '0') * 1000 + (buffer[10] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[11] - '0');
-        radio = (buffer[12] - '0') * 1000 + (buffer[13] - '0') * 100 + (buffer[14] - '0') * 10 + (buffer[15] - '0');
+        distancia = (BIT_M_DISTANCIA_C - '0') * 1000 + (BIT_C_DISTANCIA_C - '0') * 100 + (BIT_D_DISTANCIA_C - '0') * 10 + (BIT_U_DISTANCIA_C - '0');
+        velocidad = (BIT_M_V_C - '0') * 1000 + (BIT_C_V_C - '0') * 100 + (BIT_D_V_C - '0') * 10 + (BIT_U_V_C - '0');
+        velocidad_maxima = (BIT_M_VMAX_C - '0') * 1000 + (BIT_C_VMAX_C - '0') * 100 + (BIT_D_VMAX_C - '0') * 10 + (BIT_U_VMAX_C - '0');
+        radio = (BIT_M_RADIO_C - '0') * 1000 + (BIT_C_RADIO_C - '0') * 100 + (BIT_D_RADIO_C - '0') * 10 + (BIT_U_RADIO_C - '0');
         break;
 
-    //Hay que añadir el freno
-    //Instruccion_Prioridad = 1;                 //URGENTE PARAR
+        //Hay que añadir el freno
+        //Instruccion_Prioridad = BIT_PRIO - '0'; //URGENTE PARAR
     }
 }
