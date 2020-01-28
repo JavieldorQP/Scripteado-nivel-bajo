@@ -11,33 +11,6 @@
 #include "Eurouart.h" //Enlazo con la biblioteca
 #include <LPC17xx.h>
 
-/**** Caracterizaci�n del robot ****/
-
-typedef struct {
-
-	int X;																				// Coordenada X del robot en mm
-	int Y;																				// Coordenada Y del robot en mm
-
-} Posicion;
-
-typedef struct {
-	
-	Posicion Pos_Inicial;
-	Posicion Pos_Final;
-	int Vel_Actual;																// Velocidad actual del robot en mm/s
-	
-} Robot;
-
-/**** Caracterizaci�n de los mensajes ****/
-
-typedef struct {
-
-	char Codigo;
-	char Prioridad;
-
-} Mensaje;
-
-extern Mensaje instru;
 
 
 //Configuraci�n de la Baudrate
@@ -180,25 +153,25 @@ void transmitir_cadenaUART0(char *cadena)
 } // activar flag interrupci�n por registro transmisor vacio
 
 //Funciones nuevas:
-void traduccion_de_variables() //Se encarga de leer el mensaje recibido, actualizar las variables y levantar los flags.
-{
+void Traduccion_Variables(void){ //Se encarga de leer el mensaje recibido, actualizar las variables y levantar los flags.
+
     switch (T_INSTRUCCION)
     {
     case ('G'):
-        instru.Codigo = T_INSTRUCCION;
-        instru.Prioridad = 0;
+        Instruccion_Codigo = T_INSTRUCCION;
+        Instruccion_Prioridad = 0;
         grados_giro = (buffer[1] - '0') * 100 + (buffer[2] - '0') * 10 + (buffer[3] - '0');
         break;
     case ('D'):
-        instru.Codigo = T_INSTRUCCION;
-        instru.Prioridad = 0;
+        Instruccion_Codigo = T_INSTRUCCION;
+        Instruccion_Prioridad = 0;
         distancia = (buffer[1] - '0') * 1000 + (buffer[2] - '0') * 100 + (buffer[3] - '0') * 10 + (buffer[4] - '0');
         velocidad = (buffer[5] - '0') * 1000 + (buffer[6] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[8] - '0');
         velocidad_maxima = (buffer[9] - '0') * 1000 + (buffer[10] - '0') * 100 + (buffer[11] - '0') * 10 + (buffer[12] - '0');
         break;
     case ('C'):
-        instru.Codigo = T_INSTRUCCION;
-        instru.Prioridad = 0;
+        Instruccion_Codigo = T_INSTRUCCION;
+        Instruccion_Prioridad = 0;
         distancia = (buffer[1] - '0') * 1000 + (buffer[2] - '0') * 100 + (buffer[3] - '0') * 10 + (buffer[4] - '0');
         velocidad = (buffer[5] - '0') * 1000 + (buffer[6] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[8] - '0');
         velocidad_maxima = (buffer[9] - '0') * 1000 + (buffer[10] - '0') * 100 + (buffer[7] - '0') * 10 + (buffer[11] - '0');
@@ -206,6 +179,6 @@ void traduccion_de_variables() //Se encarga de leer el mensaje recibido, actuali
         break;
 
     //Hay que añadir el freno
-    //instru.Prioridad = 1;                 //URGENTE PARAR
+    //Instruccion_Prioridad = 1;                 //URGENTE PARAR
     }
 }

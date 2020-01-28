@@ -30,7 +30,11 @@ extern int velocidad_maxima;
 extern int radio;
 extern int grados_giro;
 
+extern char Instruccion_Codigo;
+extern char Instruccion_Prioridad;
+
 extern void uart0_init(int baudrate);
 extern void transmitir_cadenaUART0(char *cadena);
+extern void Traduccion_Variables(void);
 
 #endif /* UART_H_ */
