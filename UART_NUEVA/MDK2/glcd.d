@@ -1,0 +1,10 @@
+.\glcd.o: GLCD\GLCD.c
+.\glcd.o: D:\Programas_Universidad\Keil\ARM\Inc\NXP\LPC17xx\LPC17xx.H
+.\glcd.o: D:\Programas_Universidad\Keil\ARM\CMSIS\Include\core_cm3.h
+.\glcd.o: D:\Programas_Universidad\Keil\ARM\ARMCC\bin\..\include\stdint.h
+.\glcd.o: D:\Programas_Universidad\Keil\ARM\CMSIS\Include\core_cmInstr.h
+.\glcd.o: D:\Programas_Universidad\Keil\ARM\CMSIS\Include\core_cmFunc.h
+.\glcd.o: D:\Programas_Universidad\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h
+.\glcd.o: GLCD\GLCD.h
+.\glcd.o: GLCD\AsciiLib.h
+.\glcd.o: D:\Programas_Universidad\Keil\ARM\ARMCC\bin\..\include\string.h
