@@ -28,8 +28,8 @@ Caracterizacion Robot;
 
 /**** Caracterización de los mensajes ****/
 
-char Instruccion_Codigo;
-char Instruccion_Prioridad;
+char Instruccion_Codigo = ST_INICIAL;
+char Instruccion_Prioridad = NORMAL;
 
 /**** Variables de la comunicación por UART (by Lesmus Trompiz) ****/
 
@@ -45,8 +45,16 @@ int velocidad = 0;
 int velocidad_maxima = 0;
 int radio = 0;
 int grados_giro = 0;
-int posx = -1500;
-int posy = 500;
+//int posx = -1500;
+//int posy = 500;
+
+
+/**** CONDICIONES INICIALES ****/
+
+#define 	X_I						-1500
+#define 	Y_I						500
+#define 	X_D						1500
+#define 	Y_D						500
 
 /**** Estados de la máquina de estados ****/
 
@@ -57,7 +65,16 @@ int posy = 500;
 #define		ST_CURVA				4
 #define		ST_FRENO				5
 
+/**** Prioridades de la comunicación ****/
 
+#define 	NORMAL 					0					//No asignar a ninguna instrucción que nos haga movernos
+#define		URGENTE					1					//Freno
+
+/**** Prioridades de la comunicación ****/
+
+#define 	IZQUIERDA					0
+#define		DERECHA						1
+#define 	LADO						1>>17			//Para leer el 0.17 como bit de lado del campo
 
 /**** Funciones de la máquina de estados ****/
 
@@ -66,13 +83,68 @@ int Siguiente_Estado = ST_INICIAL;
 int Estado = ST_INICIAL;
 
 int CMD_Inicial(void){
-//En el bucle general se llama a esta función que solo lee mensajes de la UART para arrancar hacia otro estado
-	strcpy(buffer, "D100");			//Prueba del correcto funcionamiento de la máquina de estados
+//En el bucle general se llama a esta función que inicializa la estructura Robot y espera instrucciones para arrancar hacia otro estado
+
+//strcpy(buffer, "D100");			//Prueba del correcto funcionamiento de la máquina de estados
+
+static bool inicio = 1;
+	if(inicio)
+	{
+		inicio=0
+		//Flag_EstadoFinalizado=0			//En ST_INICIAL no hace falta ya que está deseoso de órdenes
+		
+		Robot.VelActual = 0;
+		Robot.Orientacion = Seleccion_Lado();
+		
+		if(Robot.Orientacion == -1)
+		{
+			transmitir_cadenaUART0('Error orientacion\n');						//Cazamos errores de lectura de lado
+		}
+		else if (Robot.Orientacion == IZQUIERDA)
+		{
+			Robot.Pos.X = X_I;
+			Robot.Pos.Y = Y_I;
+		}
+		else if (Robot.Orientacion == DERECHA)
+		{
+			Robot.Pos.X = X_D;
+			Robot.Pos.Y = Y_D;
+		}
+		transmitir_cadenaUART0(ST_INICIAL);
+	}
+
+	//ESTE ESTADO NO HACE NADA APARTE DE INICIALIZAR
+
+	//Un timer por debajo se encarga de transmitir la estructura a los de arriba cada 500 ms
+	//cuando terminamos un comando tb se transmite la estructura del robot, esta vez de manera asíncrona
 }
 
 int CMD_Parado(void){
 //Función de seguridad en el que llevamos todas las velocidades a 0 y miramos por la siguiente instrucción
-//Seguramente estamos aquí por un mensaje de ABORTAR o EMERGENCIA
+//Seguramente estamos aquí por un mensaje de FRENO
+
+static bool inicio = 1;
+	if(inicio)
+	{
+		inicio=0
+		Flag_EstadoFinalizado=0					//En ST_PARADO SÍ hay que hacerlo inicialmente ya que solemos llegar por ENEMIGO
+		Motores(0); 								//Repite la instrucción de parar por si ha llegado aquí por mensaje aleatorio, no mediante una frenada anterior
+		transmitir_cadenaUART0(ST_PARADO);
+	}
+
+	//Analiza todo lo que necesite mientras esta en reposo
+
+	if(sensor.laser)								//hay moros en la costa
+	{	
+		//analizo que cara es la que detecta
+		//informo arriba de que hay algo ahí
+		transmitir_sensor();
+	}
+	else
+	{
+		Flag_EstadoFinalizado = 1;
+	}
+	
 }
 
 int CMD_Recta(void){
@@ -88,13 +160,13 @@ static bool inicio = 1;
 if(inicio){
     inicio = 0;
     Flag_EstadoFinalizado = 0;
+	INFORMO A LESMUS QUE ESTOY EN ESTE ESTADO 
     Cargo datos leídos por UART
     Pongo el contador de odometría a 0
     Habilito los motores y a movernos
 }
 
-Leo UART cada 250 ms
-si no ha cambiado, la instrucción entonces Siguiente_Estado=Estado
+
 Evalúo el error que tengo en cada ciclo hasta que "llego"
     Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
     inicio = 1;
@@ -111,8 +183,35 @@ int CMD_Curva(void){
 }
 
 int CMD_Freno(void){
+//FRENA POR TU VIDA
 
+static bool inicio = 1;
+
+	if (inicio)
+	{
+		inicio = 0;
+		Flag_EstadoFinalizado = 0;
+		Motores(0); 					//Paramos en cuanto recibimos el comando
+		transmitir_cadenaUART0(ST_FRENO);
+		Instruccion_Codigo = ST_PARADO;		//Al no estar entre las opciones, se irá al default que es ST_PARADO
+											//Se hace aquí para que no esté frenando siempre y ya sepa que después viene un PARADO, aunque lo cargará cuando suban el flag_final
+	}
+
+	//Dependiendo del tiempo de frenada, para asegurarnos que hemos frenado habría que esperar más que dicho tiempo
+	timer_freno(Robot.VelActual)
+	//Al pasar ese tiempo de seguridad
+	if(flag_timer_freno)
+	{
+		inicio = 1;
+		Flag_EstadoFinalizado = 1;
+		transmitir_odometria();				//Transmitimos la distancia que nos hemos movido. Esta funcion debería ser bloqueante
+											//En este estado incluye la que se movió con el estado anterior, ya que no hubo flag_final al ser URGENTE
+		reset_odometria();
+		
+	}
 }
+	
+	
 
 int Maquina_Estados(void){
 	
@@ -143,16 +242,31 @@ int Maquina_Estados(void){
 				Estado = Siguiente_Estado;
 			}
 		
+		Traduccion_Variables();
 }
-
 
 
 /**** Funciones auxiliares ****/
 
 int Seleccion_Lado(void) {
+	/*
+	Evalúa en que lado empieza el partido y asigna un ángulo de inicio
+	En la primera iteración el robot empieza perpendicular a la pared
+	*/
+	if( ( ( (LPC_GPIO0->FIOPIN) LADO) & 0x1) == IZQUIERDA)
+	{
+		Robot.Orientacion = 0;
+	}		
+	else if ( ( ( (LPC_GPIO0->FIOPIN) LADO) & 0x1) == DERECHA)
+	{
+		Robot.Orientacion = 180;
+	}
+	else
+	{
+		Robot.Orientacion = -1;
+	}
 
-
-
+return Robot.Orientacion;
 }
 
 /**** Funci�n main ****/
@@ -176,8 +290,6 @@ int main(){
 																											//Hago una primera lectura de todos los sensores
 																											//Espero por la UART la primera instrucción
 							CMD_Inicial();
-							Traduccion_Variables();
-
 							break;
 					
 					/* Estado PARADO: nos quedamos a la espera de la siguiente instrucci�n.
@@ -186,7 +298,6 @@ int main(){
 																											//PAREN LAS ROTATIVAS
 																											//Hago lo mismo que en INICIAL 
 							CMD_Parado();    
-							Traduccion_Variables();                      //Leo la UART para saber si hay siguiente instrucción
 											
 							break;
 					
@@ -225,8 +336,6 @@ int main(){
 																											//Hago lo mismo que en INICIAL 
 							CMD_Parado();
 							Estado = ST_PARADO;
-							Traduccion_Variables();                      //Leo la UART para saber si hay siguiente instrucción
-
 							break;
             }
 	}
