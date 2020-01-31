@@ -1,0 +1,74 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup\Eurobot-2020-Backup.uvproj
+Project File Date:  01/29/2020
+
+<h2>Output:</h2>
+Build target 'Simulator'
+compiling main.c...
+main.c(31): error:  #20: identifier "ST_INICIAL" is undefined
+main.c(32): error:  #20: identifier "NORMAL" is undefined
+main.c(76): error:  #20: identifier "bool" is undefined
+main.c(82): error:  #65: expected a ";"
+main.c(93): warning:  #940-D: missing return statement at end of non-void function "CMD_Inicial"
+main.c(99): error:  #20: identifier "bool" is undefined
+main.c(103): error:  #65: expected a ";"
+main.c(105): error:  #167: argument of type "int" is incompatible with parameter of type "char *"
+main.c(121): warning:  #940-D: missing return statement at end of non-void function "CMD_Parado"
+main.c(148): warning:  #940-D: missing return statement at end of non-void function "CMD_Recta"
+main.c(153): warning:  #940-D: missing return statement at end of non-void function "CMD_Giro"
+main.c(158): warning:  #940-D: missing return statement at end of non-void function "CMD_Curva"
+main.c(163): error:  #20: identifier "bool" is undefined
+main.c(169): warning:  #223-D: function "Motores" declared implicitly
+main.c(170): error:  #167: argument of type "int" is incompatible with parameter of type "char *"
+main.c(176): warning:  #223-D: function "timer_freno" declared implicitly
+main.c(178): error:  #65: expected a ";"
+main.c(187): warning:  #12-D: parsing restarts here after previous syntax error
+main.c(187): warning:  #940-D: missing return statement at end of non-void function "CMD_Freno"
+main.c(221): warning:  #940-D: missing return statement at end of non-void function "Maquina_Estados"
+main.c(231): error:  #18: expected a ")"
+main.c(231): error:  #20: identifier "IZQUIERDA" is undefined
+main.c(235): error:  #18: expected a ")"
+main.c(235): error:  #20: identifier "DERECHA" is undefined
+compiling funciones_pwm.c...
+..\proyecto Keil\funciones_pwm.c(98): warning:  #1-D: last line of file ends without a newline
+".\Eurobot-2020-Backup.axf" - 14 Errors, 11 Warning(s).
+Target not created
+Rebuild target 'Simulator'
+assembling startup_LPC17xx.s...
+compiling system_LPC17xx.c...
+compiling main.c...
+main.c(31): error:  #20: identifier "ST_INICIAL" is undefined
+main.c(32): error:  #20: identifier "NORMAL" is undefined
+main.c(76): error:  #20: identifier "bool" is undefined
+main.c(82): error:  #65: expected a ";"
+main.c(93): warning:  #940-D: missing return statement at end of non-void function "CMD_Inicial"
+main.c(99): error:  #20: identifier "bool" is undefined
+main.c(103): error:  #65: expected a ";"
+main.c(105): error:  #167: argument of type "int" is incompatible with parameter of type "char *"
+main.c(121): warning:  #940-D: missing return statement at end of non-void function "CMD_Parado"
+main.c(148): warning:  #940-D: missing return statement at end of non-void function "CMD_Recta"
+main.c(153): warning:  #940-D: missing return statement at end of non-void function "CMD_Giro"
+main.c(158): warning:  #940-D: missing return statement at end of non-void function "CMD_Curva"
+main.c(163): error:  #20: identifier "bool" is undefined
+main.c(169): warning:  #223-D: function "Motores" declared implicitly
+main.c(170): error:  #167: argument of type "int" is incompatible with parameter of type "char *"
+main.c(176): warning:  #223-D: function "timer_freno" declared implicitly
+main.c(178): error:  #65: expected a ";"
+main.c(187): warning:  #12-D: parsing restarts here after previous syntax error
+main.c(187): warning:  #940-D: missing return statement at end of non-void function "CMD_Freno"
+main.c(221): warning:  #940-D: missing return statement at end of non-void function "Maquina_Estados"
+main.c(231): error:  #18: expected a ")"
+main.c(231): error:  #20: identifier "IZQUIERDA" is undefined
+main.c(235): error:  #18: expected a ")"
+main.c(235): error:  #20: identifier "DERECHA" is undefined
+compiling Eurouart.c...
+compiling GLCD.c...
+compiling AsciiLib.c...
+compiling funciones_pwm.c...
+..\proyecto Keil\funciones_pwm.c(98): warning:  #1-D: last line of file ends without a newline
+".\Eurobot-2020-Backup.axf" - 14 Errors, 11 Warning(s).
+Target not created
