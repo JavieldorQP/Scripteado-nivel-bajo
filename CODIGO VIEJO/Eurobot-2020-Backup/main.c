@@ -5,24 +5,14 @@
 #include <string.h>
 #include <math.h>
 #include "Eurouart.h"
+#include <funciones_pwm.h>
+#include <funciones_timer.h>
+#include <funciones_desplazamiento.h>
+#include <variables.h>
 #include "GLCD.h"
 
+
 /**** Caracterización del robot ****/
-
-typedef struct {
-
-	int X;																				// Coordenada X del robot en mm
-	int Y;																				// Coordenada Y del robot en mm
-
-} Posicion;
-
-typedef struct {
-	
-	Posicion Pos;																	// Coordenadas actuales del robot
-	int Orientacion;															// Ángulo con respecto a la orientación del campo
-	int VelActual;																// Velocidad actual del robot en mm/s
-	
-} Caracterizacion;
 
 Caracterizacion Robot;
 
@@ -46,6 +36,11 @@ int velocidad_maxima = 0;
 int radio = 0;
 int grados_giro = 0;
 
+
+/**** CINEMÁTICA ****/
+
+cinematica lazo_abierto;
+param_mecanicos maxon;
 
 /**** Estados de la máquina de estados ****/
 
@@ -71,7 +66,7 @@ int Estado = ST_INICIAL;
 /****  Variables odometria  ****/
 #define 	AVANZA					1
 #define 	RETROCEDE				0
-#define PI 							3.1416
+#define PI 							3.14159
 #define LONG_EJE 					34										//Longitud del eje en cm
 #define diametro					12.2 									//Diametro en cm
 #define pulsos						256
@@ -80,44 +75,28 @@ int Estado = ST_INICIAL;
 
 
 
-typedef struct{
-	int timer_derecho,timer_izquierdo;
-}timer_counters;
+/**** Funciones de la máquina de estados ****/
 
-void act_odom(int DIR_I, int DIR_D) 
-{
-	timer_counters TC;
-	float deltaO;
-	float avance;
-	float deltaX;							//definición de avance en recto del robot, incremento del ángulo, incremento en X e incremento en Y 
-	float deltaY;	
+//ESTRUCTURA GENERAL DE LOS COMANDOS
 
-	TC.timer_derecho=LPC_TIM2->TC;
-	TC.timer_izquierdo=LPC_TIM3->TC;
-	
-	avance=(DIR_D*TC.timer_derecho*p_a_cm	+	DIR_I*TC.timer_izquierdo*p_a_cm)	/	2;          					//cálculo del avance en recto del robot
-	deltaO=((DIR_D*TC.timer_derecho*p_a_cm	-	DIR_I*TC.timer_izquierdo*p_a_cm)	/	LONG_EJE)*180/PI;		//cálculo del incremento del ángulo en grados
-	
-	LPC_TIM2->TC = 0; // Manually Reset Timer 0 (forced)
-	LPC_TIM3->TC = 0; // Manually Reset Timer 0 (forced)
-	deltaX						=		avance*cosf(Robot.Orientacion*PI/180);   			//calculo del avance en X del robot  (funcion cos en radianes)
-	deltaY						=		avance*sinf(Robot.Orientacion*PI/180);				//calculo del avance en Y del robot  (funcion sin en radianes)
-	Robot.Pos.X	+=	deltaX;
-	Robot.Pos.Y	+=	deltaY;						//incrementar las variables globales con los datos calculados
-	Robot.Orientacion	+=	deltaO;
+/*
+static bool inicio = 1;
 
-	while (pos_actual.omega>=360)							// si se pasa de 360º convierte a rango 0
-		pos_actual.omega-=360;								// no se contempla que de mas de una vuelta en un tiempo de muestreo
-	while (pos_actual.omega<0)									// si se pasa de 360º convierte a rango 0
-		pos_actual.omega+=360;	
-
+if(inicio){
+    inicio = 0;
+    Flag_EstadoFinalizado = 0;
+	INFORMO A LESMUS QUE ESTOY EN ESTE ESTADO 
+    Cargo datos leídos por UART
+    Pongo el contador de odometría a 0
+    Habilito los motores y a movernos
 }
 
 
+Evalúo el error que tengo en cada ciclo hasta que "llego"
+    Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
+    inicio = 1;
 
-
-/**** Funciones de la máquina de estados ****/
-
+*/
 
 int CMD_Inicial(void){
 //En el bucle general se llama a esta función que inicializa la estructura Robot y espera instrucciones para arrancar hacia otro estado
@@ -152,7 +131,8 @@ static bool inicio = 1;
 	{
 		inicio=0
 		Flag_EstadoFinalizado=0					//En ST_PARADO SÍ hay que hacerlo inicialmente ya que solemos llegar por ENEMIGO
-		Motores(0); 								//Repite la instrucción de parar por si ha llegado aquí por mensaje aleatorio, no mediante una frenada anterior
+		velocidad_derecha(0,&maxon);
+		velocidad_izquierda(0,&maxon); 								//Repite la instrucción de parar por si ha llegado aquí por mensaje aleatorio, no mediante una frenada anterior
 		transmitir_cadenaUART0(ST_PARADO);
 	}
 
@@ -174,28 +154,38 @@ static bool inicio = 1;
 int CMD_Recta(void){
 //Avanzamos una distancia en línea recta a velocidad máxima definida
 
-
-
-//ESTRUCTURA GENERAL DE LOS COMANDOS
-
-/*
 static bool inicio = 1;
 
 if(inicio){
     inicio = 0;
     Flag_EstadoFinalizado = 0;
-	INFORMO A LESMUS QUE ESTOY EN ESTE ESTADO 
-    Cargo datos leídos por UART
-    Pongo el contador de odometría a 0
-    Habilito los motores y a movernos
+	transmitir_cadenaUART0(ST_RECTA);
+	lazo_abierto.distancia_total = distancia/(maxon.diametro/2)
+	lazo_abierto.velocidad_final = velocidad_maxima;
+	lazo_abierto.velocidad_inicial = Robot.VelActual;
+
+	avanza_recto(&lazo_abierto,&maxon);
 }
 
+	//Evalúo el error que tengo en cada ciclo hasta que "llego"
+	//act_odom(AVANZA,AVANZA);
 
-Evalúo el error que tengo en cada ciclo hasta que "llego"
-    Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
-    inicio = 1;
+	if(fl_fin_timer){
+		//Actualmente esto frena al final, no encadena velocidades aún
+		//Modificar funciones_desplazamiento
+				velocidad_derecha(variable.velocidad_inicial,&maxon);
+				velocidad_izquierda(variable.velocidad_inicial,&maxon);
+				fl_fin_timer=0;
+				Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
+   	 			inicio = 1;
+			}
+
+
 
 */
+
+
+
 }
 
 int CMD_Giro(void){
@@ -221,16 +211,21 @@ static bool inicio = 1;
 	{
 		inicio = 0;
 		Flag_EstadoFinalizado = 0;
-		Motores(0); 					//Paramos en cuanto recibimos el comando
+		velocidad_derecha(0,&maxon);
+		velocidad_izquierda(0,&maxon); 					//Paramos en cuanto recibimos el comando
 		transmitir_cadenaUART0(ST_FRENO);
 		Instruccion_Codigo = ST_PARADO;		//Al no estar entre las opciones, se irá al default que es ST_PARADO
 											//Se hace aquí para que no esté frenando siempre y ya sepa que después viene un PARADO, aunque lo cargará cuando suban el flag_final
+		calculo_d_frenada(&lazo_abierto,&maxon);
+		fl_fin_timer = 0;
+		LPC_TIM1->MR1=((int)FPCLK*lazo_abierto.tiempo_frenada-1);											//Modificar MR1 para que el timer interrumpa pasado ese tiempo
+		LPC_TIM1->TCR|=(1<<0);	
 	}
 
 	//Dependiendo del tiempo de frenada, para asegurarnos que hemos frenado habría que esperar más que dicho tiempo
 	timer_freno(Robot.VelActual)
 	//Al pasar ese tiempo de seguridad
-	if(flag_timer_freno)
+	if(fl_fin_timer)
 	{
 		inicio = 1;
 		Flag_EstadoFinalizado = 1;
@@ -270,6 +265,9 @@ int Maquina_Estados(void){
 		// Si el estado ha finalizado o hay un mensaje de prioridad urgente -> cambio de estado
 			if(Instruccion_Prioridad || Flag_EstadoFinalizado){
 				Estado = Siguiente_Estado;
+				//Limpia el mensaje para que en caso de no recibir nada se pare
+				Instruccion_Codigo = ST_PARADO;
+				Instruccion_Prioridad = 0;
 			}
 		
 		Traduccion_Variables();
@@ -278,32 +276,45 @@ int Maquina_Estados(void){
 
 /**** Funciones auxiliares ****/
 
-int Seleccion_Lado(void) {
-	/*
-	Evalúa en que lado empieza el partido y asigna un ángulo de inicio
-	En la primera iteración el robot empieza perpendicular a la pared
-	*/
-	if( ( ( (LPC_GPIO0->FIOPIN) LADO) & 0x1) == IZQUIERDA)
-	{
-		Robot.Orientacion = 0;
-	}		
-	else if ( ( ( (LPC_GPIO0->FIOPIN) LADO) & 0x1) == DERECHA)
-	{
-		Robot.Orientacion = 180;
-	}
-	else
-	{
-		Robot.Orientacion = -1;
-	}
+void act_odom(int DIR_I, int DIR_D) 
+{
+	timer_counters TC;
+	float deltaO;
+	float avance;
+	float deltaX;							//definición de avance en recto del robot, incremento del ángulo, incremento en X e incremento en Y 
+	float deltaY;	
 
-return Robot.Orientacion;
+	TC.timer_derecho=LPC_TIM2->TC;
+	TC.timer_izquierdo=LPC_TIM3->TC;
+	
+	avance=(DIR_D*TC.timer_derecho*p_a_cm	+	DIR_I*TC.timer_izquierdo*p_a_cm)	/	2;          					//cálculo del avance en recto del robot
+	deltaO=((DIR_D*TC.timer_derecho*p_a_cm	-	DIR_I*TC.timer_izquierdo*p_a_cm)	/	LONG_EJE)*180/PI;		//cálculo del incremento del ángulo en grados
+	
+	LPC_TIM2->TC = 0; // Manually Reset Timer 0 (forced)
+	LPC_TIM3->TC = 0; // Manually Reset Timer 0 (forced)
+	deltaX						=		avance*cosf(Robot.Orientacion*PI/180);   			//calculo del avance en X del robot  (funcion cos en radianes)
+	deltaY						=		avance*sinf(Robot.Orientacion*PI/180);				//calculo del avance en Y del robot  (funcion sin en radianes)
+	Robot.Pos.X	+=	deltaX;
+	Robot.Pos.Y	+=	deltaY;						//incrementar las variables globales con los datos calculados
+	Robot.Orientacion	+=	deltaO;
+
+	while (Robot.Orientacion >= 360)							// si se pasa de 360º convierte a rango 0
+		Robot.Orientacion -= 360;								// no se contempla que de mas de una vuelta en un tiempo de muestreo
+	while (Robot.Orientacion <0)									// si se pasa de 360º convierte a rango 0
+		Robot.Orientacion += 360;	
+
 }
+
 
 /**** Funci�n main ****/
 
 int main(){
 
 //Configuramos TODO lo configurable
+
+init_pwm();
+config_TIMER1();
+configuracion_parametros_mecanicos(&maxon)
 
 		while(1){
 			
