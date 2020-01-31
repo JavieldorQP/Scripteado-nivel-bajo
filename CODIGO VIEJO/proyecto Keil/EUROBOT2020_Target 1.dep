@@ -1,5 +1,5 @@
 Dependencies for Project 'EUROBOT2020', Target 'Target 1': (DO NOT MODIFY !)
-F (.\startup_LPC17xx.s)(0x532C55A0)(--cpu Cortex-M3 --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx--list .\startup_lpc17xx.lst --xref -o .\startup_lpc17xx.o --depend .\startup_lpc17xx.d)
+F (.\startup_LPC17xx.s)(0x5E2DCBDC)(--cpu Cortex-M3 --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx--list .\startup_lpc17xx.lst --xref -o .\startup_lpc17xx.o --depend .\startup_lpc17xx.d)
 F (C:\Keil\ARM\Startup\NXP\LPC17xx\system_LPC17xx.c)(0x51C80410)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\system_lpc17xx.o --omf_browse .\system_lpc17xx.crf --depend .\system_lpc17xx.d)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C80BA4)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\LPC17xx.h)(0x51C80528)
@@ -7,7 +7,7 @@ I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
 I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51C809AA)
 I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x51C809AA)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h)(0x51C80528)
-F (.\main.c)(0x5E271EF0)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\main.o --omf_browse .\main.crf --depend .\main.d)
+F (.\main.c)(0x5E2DCBDC)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\main.o --omf_browse .\main.crf --depend .\main.d)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\lpc17xx.h)(0x51C80528)
 I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C80BA4)
@@ -15,11 +15,11 @@ I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51C809AA)
 I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x51C809AA)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h)(0x51C80528)
 I (C:\Keil\ARM\ARMCC\include\math.h)(0x51C80BA4)
-I (C:\Users\Javier\Desktop\CODIGO VIEJO\proyecto Keil\uart.h)(0x5DB6D371)
-I (C:\Users\Javier\Desktop\CODIGO VIEJO\proyecto Keil\funciones_pwm.h)(0x5DCA620E)
-I (C:\Users\Javier\Desktop\CODIGO VIEJO\proyecto Keil\timer.h)(0x5DA9B5F6)
-I (C:\Users\Javier\Desktop\CODIGO VIEJO\proyecto Keil\comunicacion.h)(0x5DB6DFB9)
-F (.\funciones_pwm.c)(0x5DCA6356)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\funciones_pwm.o --omf_browse .\funciones_pwm.crf --depend .\funciones_pwm.d)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\proyecto Keil\uart.h)(0x5E2DCBDC)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\proyecto Keil\funciones_pwm.h)(0x5E2DCBDC)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\proyecto Keil\timer.h)(0x5E2DCBDC)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\proyecto Keil\comunicacion.h)(0x5E2DCBDC)
+F (.\funciones_pwm.c)(0x5E2DCBDC)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\funciones_pwm.o --omf_browse .\funciones_pwm.crf --depend .\funciones_pwm.d)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\lpc17xx.h)(0x51C80528)
 I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C80BA4)
@@ -27,26 +27,26 @@ I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51C809AA)
 I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x51C809AA)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h)(0x51C80528)
 I (C:\Keil\ARM\ARMCC\include\math.h)(0x51C80BA4)
-F (.\timer.c)(0x5DCA62E4)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\timer.o --omf_browse .\timer.crf --depend .\timer.d)
+F (.\timer.c)(0x5E2DCBDC)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\timer.o --omf_browse .\timer.crf --depend .\timer.d)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\lpc17xx.h)(0x51C80528)
 I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C80BA4)
 I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51C809AA)
 I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x51C809AA)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h)(0x51C80528)
-F (.\comunicacion.c)(0x5E286C93)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\comunicacion.o --omf_browse .\comunicacion.crf --depend .\comunicacion.d)
+F (.\comunicacion.c)(0x5E2DCBDC)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\comunicacion.o --omf_browse .\comunicacion.crf --depend .\comunicacion.d)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\lpc17xx.h)(0x51C80528)
 I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C80BA4)
 I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51C809AA)
 I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x51C809AA)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h)(0x51C80528)
-I (C:\Users\Javier\Desktop\CODIGO VIEJO\proyecto Keil\uart.h)(0x5DB6D371)
-F (.\uart.c)(0x5DB6D371)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\uart.o --omf_browse .\uart.crf --depend .\uart.d)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\proyecto Keil\uart.h)(0x5E2DCBDC)
+F (.\uart.c)(0x5E2DCBDC)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\uart.o --omf_browse .\uart.crf --depend .\uart.d)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\LPC17xx.h)(0x51C80528)
 I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C80BA4)
 I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51C809AA)
 I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x51C809AA)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h)(0x51C80528)
-I (C:\Users\Javier\Desktop\CODIGO VIEJO\proyecto Keil\uart.h)(0x5DB6D371)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\proyecto Keil\uart.h)(0x5E2DCBDC)

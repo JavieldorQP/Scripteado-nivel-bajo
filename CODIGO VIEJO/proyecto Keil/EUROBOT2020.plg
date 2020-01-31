@@ -3,52 +3,7 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
-C:\Users\Javier\Desktop\CODIGO VIEJO\proyecto Keil\EUROBOT2020.uvproj
-Project File Date:  01/21/2020
+C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\proyecto Keil\EUROBOT2020.uvproj
+Project File Date:  01/29/2020
 
 <h2>Output:</h2>
-Rebuild target 'Target 1'
-assembling startup_LPC17xx.s...
-compiling system_LPC17xx.c...
-compiling main.c...
-funciones_pwm.h(9): warning:  #1-D: last line of file ends without a newline
-timer.h(7): warning:  #1-D: last line of file ends without a newline
-comunicacion.h(11): warning:  #1295-D: Deprecated declaration funcion_comunicacion - give arg types
-comunicacion.h(13): warning:  #1-D: last line of file ends without a newline
-compiling funciones_pwm.c...
-funciones_pwm.c(98): warning:  #1-D: last line of file ends without a newline
-compiling timer.c...
-compiling comunicacion.c...
-compiling uart.c...
-linking...
-Program Size: Code=13420 RO-data=420 RW-data=56 ZI-data=664  
-".\EUROBOT2020.axf" - 0 Errors, 5 Warning(s).
-Load "C:\\Users\\Javier\\Desktop\\CODIGO VIEJO\\proyecto Keil\\EUROBOT2020.axf" 
-Load "C:\\Users\\Javier\\Desktop\\CODIGO VIEJO\\proyecto Keil\\EUROBOT2020.axf" 
-Erase Done.
-Programming Done.
-Verify OK.
-Rebuild target 'Target 1'
-assembling startup_LPC17xx.s...
-compiling system_LPC17xx.c...
-compiling main.c...
-funciones_pwm.h(9): warning:  #1-D: last line of file ends without a newline
-timer.h(7): warning:  #1-D: last line of file ends without a newline
-comunicacion.h(11): warning:  #1295-D: Deprecated declaration funcion_comunicacion - give arg types
-comunicacion.h(13): warning:  #1-D: last line of file ends without a newline
-compiling funciones_pwm.c...
-funciones_pwm.c(98): warning:  #1-D: last line of file ends without a newline
-compiling timer.c...
-compiling comunicacion.c...
-compiling uart.c...
-linking...
-Program Size: Code=13428 RO-data=420 RW-data=56 ZI-data=664  
-".\EUROBOT2020.axf" - 0 Errors, 5 Warning(s).
-Load "C:\\Users\\Javier\\Desktop\\CODIGO VIEJO\\proyecto Keil\\EUROBOT2020.axf" 
-Erase Done.
-Programming Done.
-Verify OK.
-Load "C:\\Users\\Javier\\Desktop\\CODIGO VIEJO\\proyecto Keil\\EUROBOT2020.axf" 
-Internal DLL Error
-Load "C:\\Users\\Javier\\Desktop\\CODIGO VIEJO\\proyecto Keil\\EUROBOT2020.axf" 
-Internal DLL Error

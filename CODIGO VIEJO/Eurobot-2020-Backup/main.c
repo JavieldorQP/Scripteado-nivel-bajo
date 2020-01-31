@@ -45,16 +45,7 @@ int velocidad = 0;
 int velocidad_maxima = 0;
 int radio = 0;
 int grados_giro = 0;
-//int posx = -1500;
-//int posy = 500;
 
-
-/**** CONDICIONES INICIALES ****/
-
-#define 	X_I						-1500
-#define 	Y_I						500
-#define 	X_D						1500
-#define 	Y_D						500
 
 /**** Estados de la máquina de estados ****/
 
@@ -70,17 +61,63 @@ int grados_giro = 0;
 #define 	NORMAL 					0					//No asignar a ninguna instrucción que nos haga movernos
 #define		URGENTE					1					//Freno
 
-/**** Prioridades de la comunicación ****/
 
-#define 	IZQUIERDA					0
-#define		DERECHA						1
-#define 	LADO						1>>17			//Para leer el 0.17 como bit de lado del campo
-
-/**** Funciones de la máquina de estados ****/
+/****  Variables maquina estados  ****/
 
 int Flag_EstadoFinalizado = 1;                           //La inicializo a 1 para que actualice Estado desde ST_INICIAL
 int Siguiente_Estado = ST_INICIAL; 	
 int Estado = ST_INICIAL;
+
+/****  Variables odometria  ****/
+#define 	AVANZA					1
+#define 	RETROCEDE				0
+#define PI 							3.1416
+#define LONG_EJE 					34										//Longitud del eje en cm
+#define diametro					12.2 									//Diametro en cm
+#define pulsos						256
+#define reduct						26
+#define p_a_cm						diametro*PI/(pulsos*reduct)				//Numero de cm recorrido por pulso  
+
+
+
+typedef struct{
+	int timer_derecho,timer_izquierdo;
+}timer_counters;
+
+void act_odom(int DIR_I, int DIR_D) 
+{
+	timer_counters TC;
+	float deltaO;
+	float avance;
+	float deltaX;							//definición de avance en recto del robot, incremento del ángulo, incremento en X e incremento en Y 
+	float deltaY;	
+
+	TC.timer_derecho=LPC_TIM2->TC;
+	TC.timer_izquierdo=LPC_TIM3->TC;
+	
+	avance=(DIR_D*TC.timer_derecho*p_a_cm	+	DIR_I*TC.timer_izquierdo*p_a_cm)	/	2;          					//cálculo del avance en recto del robot
+	deltaO=((DIR_D*TC.timer_derecho*p_a_cm	-	DIR_I*TC.timer_izquierdo*p_a_cm)	/	LONG_EJE)*180/PI;		//cálculo del incremento del ángulo en grados
+	
+	LPC_TIM2->TC = 0; // Manually Reset Timer 0 (forced)
+	LPC_TIM3->TC = 0; // Manually Reset Timer 0 (forced)
+	deltaX						=		avance*cosf(Robot.Orientacion*PI/180);   			//calculo del avance en X del robot  (funcion cos en radianes)
+	deltaY						=		avance*sinf(Robot.Orientacion*PI/180);				//calculo del avance en Y del robot  (funcion sin en radianes)
+	Robot.Pos.X	+=	deltaX;
+	Robot.Pos.Y	+=	deltaY;						//incrementar las variables globales con los datos calculados
+	Robot.Orientacion	+=	deltaO;
+
+	while (pos_actual.omega>=360)							// si se pasa de 360º convierte a rango 0
+		pos_actual.omega-=360;								// no se contempla que de mas de una vuelta en un tiempo de muestreo
+	while (pos_actual.omega<0)									// si se pasa de 360º convierte a rango 0
+		pos_actual.omega+=360;	
+
+}
+
+
+
+
+/**** Funciones de la máquina de estados ****/
+
 
 int CMD_Inicial(void){
 //En el bucle general se llama a esta función que inicializa la estructura Robot y espera instrucciones para arrancar hacia otro estado
@@ -94,22 +131,9 @@ static bool inicio = 1;
 		//Flag_EstadoFinalizado=0			//En ST_INICIAL no hace falta ya que está deseoso de órdenes
 		
 		Robot.VelActual = 0;
-		Robot.Orientacion = Seleccion_Lado();
-		
-		if(Robot.Orientacion == -1)
-		{
-			transmitir_cadenaUART0('Error orientacion\n');						//Cazamos errores de lectura de lado
-		}
-		else if (Robot.Orientacion == IZQUIERDA)
-		{
-			Robot.Pos.X = X_I;
-			Robot.Pos.Y = Y_I;
-		}
-		else if (Robot.Orientacion == DERECHA)
-		{
-			Robot.Pos.X = X_D;
-			Robot.Pos.Y = Y_D;
-		}
+		Robot.Orientacion = 0;
+		Robot.Pos.X = 0;
+		Robot.Pos.Y = 0;
 		transmitir_cadenaUART0(ST_INICIAL);
 	}
 
@@ -133,7 +157,7 @@ static bool inicio = 1;
 	}
 
 	//Analiza todo lo que necesite mientras esta en reposo
-
+/*
 	if(sensor.laser)								//hay moros en la costa
 	{	
 		//analizo que cara es la que detecta
@@ -144,7 +168,7 @@ static bool inicio = 1;
 	{
 		Flag_EstadoFinalizado = 1;
 	}
-	
+	*/
 }
 
 int CMD_Recta(void){
@@ -176,10 +200,16 @@ Evalúo el error que tengo en cada ciclo hasta que "llego"
 
 int CMD_Giro(void){
 //Giramos sobre el eje del robot un ángulo definido a velocidad máxima definida
+
+
+
+if(grados_giro>0)
+act_odom(RETROCEDE,AVANZA);
 }
 
 int CMD_Curva(void){
 //Tomamos una curva de radio determinado y angulo de arco determinado a velocidad máxima definida
+
 }
 
 int CMD_Freno(void){
