@@ -50,9 +50,10 @@ typedef struct								//Estructura para los parametros mecanicos (motor + contro
 {
 	double aceleracion,					//Aceleraci�n de la controladora de 3000 rpm/s
 				 reductora,
+				 diametro,						//Diametro de la rueda
 				 vel_eje_max,					//Velocidad m�xima del eje del motor segun datasheet
-				 vel_max,							//Velocidad m�xima de la rueda
-				 diametro;						//Diametro de la rueda
+				 vel_max;							//Velocidad m�xima de la rueda
+				 
 	
 }param_mecanicos;
 

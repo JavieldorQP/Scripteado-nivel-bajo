@@ -163,7 +163,7 @@ void Traduccion_Variables(void)
         {
             grados_giro = grados_giro;
         }
-        if (BIT_SIGNO_GRADOS == '-')
+        else if (BIT_SIGNO_GRADOS == '-')
         {
             grados_giro = -1 * grados_giro;
         }
@@ -181,7 +181,7 @@ void Traduccion_Variables(void)
         velocidad_maxima = (BIT_M_VMAX - '0') * 1000 + (BIT_C_VMAX - '0') * 100 + (BIT_D_VMAX - '0') * 10 + (BIT_U_VMAX - '0');
         if (BIT_SIGNO_GRADOS == '+')
             distancia = distancia;
-        if (BIT_SIGNO_GRADOS == '-')
+        else if (BIT_SIGNO_GRADOS == '-')
             distancia = -1 * distancia;
         else
             transmitir_cadenaUART0("E");

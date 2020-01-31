@@ -13,6 +13,7 @@
 
 /**** Variables de la comunicación por UART (by Lesmus Trompiz) ****/
 
+#define BAUDRATE 115200
 char buffer[70];  // Buffer de recepci�n de 70 caracteres
 char *ptr_rx;     // puntero de recepci�n
 char rx_completa; // Flag de recepci�n de cadena que se activa a "1" al recibir la tecla return CR(ASCII=13)
@@ -26,7 +27,7 @@ int velocidad_maxima = 0;
 int radio = 0;
 int grados_giro = 0;
 
-
+char aux[100]={0};	//Buffer de transmisión de 100 caracteres
 /**** CINEMÁTICA ****/
 
 cinematica lazo_abierto;
@@ -66,12 +67,12 @@ int Estado = ST_INICIAL;
 /****  Variables odometria  ****/
 #define 	AVANZA					1
 #define 	RETROCEDE				0
-#define PI 							3.14159
-#define LONG_EJE 					34										//Longitud del eje en cm
-#define diametro					12.2 									//Diametro en cm
-#define pulsos						256
-#define reduct						26
-#define p_a_cm						diametro*PI/(pulsos*reduct)				//Numero de cm recorrido por pulso  
+#define 	PI 							3.14159
+#define 	LONG_EJE 				34										//Longitud del eje en cm
+#define 	DIAMETRO				12.2 									//Diametro en cm
+#define 	pulsos					256
+#define 	reduct					26
+#define 	p_a_cm					DIAMETRO*PI/(pulsos*reduct)				//Numero de cm recorrido por pulso  
 
 /**** Funciones odometría ****/
 
@@ -104,6 +105,14 @@ void act_odom(int DIR_I, int DIR_D)
 
 }
 
+
+
+void transmitir_estado(void){
+
+sprintf(aux,"%d\n",Estado),
+transmitir_cadenaUART0(aux);
+	
+}
 /**** Funciones de la máquina de estados ****/
 
 //ESTRUCTURA GENERAL DE LOS COMANDOS
@@ -132,7 +141,7 @@ int CMD_Inicial(void){
 
 //strcpy(buffer, "D100");			//Prueba del correcto funcionamiento de la máquina de estados
 
-char Inicio = 1;
+static char Inicio = 1;
 	if(Inicio)
 	{
 		Inicio=0;
@@ -142,27 +151,29 @@ char Inicio = 1;
 		Robot.Orientacion = 0;
 		Robot.Pos.X = 0;
 		Robot.Pos.Y = 0;
-		transmitir_cadenaUART0(ST_INICIAL);
+		transmitir_estado();		//TRANSMITIR A LESMUS UNA S
 	}
 
 	//ESTE ESTADO NO HACE NADA APARTE DE INICIALIZAR
 
 	//Un timer por debajo se encarga de transmitir la estructura a los de arriba cada 500 ms
 	//cuando terminamos un comando tb se transmite la estructura del robot, esta vez de manera asíncrona
+	
+	return 0;
 }
 
 int CMD_Parado(void){
 //Función de seguridad en el que llevamos todas las velocidades a 0 y miramos por la siguiente instrucción
 //Seguramente estamos aquí por un mensaje de FRENO
 
-char Inicio = 1;
+static char Inicio = 1;
 	if(Inicio)
 	{
 		Inicio=0;
 		Flag_EstadoFinalizado=0;				//En ST_PARADO SÍ hay que hacerlo inicialmente ya que solemos llegar por ENEMIGO
 		velocidad_derecha(0,&maxon);
 		velocidad_izquierda(0,&maxon); 								//Repite la instrucción de parar por si ha llegado aquí por mensaje aleatorio, no mediante una frenada anterior
-		transmitir_cadenaUART0(ST_PARADO);
+		transmitir_estado();
 	}
 
 	//Analiza todo lo que necesite mientras esta en reposo
@@ -178,18 +189,21 @@ char Inicio = 1;
 		Flag_EstadoFinalizado = 1;
 	}
 	*/
+	if(Siguiente_Estado != Estado) //REVISAR CONDICION
+		Flag_EstadoFinalizado = 1;
+	return 0;
 }
 
 int CMD_Recta(void){
 //Avanzamos una distancia en línea recta a velocidad máxima definida
 
-char Inicio = 1;
+static char Inicio = 1;
 
 if(Inicio){
-    Inicio = 0;
-    Flag_EstadoFinalizado = 0;
-	transmitir_cadenaUART0(ST_RECTA);
-	lazo_abierto.distancia_total = distancia/(maxon.diametro/2);
+	Inicio = 0;
+	Flag_EstadoFinalizado = 0;
+	transmitir_estado();
+	lazo_abierto.distancia_total = (distancia/2)/maxon.diametro;
 	lazo_abierto.velocidad_final = velocidad_maxima;
 	lazo_abierto.velocidad_inicial = Robot.VelActual;
 
@@ -208,6 +222,7 @@ if(Inicio){
 				Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
    	 			Inicio = 1;
 			}
+	return 0;
 }
 
 int CMD_Giro(void){
@@ -217,17 +232,23 @@ int CMD_Giro(void){
 
 if(grados_giro>0)
 act_odom(RETROCEDE,AVANZA);
+
+
+return 0;
 }
 
 int CMD_Curva(void){
 //Tomamos una curva de radio determinado y angulo de arco determinado a velocidad máxima definida
 
+	
+	
+	return 0;
 }
 
 int CMD_Freno(void){
 //FRENA POR TU VIDA
 
-char Inicio = 1;
+static int Inicio = 1;
 
 	if (Inicio)
 	{
@@ -235,7 +256,7 @@ char Inicio = 1;
 		Flag_EstadoFinalizado = 0;
 		velocidad_derecha(0,&maxon);
 		velocidad_izquierda(0,&maxon); 					//Paramos en cuanto recibimos el comando
-		transmitir_cadenaUART0(ST_FRENO);
+		transmitir_estado();
 		Instruccion_Codigo = ST_PARADO;		//Al no estar entre las opciones, se irá al default que es ST_PARADO
 											//Se hace aquí para que no esté frenando siempre y ya sepa que después viene un PARADO, aunque lo cargará cuando suban el flag_final
 		calculo_d_frenada(&lazo_abierto,&maxon);
@@ -245,7 +266,7 @@ char Inicio = 1;
 	}
 
 	//Dependiendo del tiempo de frenada, para asegurarnos que hemos frenado habría que esperar más que dicho tiempo
-	timer_freno(Robot.VelActual);
+	//timer_freno(Robot.VelActual);
 	//Al pasar ese tiempo de seguridad
 	if(Flag_FinTimer) {
 		Inicio = 1;
@@ -286,14 +307,18 @@ int Maquina_Estados(void){
 		}
 		
 		// Si el estado ha finalizado o hay un mensaje de prioridad urgente -> cambio de estado
-			if(Instruccion_Prioridad || Flag_EstadoFinalizado){
-				Estado = Siguiente_Estado;
-				//Limpia el mensaje para que en caso de no recibir nada se pare
-				Instruccion_Codigo = ST_PARADO;
-				Instruccion_Prioridad = 0;
-			}
+		if(Instruccion_Prioridad || Flag_EstadoFinalizado){
+			Estado = Siguiente_Estado;
+			//Limpia el mensaje para que en caso de no recibir nada se pare
+			Instruccion_Codigo = ST_PARADO;
+			Instruccion_Prioridad = 0;
+		}
 		
+		if(rx_completa)
+		{
 		Traduccion_Variables();
+		rx_completa=0;
+		}
 		return 0;
 }
 
@@ -308,6 +333,7 @@ int main(){
 init_pwm();
 config_TIMER1();
 configuracion_parametros_mecanicos(&maxon);
+uart0_init(BAUDRATE);
 
 		while(1){
 			
