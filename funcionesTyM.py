@@ -108,3 +108,6 @@ def instrucciones_lidar(posrobotx, posroboty, poslidarx, poslidary):
 
     else:
         return 0, '0'
+
+
+calculo_gi

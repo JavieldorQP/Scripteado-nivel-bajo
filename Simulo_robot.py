@@ -1,6 +1,7 @@
 from funcionesTyM import calculo_giro_avanzo_giro
 import time
 import math
+import random
 # ROBOTS
 PAREJITAS = 0
 POSAVASOS = 1
@@ -9,34 +10,30 @@ POSAVASOS = 1
 def simula_movimiento(juego, robot, Objx, Objy, orientacion_final):
     if(robot == PAREJITAS):
         distancia, angulo_giro1, angulo_giro2 = calculo_giro_avanzo_giro(
-            juego.parejitas.pos[0], juego.parejitas.pos[1], Objx, Objy, juego.parejitas.orientacion, orientacion_final)
+            juego.parejitas.robot.pos[0], juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion, orientacion_final)
         print(distancia)
         print(angulo_giro1)
         print(angulo_giro2)
         feedback = control(distancia, angulo_giro1+angulo_giro2, juego)
         if(feedback):
-            juego.parejitas.pos[0] = Objx
-            juego.parejitas.pos[1] = Objy
-            juego.parejitas.orientacion = orientacion_final
-            juego.experimento = False
-            juego.puntos = juego.puntos+15
+            juego.parejitas.robot.pos[0] = Objx
+            juego.parejitas.robot.pos[1] = Objy
+            juego.parejitas.robot.orientacion = orientacion_final
         else:
             print("Error")
     else:
         distancia, angulo_giro1, angulo_giro2 = calculo_giro_avanzo_giro(
-            juego.posavasos.pos[0], juego.posavasos.pos[1], Objx, Objy, juego.posavasos.orientacion, orientacion_final)
+            juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion, orientacion_final)
         print(distancia)
         print(angulo_giro1)
         print(angulo_giro2)
         feedback = control(distancia, angulo_giro1+angulo_giro2, juego)
         if(feedback):
-            juego.posavasos.pos[0] = Objx
-            juego.posavasos.pos[1] = Objy
-            juego.posavasos.orientacion = orientacion_final
-            juego.experimento = False
-            juego.puntos = juego.puntos+15
+            juego.posavasos.robot.pos[0] = Objx
+            juego.posavasos.robot.pos[1] = Objy
+            juego.posavasos.robot.orientacion = orientacion_final
         else:
-            print("Error")
+            print("Error imposible llegar")
 
 
 def control(angulo, distancia, juego):
@@ -60,14 +57,19 @@ def actuadores(accion, juego):
         print("Recogiendo vasos")
         # send_mensaje("AR"):Realidad
         time.sleep(8)  # Simulacion
-        juego.robot.ventosas_ocupada = True
+        juego.posavasos.ventosas_ocupada = True
         print("Vasos recogidos")
-        juego.tiempo = juego.tiempo+5  # Añado tiempos
+        juego.tiempo = juego.tiempo+8  # Añado tiempos
     elif(accion == "S"):
         print("Soltando vasos")
         # send_mensaje("AS"):Realidad
         time.sleep(14)  # Simulacion
         print("Vasos sueltos")
-        juego.tiempo = juego.tiempo+10  # Añado tiempos
-        juego.puntos = juego.puntos+14
-        juego.robot.ventosas_ocupada = False
+        juego.tiempo = juego.tiempo+14  # Añado tiempos
+        juego.posavasos.ventosas_ocupada = False
+
+
+def camara(juego):
+    juego.brujula = random.choice(["N", "S"])
+    time.sleep(4)
+    juego.tiempo = juego.tiempo+4
