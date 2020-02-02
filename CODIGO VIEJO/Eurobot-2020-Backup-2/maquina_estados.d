@@ -1,0 +1,12 @@
+.\maquina_estados.o: maquina_estados.c
+.\maquina_estados.o: C:\Keil\ARM\Inc\NXP\LPC17xx\lpc17xx.h
+.\maquina_estados.o: C:\Keil\ARM\CMSIS\Include\core_cm3.h
+.\maquina_estados.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+.\maquina_estados.o: C:\Keil\ARM\CMSIS\Include\core_cmInstr.h
+.\maquina_estados.o: C:\Keil\ARM\CMSIS\Include\core_cmFunc.h
+.\maquina_estados.o: C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h
+.\maquina_estados.o: variables.h
+.\maquina_estados.o: C:\Keil\ARM\ARMCC\bin\..\include\stdbool.h
+.\maquina_estados.o: funciones_control.h
+.\maquina_estados.o: C:\Keil\ARM\ARMCC\bin\..\include\math.h
+.\maquina_estados.o: funciones_pwm.h

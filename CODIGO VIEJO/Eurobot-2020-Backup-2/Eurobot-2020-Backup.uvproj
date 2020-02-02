@@ -433,19 +433,29 @@
               <FilePath>.\AsciiLib.c</FilePath>
             </File>
             <File>
-              <FileName>funciones_pwm.c</FileName>
+              <FileName>maquina_estados.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\proyecto Keil\funciones_pwm.c</FilePath>
+              <FilePath>.\maquina_estados.c</FilePath>
             </File>
             <File>
-              <FileName>funciones_desplazamiento.c</FileName>
+              <FileName>funciones_control.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\funciones_desplazamiento.c</FilePath>
+              <FilePath>.\funciones_control.c</FilePath>
             </File>
             <File>
               <FileName>funciones_timer.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\funciones_timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>configuraciones.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\configuraciones.c</FilePath>
+            </File>
+            <File>
+              <FileName>funciones_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\funciones_pwm.c</FilePath>
             </File>
           </Files>
         </Group>

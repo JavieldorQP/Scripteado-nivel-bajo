@@ -1,0 +1,10 @@
+.\configuraciones.o: configuraciones.c
+.\configuraciones.o: C:\Keil\ARM\Inc\NXP\LPC17xx\lpc17xx.h
+.\configuraciones.o: C:\Keil\ARM\CMSIS\Include\core_cm3.h
+.\configuraciones.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+.\configuraciones.o: C:\Keil\ARM\CMSIS\Include\core_cmInstr.h
+.\configuraciones.o: C:\Keil\ARM\CMSIS\Include\core_cmFunc.h
+.\configuraciones.o: C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h
+.\configuraciones.o: C:\Keil\ARM\ARMCC\bin\..\include\math.h
+.\configuraciones.o: variables.h
+.\configuraciones.o: C:\Keil\ARM\ARMCC\bin\..\include\stdbool.h

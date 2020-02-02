@@ -7,9 +7,13 @@
 #include "Eurouart.h"
 #include "funciones_pwm.h"
 #include "funciones_timer.h"
-#include "funciones_desplazamiento.h"
+#include "funciones_control.h"
+#include "maquina_estados.h"
+#include "configuraciones.h"
 #include "variables.h"
 #include "GLCD.h"
+
+#define FPCLK 25e6
 
 /**** Variables de la comunicación por UART (by Lesmus Trompiz) ****/
 
@@ -33,7 +37,7 @@ char aux[100]={0};	//Buffer de transmisión de 100 caracteres
 cinematica lazo_abierto;
 param_mecanicos maxon;
 
-cinematica variable; 									// 31/01/2020: La declaro para eliminar errores
+//cinematica variable; 									// 31/01/2020: La declaro para eliminar errores
 
 /**** Estados de la máquina de estados ****/
 
@@ -67,7 +71,7 @@ int Estado = ST_INICIAL;
 /****  Variables odometria  ****/
 #define 	AVANZA					1
 #define 	RETROCEDE				0
-#define 	PI 							3.14159
+
 #define 	LONG_EJE 				34										//Longitud del eje en cm
 #define 	DIAMETRO				12.2 									//Diametro en cm
 #define 	pulsos					256
@@ -105,7 +109,10 @@ void act_odom(int DIR_I, int DIR_D)
 
 }
 
-
+void reset_odometria(void){
+	LPC_TIM2->TC=0;
+	LPC_TIM3->TC=0;
+}
 
 void transmitir_estado(void){
 
@@ -189,7 +196,9 @@ static char Inicio = 1;
 		Flag_EstadoFinalizado = 1;
 	}
 	*/
-	if(Siguiente_Estado != Estado) //REVISAR CONDICION
+	
+	
+	if(Siguiente_Estado != Estado) 
 		Flag_EstadoFinalizado = 1;
 	return 0;
 }
@@ -202,25 +211,27 @@ static char Inicio = 1;
 if(Inicio){
 	Inicio = 0;
 	Flag_EstadoFinalizado = 0;
+	reset_odometria();
 	transmitir_estado();
-	lazo_abierto.distancia_total = (distancia/2)/maxon.diametro;
+	lazo_abierto.distancia_total_rad = (distancia/2)/maxon.diametro;
 	lazo_abierto.velocidad_final = velocidad_maxima;
-	lazo_abierto.velocidad_inicial = Robot.VelActual;
+	lazo_abierto.velocidad_inicial = 0;			//Cuando sea capaz de empalmar comandos sería Robot.VelActual
 
 	avanza_recto(&lazo_abierto,&maxon);
+	
 }
 
-	//Evalúo el error que tengo en cada ciclo hasta que "llego"
-	//act_odom(AVANZA,AVANZA);
+	//Evalúo el error que tengo en cada ciclo hasta que "llego" con el TIMER1
+	
 
-	if(Flag_FinTimer){
+	if(lazo_abierto.error_pos_act_derecha < 0.1 || lazo_abierto.error_pos_act_izquierda < 0.1){
 		//Actualmente esto frena al final, no encadena velocidades aún
 		//Modificar funciones_desplazamiento
-				velocidad_derecha(variable.velocidad_inicial,&maxon);
-				velocidad_izquierda(variable.velocidad_inicial,&maxon);
-				Flag_FinTimer=0;
+				velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
+				velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
+		
 				Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
-   	 			Inicio = 1;
+   	 		Inicio = 1;
 			}
 	return 0;
 }
@@ -229,11 +240,12 @@ int CMD_Giro(void){
 //Giramos sobre el eje del robot un ángulo definido a velocidad máxima definida
 
 
-
+/*
 if(grados_giro>0)
 act_odom(RETROCEDE,AVANZA);
-
-
+*/
+	
+	
 return 0;
 }
 
@@ -254,28 +266,33 @@ static int Inicio = 1;
 	{
 		Inicio = 0;
 		Flag_EstadoFinalizado = 0;
+		
+		lazo_abierto.error_pos_act_derecha = 1;											//Le asigno un valor mayor que la comprobacion del if del main
+		lazo_abierto.error_pos_act_izquierda = 1;										//Le asigno un valor mayor que la comprobacion del if del main
+		calculo_d_frenada(&lazo_abierto,&maxon);
+		lazo_abierto.distancia_acel_vel_cte = lazo_abierto.distancia_frenada;
+		reset_odometria();
 		velocidad_derecha(0,&maxon);
 		velocidad_izquierda(0,&maxon); 					//Paramos en cuanto recibimos el comando
+		
 		transmitir_estado();
-		Instruccion_Codigo = ST_PARADO;		//Al no estar entre las opciones, se irá al default que es ST_PARADO
-											//Se hace aquí para que no esté frenando siempre y ya sepa que después viene un PARADO, aunque lo cargará cuando suban el flag_final
-		calculo_d_frenada(&lazo_abierto,&maxon);
-		Flag_FinTimer = 0;
-		LPC_TIM1->MR1=((int)FPCLK*lazo_abierto.tiempo_frenada-1);											//Modificar MR1 para que el timer interrumpa pasado ese tiempo
-		LPC_TIM1->TCR|=(1<<0);	
-	}
-
-	//Dependiendo del tiempo de frenada, para asegurarnos que hemos frenado habría que esperar más que dicho tiempo
-	//timer_freno(Robot.VelActual);
-	//Al pasar ese tiempo de seguridad
-	if(Flag_FinTimer) {
-		Inicio = 1;
-		Flag_EstadoFinalizado = 1;
-		//transmitir_odometria();				//Transmitimos la distancia que nos hemos movido. Esta funcion debería ser bloqueante
-											//En este estado incluye la que se movió con el estado anterior, ya que no hubo flag_final al ser URGENTE
-		//reset_odometria();
 		
 	}
+
+	
+	//Evalúo el error que tengo en cada ciclo hasta que "llego" con el TIMER1
+	
+	
+	if(lazo_abierto.error_pos_act_derecha < 0.1 || lazo_abierto.error_pos_act_izquierda < 0.1){
+			Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
+			Inicio = 1;
+			Instruccion_Codigo = ST_PARADO;		//Al no estar entre las opciones, se irá al default que es ST_PARADO
+		
+	//transmitir_odometria();				//Transmitimos la distancia que nos hemos movido. Esta funcion debería ser bloqueante
+										//En este estado incluye la que se movió con el estado anterior, ya que no hubo flag_final al ser URGENTE
+	//reset_odometria();
+		}
+	
 	
 	return 0;
 }
@@ -332,7 +349,7 @@ int main(){
 
 init_pwm();
 config_TIMER1();
-configuracion_parametros_mecanicos(&maxon);
+configuracion_parametros_mecanicos(&maxon,&lazo_abierto);
 uart0_init(BAUDRATE);
 
 		while(1){

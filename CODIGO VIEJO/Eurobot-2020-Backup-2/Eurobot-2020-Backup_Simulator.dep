@@ -7,7 +7,7 @@ I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
 I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51C809AA)
 I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x51C809AA)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h)(0x51C80528)
-F (.\main.c)(0x5E3409D4)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\main.o --omf_browse .\main.crf --depend .\main.d)
+F (.\main.c)(0x5E3629F9)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\main.o --omf_browse .\main.crf --depend .\main.d)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\LPC17xx.h)(0x51C80528)
 I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C80BA4)
@@ -18,12 +18,15 @@ I (C:\Keil\ARM\ARMCC\include\stdio.h)(0x51C80BA4)
 I (C:\Keil\ARM\ARMCC\include\string.h)(0x51C80BA4)
 I (C:\Keil\ARM\ARMCC\include\math.h)(0x51C80BA4)
 I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\Eurouart.h)(0x5E3409D4)
-I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\funciones_pwm.h)(0x5E3409D4)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\funciones_pwm.h)(0x5E361DCE)
 I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\funciones_timer.h)(0x5E3409D4)
-I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\funciones_desplazamiento.h)(0x5E3409D4)
-I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\variables.h)(0x5E3409D4)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\funciones_control.h)(0x5E361EBB)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\variables.h)(0x5E361DDA)
+I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C80BA4)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\maquina_estados.h)(0x5E36221F)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\configuraciones.h)(0x5E362010)
 I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\GLCD.h)(0x5E3409D4)
-F (.\Eurouart.c)(0x5E3409D4)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\eurouart.o --omf_browse .\eurouart.crf --depend .\eurouart.d)
+F (.\Eurouart.c)(0x5E3422C2)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\eurouart.o --omf_browse .\eurouart.crf --depend .\eurouart.d)
 I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\Eurouart.h)(0x5E3409D4)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\LPC17xx.h)(0x51C80528)
 I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
@@ -44,7 +47,19 @@ I (C:\Keil\ARM\ARMCC\include\string.h)(0x51C80BA4)
 F (.\AsciiLib.c)(0x5E3409D4)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\asciilib.o --omf_browse .\asciilib.crf --depend .\asciilib.d)
 I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\AsciiLib.h)(0x5E3409D4)
 I (C:\Keil\ARM\ARMCC\include\string.h)(0x51C80BA4)
-F (..\proyecto Keil\funciones_pwm.c)(0x5E3409D4)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\funciones_pwm.o --omf_browse .\funciones_pwm.crf --depend .\funciones_pwm.d)
+F (.\maquina_estados.c)(0x5E362399)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\maquina_estados.o --omf_browse .\maquina_estados.crf --depend .\maquina_estados.d)
+I (C:\Keil\ARM\Inc\NXP\LPC17xx\lpc17xx.h)(0x51C80528)
+I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C80BA4)
+I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51C809AA)
+I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x51C809AA)
+I (C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h)(0x51C80528)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\variables.h)(0x5E361DDA)
+I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C80BA4)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\funciones_control.h)(0x5E361EBB)
+I (C:\Keil\ARM\ARMCC\include\math.h)(0x51C80BA4)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\funciones_pwm.h)(0x5E361DCE)
+F (.\funciones_control.c)(0x5E362399)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\funciones_control.o --omf_browse .\funciones_control.crf --depend .\funciones_control.d)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\lpc17xx.h)(0x51C80528)
 I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C80BA4)
@@ -52,23 +67,36 @@ I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51C809AA)
 I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x51C809AA)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h)(0x51C80528)
 I (C:\Keil\ARM\ARMCC\include\math.h)(0x51C80BA4)
-F (.\funciones_desplazamiento.c)(0x5E3409D4)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\funciones_desplazamiento.o --omf_browse .\funciones_desplazamiento.crf --depend .\funciones_desplazamiento.d)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\variables.h)(0x5E361DDA)
+I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C80BA4)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\funciones_pwm.h)(0x5E361DCE)
+F (.\funciones_timer.c)(0x5E36210B)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\funciones_timer.o --omf_browse .\funciones_timer.crf --depend .\funciones_timer.d)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\lpc17xx.h)(0x51C80528)
 I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C80BA4)
 I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51C809AA)
 I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x51C809AA)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h)(0x51C80528)
-I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\funciones_pwm.h)(0x5E3409D4)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\variables.h)(0x5E361DDA)
+I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C80BA4)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\funciones_control.h)(0x5E361EBB)
 I (C:\Keil\ARM\ARMCC\include\math.h)(0x51C80BA4)
-I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\variables.h)(0x5E3409D4)
-F (.\funciones_timer.c)(0x5E3409D4)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\funciones_timer.o --omf_browse .\funciones_timer.crf --depend .\funciones_timer.d)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\funciones_pwm.h)(0x5E361DCE)
+F (.\configuraciones.c)(0x5E362399)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\configuraciones.o --omf_browse .\configuraciones.crf --depend .\configuraciones.d)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\lpc17xx.h)(0x51C80528)
 I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C80BA4)
 I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51C809AA)
 I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x51C809AA)
 I (C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h)(0x51C80528)
-I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\funciones_pwm.h)(0x5E3409D4)
 I (C:\Keil\ARM\ARMCC\include\math.h)(0x51C80BA4)
-I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\variables.h)(0x5E3409D4)
+I (C:\Users\Javier\Desktop\Scripteado-nivel-bajo\CODIGO VIEJO\Eurobot-2020-Backup-2\variables.h)(0x5E361DDA)
+I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C80BA4)
+F (.\funciones_pwm.c)(0x5E36210B)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\NXP\LPC17xx-o .\funciones_pwm.o --omf_browse .\funciones_pwm.crf --depend .\funciones_pwm.d)
+I (C:\Keil\ARM\Inc\NXP\LPC17xx\lpc17xx.h)(0x51C80528)
+I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51C809AA)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C80BA4)
+I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51C809AA)
+I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x51C809AA)
+I (C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h)(0x51C80528)
+I (C:\Keil\ARM\ARMCC\include\math.h)(0x51C80BA4)

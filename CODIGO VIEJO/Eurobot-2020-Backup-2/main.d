@@ -11,6 +11,9 @@
 .\main.o: Eurouart.h
 .\main.o: funciones_pwm.h
 .\main.o: funciones_timer.h
-.\main.o: funciones_desplazamiento.h
+.\main.o: funciones_control.h
 .\main.o: variables.h
+.\main.o: C:\Keil\ARM\ARMCC\bin\..\include\stdbool.h
+.\main.o: maquina_estados.h
+.\main.o: configuraciones.h
 .\main.o: GLCD.h
