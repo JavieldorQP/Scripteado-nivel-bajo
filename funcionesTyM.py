@@ -6,18 +6,19 @@ def calculo_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjetivoy, o
         calculo_giro_avanzo:: Int [Posrobotx,Posroboty,Posobx,Posoby,Original_Yaw,Final_Yaw] -> Int Angle
         Recibe la posición del robot, su orientación y la posición del objetivo
         y calcula el ángulo de giro que ha de realizar.
-        >>> calculo_giro(0,0,10,10,-45)
-        math.degrees(90)
-        >>> calculo_giro(0,0,10,10,45)
-        0
-        >>> calculo_giro(0,0,0,10,-30)
-        math.degrees(120)
+        >>> calculo_giro_avanzo_giro(1200,-320,1200,800,180,90)
+        (1120.0,-90.0, 0.0)
+        >>> calculo_giro_avanzo_giro(-1300,200,-1500,-800,270,180)
+        (1019.803902718557, 168.6900675259798, 101.3099324740202)
     """
+    # Calculo las distancias:
     distancia_x = posobjetivox-posrobotx
     distancia_y = posobjetivoy-posroboty
     distancia_total = math.sqrt(
         distancia_x**2+distancia_y**2)   # Calculo el módulo
-
+    # Paso los grados a radianes
+    orientacion_original = math.radians(orientacion_original)
+    orientacion_final = math.radians(orientacion_final)
     # Si no es un caso especial, se aplica la arcotangente
     if(distancia_x != 0):
         angulo_objetivo = math.atan(distancia_y/distancia_x)
@@ -43,9 +44,13 @@ def calculo_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjetivoy, o
             angulo_giro2 = angulo_giro2-2*math.pi
         else:
             angulo_giro2 = angulo_giro2+2*math.pi
+
+    # Transformamo los radianes a grados y los devuelvo
+    angulo_giro1 = math.degrees(angulo_giro1)
+    angulo_giro2 = math.degrees(angulo_giro2)
     # Printeos para asegurar que todo ha ido bien
     print("Se ha de girar este angulo primero:")
-    print(math.degrees(angulo_giro1))
+    print(angulo_giro1)
     print("Y esta es la distancia que se ha de recorrer: ")
     print(distancia_total)
     print("Por último se gira:")
@@ -61,12 +66,10 @@ def instrucciones_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjeti
     """
     distancia_total, angulo_giro1, angulo_giro2 = calculo_giro_avanzo_giro(
         posrobotx, posroboty, posobjetivox, posobjetivoy, orientacion, orientacion_final)
-    angulo_giro1 = int(math.degrees(angulo_giro1))
     instruccion_giro1 = "G"+str(angulo_giro1)
     print(instruccion_giro1)
     instruccion_distancia = "D"+str(int(distancia_total))
     print(instruccion_distancia)
-    angulo_giro2 = int(math.degrees(angulo_giro2))
     instruccion_giro2 = "G"+str(angulo_giro2)
     print(instruccion_giro2)
     return instruccion_giro1, instruccion_distancia, instruccion_giro2
@@ -110,4 +113,6 @@ def instrucciones_lidar(posrobotx, posroboty, poslidarx, poslidary):
         return 0, '0'
 
 
-calculo_gi
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

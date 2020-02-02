@@ -3,6 +3,8 @@
 """
 
 # Funcion propia del protocolo
+
+
 def POSE_TO_MSG(Posicion):
     """
         pose_to_msg:: Num -> String
@@ -20,7 +22,7 @@ def POSE_TO_MSG(Posicion):
             MSG = "+0" + str(Posicion)
         elif (Posicion >= 10):
             MSG = "+00" + str(Posicion)
-        else:                                                       #lif (Posicion >= 0):
+        else:  # lif (Posicion >= 0):
             MSG = "+000" + str(Posicion)
         # if Posicion < 0:
         #     MSG = "-" + MSG
@@ -28,7 +30,7 @@ def POSE_TO_MSG(Posicion):
         #     MSG = '+' + MSG
     # if posicion < 0:
     #     signo = "-"
-    # else: 
+    # else:
     #     signo = "+"
     # return signo + msg
 
@@ -42,6 +44,7 @@ def POSE_TO_MSG(Posicion):
         elif (abs(Posicion) >= 0):
             MSG = "-000" + str(abs(Posicion))
     return MSG
+
 
 if __name__ == "__main__":
     import doctest

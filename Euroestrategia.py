@@ -12,7 +12,6 @@
 """
 # Biliotecas:
 import time
-import math
 from Simulo_robot import simula_movimiento, actuadores, camara
 # Constantes
 # Definir vaso 1 como una tupla
@@ -24,8 +23,8 @@ ACTIVACION_EXPERIMENTOY_AZUL = 800
 ACTIVACION_EXPERIMENTOX_AMARILLO = -ACTIVACION_EXPERIMENTOX_AZUL
 ACTIVACION_EXPERIMENTOY_AMARILLO = ACTIVACION_EXPERIMENTOY_AZUL
 # Estanterias:
-ESTANTERIA_VASOS_1X = -3000
-ESTANTERIA_VASOS_1Y = -1150
+ESTANTERIA_VASOS_1X = -1500
+ESTANTERIA_VASOS_1Y = -800
 ESTANTERIA_VASOS_2X = -575
 ESTANTERIA_VASOS_2Y = 900
 ESTANTERIA_VASOS_3X = -ESTANTERIA_VASOS_2X
@@ -41,13 +40,15 @@ BAHIA_AZULX = -1300
 BAHIA_AZULY = 200
 BAHIA_AMARILLOX = -BAHIA_AZULX
 BAHIA_AMARILLOY = BAHIA_AZULY
-# Puertos:
+# Puertos Azules:
 PUERTO_SUR_AZULX = -1200
 PUERTO_SUR_AZULY = -300
-PUERTO_SUR_AMARILLOX = -PUERTO_SUR_AZULX
-PUERTO_SUR_AMARILLOY = PUERTO_SUR_AZULY
 PUERTO_NORTE_AZULX = PUERTO_SUR_AZULX
 PUERTO_NORTE_AZULY = 550
+# Puertos Amarillos:
+PUERTO_SUR_AMARILLOX = -PUERTO_SUR_AZULX
+PUERTO_SUR_AMARILLOY = PUERTO_SUR_AZULY
+
 PUERTO_NORTE_AMARILLOX = -PUERTO_NORTE_AZULX
 PUERTO_NORTE_AMARILLOY = PUERTO_NORTE_AZULY
 # Posición para ver la camara:
@@ -77,7 +78,7 @@ class robot:  # Clase tipo robot donde se almacenan todos los valores insteresan
         self.bandera = 0
         self.velocidad = [0, 0]
         self.velocidadangular = [0]
-        self.orientacion = math.radians(orientacion)
+        self.orientacion = orientacion
 
 
 class Posavasos:
@@ -171,9 +172,7 @@ def ejecutor(orden, robot, juego):
             Objx = ACTIVACION_EXPERIMENTOX_AZUL
             Objy = ACTIVACION_EXPERIMENTOY_AZUL
 
-        Orientacion_final = math.radians(90)
-
-        # Publicaria en un topic
+        Orientacion_final = 90
         simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
         juego.experimento = False
         juego.puntos = juego.puntos+15
@@ -181,10 +180,11 @@ def ejecutor(orden, robot, juego):
         if(juego.lado == AMARILLO):
             Objx = BAHIA_AMARILLOX
             Objy = BAHIA_AMARILLOY
+            Orientacion_final = 0
         elif(juego.lado == AZUL):
             Objx = BAHIA_AZULX
             Objy = BAHIA_AZULY
-        Orientacion_final = math.radians(270)
+            Orientacion_final = 180
         # Publicaria en un topic
         simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
         actuadores("S", juego)
@@ -192,13 +192,21 @@ def ejecutor(orden, robot, juego):
         juego.puntos = juego.puntos+14
     elif(orden == ESTANTERIAS_CERCA):
         if(juego.lado == AMARILLO):
+            print("Holi holi amarillo")
+            print(juego.posavasos.robot.pos[0])
+            print(juego.posavasos.robot.pos[1])
+            print(juego.posavasos.robot.orientacion)
             Objx = ESTANTERIA_VASOS_4X
             Objy = ESTANTERIA_VASOS_4Y
-            Orientacion_final = math.radians(0)
+            Orientacion_final = 0
         elif(juego.lado == AZUL):
             Objx = ESTANTERIA_VASOS_1X
             Objy = ESTANTERIA_VASOS_1Y
-            Orientacion_final = math.radians(180)
+            print("Holi holi azul")
+            print(juego.posavasos.robot.pos[0])
+            print(juego.posavasos.robot.pos[1])
+            print(juego.posavasos.robot.orientacion)
+            Orientacion_final = 180
         simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
         actuadores("R", juego)
         juego.estanterias.estanteria_casa = False
@@ -209,14 +217,14 @@ def ejecutor(orden, robot, juego):
         elif(juego.lado == AZUL):
             Objx = ESTANTERIA_VASOS_2X
             Objy = ESTANTERIA_VASOS_2Y
-        Orientacion_final = math.radians(90)
+        Orientacion_final = 90
         simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
         actuadores("R", juego)
         juego.estanterias.estanteria_neutro_cerca = False
     elif(orden == ACTUALIZAR_BRUJULA):
         Objx = CAMARA_X
         Objy = CAMARA_Y
-        Orientacion_final = math.radians(90)
+        Orientacion_final = 90
         simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
         camara(juego)
         juego.brujula
@@ -236,7 +244,7 @@ def ejecutor(orden, robot, juego):
             else:
                 Objx = PUERTO_SUR_AZULX
                 Objy = PUERTO_SUR_AZULY
-            Orientacion_final = math.radians(180)
+            Orientacion_final = 180
         simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
         juego.puntos = juego.puntos+10
         juego.Activo = False
@@ -248,7 +256,7 @@ def main():
     if(lado == AMARILLO):
         print("AMARILLO")
         juego = game(AMARILLO, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY +
-                     20, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY-20, math.pi)
+                     20, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY-20, 180)
 
     else:
         print("AZUL")

@@ -8,12 +8,10 @@ POSAVASOS = 1
 
 
 def simula_movimiento(juego, robot, Objx, Objy, orientacion_final):
+
     if(robot == PAREJITAS):
         distancia, angulo_giro1, angulo_giro2 = calculo_giro_avanzo_giro(
             juego.parejitas.robot.pos[0], juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion, orientacion_final)
-        print(distancia)
-        print(angulo_giro1)
-        print(angulo_giro2)
         feedback = control(distancia, angulo_giro1+angulo_giro2, juego)
         if(feedback):
             juego.parejitas.robot.pos[0] = Objx
@@ -21,12 +19,10 @@ def simula_movimiento(juego, robot, Objx, Objy, orientacion_final):
             juego.parejitas.robot.orientacion = orientacion_final
         else:
             print("Error")
+
     else:
         distancia, angulo_giro1, angulo_giro2 = calculo_giro_avanzo_giro(
             juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion, orientacion_final)
-        print(distancia)
-        print(angulo_giro1)
-        print(angulo_giro2)
         feedback = control(distancia, angulo_giro1+angulo_giro2, juego)
         if(feedback):
             juego.posavasos.robot.pos[0] = Objx
