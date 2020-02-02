@@ -13,97 +13,84 @@
 # Biliotecas:
 import time
 import math
-import random
-from funcionesTyM import calculo_giro_avanzo_giro
+from Simulo_robot import simula_movimiento, actuadores, camara
 # Constantes
 # Definir vaso 1 como una tupla
 # Indicar cuantos robots hay
 VASO_1X = 0
 VASO_1Y = 0
-ACTIVACION_EXPERIMENTOX = -1200
-ACTIVACION_EXPERIMENTOY = 800
+ACTIVACION_EXPERIMENTOX_AZUL = -1200
+ACTIVACION_EXPERIMENTOY_AZUL = 800
+ACTIVACION_EXPERIMENTOX_AMARILLO = -ACTIVACION_EXPERIMENTOX_AZUL
+ACTIVACION_EXPERIMENTOY_AMARILLO = ACTIVACION_EXPERIMENTOY_AZUL
 # Estanterias:
 ESTANTERIA_VASOS_1X = -3000
 ESTANTERIA_VASOS_1Y = -1150
 ESTANTERIA_VASOS_2X = -575
 ESTANTERIA_VASOS_2Y = 900
-ESTANTERIA_VASOS_3X = +575
-ESTANTERIA_VASOS_3Y = 900
-ESTANTERIA_VASOS_4X = +3000
-ESTANTERIA_VASOS_4Y = 1150
-ESTANTERIA_VASOS_3X = +575
-ESTANTERIA_VASOS_3Y = 900
+ESTANTERIA_VASOS_3X = -ESTANTERIA_VASOS_2X
+ESTANTERIA_VASOS_3Y = ESTANTERIA_VASOS_2Y
+ESTANTERIA_VASOS_4X = -ESTANTERIA_VASOS_1X
+ESTANTERIA_VASOS_4Y = ESTANTERIA_VASOS_1Y
 # Bahia:
-BAHIA_1X = -400
-BAHIA_1Y = -650
-BAHIA_2X = BAHIA_1X
-BAHIA_2Y = -BAHIA_1Y
+BAHIA_CENTRAL_AMARILLOX = -400  # Tener en cuenta que es la del otro lado
+BAHIA_CENTRAL_AMARILLOY = -650
+BAHIA_CENTRAL_AZULX = -BAHIA_CENTRAL_AMARILLOX
+BAHIA_CENTRAL_AZULY = BAHIA_CENTRAL_AMARILLOY
+BAHIA_AZULX = -1300
+BAHIA_AZULY = 200
+BAHIA_AMARILLOX = -BAHIA_AZULX
+BAHIA_AMARILLOY = BAHIA_AZULY
 # Puertos:
-PUERTO_SUR_GRISX = -1200
-PUERTO_SUR_GRISY = -300
-PUERTO_SUR_AMARILLOX = -PUERTO_SUR_GRISX
-PUERTO_SUR_AMARILLOY = PUERTO_SUR_GRISY
-PUERTO_NORTE_GRISX = PUERTO_SUR_GRISX
-PUERTO_NORTE_GRISY = 550
-PUERTO_NORTE_AMARILLOX = -PUERTO_NORTE_GRISX
-PUERTO_NORTE_AMARILLOY = PUERTO_NORTE_GRISY
-BAHIA_IZQUIERDAX = -1300
-BAHIA_IZQUIERDAY = 200
-BAHIA_DERECHAX = -BAHIA_IZQUIERDAX
-BAHIA_DERECHAY = BAHIA_IZQUIERDAY
+PUERTO_SUR_AZULX = -1200
+PUERTO_SUR_AZULY = -300
+PUERTO_SUR_AMARILLOX = -PUERTO_SUR_AZULX
+PUERTO_SUR_AMARILLOY = PUERTO_SUR_AZULY
+PUERTO_NORTE_AZULX = PUERTO_SUR_AZULX
+PUERTO_NORTE_AZULY = 550
+PUERTO_NORTE_AMARILLOX = -PUERTO_NORTE_AZULX
+PUERTO_NORTE_AMARILLOY = PUERTO_NORTE_AZULY
 # Posición para ver la camara:
 CAMARA_X = 0
 CAMARA_Y = 800
-
-
-def control(angulo, distancia, juego):
-    """Función que simula el nivel bajo, de momento no hace más que generar delays 
-    en función de las distancias recorridas, en el futuro sera capaz de simular 
-    enemigos y errores."""
-    vdefecto = 500  # 0.5 m/s
-    wdefecto = 360  # 1Hz
-    print("Tiempo que tarda el robot:")
-    tiempo = abs((distancia/vdefecto))+abs((angulo/wdefecto))
-    juego.tiempo = juego.tiempo+tiempo
-    print(tiempo)
-    time.sleep(tiempo)
-    return 1
-
-
-def actuadores(accion, juego):
-    """Función que se encarga de simular el comportamiento del actuador y
-    simula un tiempo para recoger los vasos."""
-    if(accion == "R"):  # Toca recoger
-        print("Recogiendo vasos")
-        # send_mensaje("AR"):Realidad
-        time.sleep(8)  # Simulacion
-        juego.robot.ventosas_ocupada = True
-        print("Vasos recogidos")
-        juego.tiempo = juego.tiempo+5  # Añado tiempos
-    elif(accion == "S"):
-        print("Soltando vasos")
-        # send_mensaje("AS"):Realidad
-        time.sleep(14)  # Simulacion
-        print("Vasos sueltos")
-        juego.tiempo = juego.tiempo+10  # Añado tiempos
-        juego.puntos = juego.puntos+14
-        juego.robot.ventosas_ocupada = False
-
-
-def camara(juego):
-    juego.brujula = random.choice(["N", "S"])
-    time.sleep(4)
-    juego.tiempo = juego.tiempo+4
+# Instrucciones
+ACTIVAR_EXPERIMENTO = 0
+BAHIA_SOLTAR = 1
+ESTANTERIAS_NEUTRO_CERCA = 2
+ESTANTERIAS_CERCA = 3
+ESTANTERIAS_NEUTRO_ENEMIGO = 4
+ESTANTERIAS_ENEMIGO = 5
+ACTUALIZAR_BRUJULA = 6
+CASA = 7
+# ROBOTS
+PAREJITAS = 0
+POSAVASOS = 1
+# Lados
+AMARILLO = 1
+AZUL = 2
 
 
 class robot:  # Clase tipo robot donde se almacenan todos los valores insteresantes del propio estado del robot
-    def __init__(self, posx, posy, vx, vy):
-        self.pos = [PUERTO_SUR_GRISX, PUERTO_SUR_GRISY]
+    def __init__(self, posx, posy, orientacion):
+        self.disponible = True
+        self.pos = [posx, posy]
         self.bandera = 0
         self.velocidad = [0, 0]
         self.velocidadangular = [0]
-        self.orientacion = math.radians(0)
-        self.ventosas_ocupada = False
+        self.orientacion = math.radians(orientacion)
+
+
+class Posavasos:
+    def __init__(self, posx, posy, orientacion):
+        self.robot = robot(posx, posy, orientacion)  # Datos por concretar
+        self.ventosas_ocupada = False  # No ha cogido ningún vaso
+
+
+class Parejitas:
+    def __init__(self, posx, posy, orientacion):
+        self.robot = robot(posx, posy, orientacion)  # Datos por concretar
+        self.compuertas = False  # Estan abiertas
+        self.actuador_banda = False
 
 
 class vasos():  #
@@ -115,18 +102,23 @@ class vasos():  #
 
 
 class estanterias():  #
-    def __init__(self, estanteria1, estanteria2, estanteria3, estanteria4):
-        self.estanteria1 = estanteria1
-        self.estanteria2 = estanteria2
+    def __init__(self, estanteria_casa, estanteria_neutro_cerca, estanteria3, estanteria4):
+        self.estanteria_casa = estanteria_casa
+        self.estanteria_neutro_cerca = estanteria_neutro_cerca
         self.estanteria3 = estanteria3
         self.estanteria4 = estanteria4
 
 
 class game:  # Clase tipo game, donde se almacenan toda la información del partido y con un vistazo obtienes toda la información
-    def __init__(self, posx, posy, vx, vy):
+    def __init__(self, lado, pos_inicio_parejitasx, pos_inicio_parejitasy, pos_inicio_posavasosx, pos_inicio_posavasosy, orientacion_inicial):
+        self.Activo = True
         self.tiempo = 0
         self.puntos = 0
-        self.robot = robot(posx, posy, vx, vy)
+        self.lado = lado
+        self.posavasos = Posavasos(
+            pos_inicio_posavasosx, pos_inicio_posavasosy, orientacion_inicial)
+        self.parejitas = Parejitas(
+            pos_inicio_parejitasx, pos_inicio_parejitasy, orientacion_inicial)
         self.vasos = vasos(True, True, True, True)
         self.estanterias = estanterias(True, True, True, True)
         self.experimento = True
@@ -137,87 +129,151 @@ class game:  # Clase tipo game, donde se almacenan toda la información del part
 
 
 def planificador(juego):
-    if(juego.tiempo <= 90):
-        print("Queda tiempo, vamos por la siguiente instruccion")
-        if(juego.experimento):
-            print("Activo el experimento")
-            ejecutor(ACTIVACION_EXPERIMENTOX,
-                     ACTIVACION_EXPERIMENTOY, juego, math.radians(90))
-            juego.experimento = False
-            juego.puntos = juego.puntos+15
-
-        elif(juego.robot.ventosas_ocupada):
-            print("Vamos a la bahia a descargar los vasos")
-            ejecutor(BAHIA_IZQUIERDAX, BAHIA_IZQUIERDAY,
-                     juego, math.radians(180))
-            actuadores("S", juego)
-
-        elif (juego.estanterias.estanteria2):
-            print("Voy a la estanteria del medio")
-            ejecutor(ESTANTERIA_VASOS_1X, ESTANTERIA_VASOS_1Y,
-                     juego, math.radians(90))
-            juego.estanterias.estanteria2 = 0
-            actuadores("R", juego)
-        elif (juego.estanterias.estanteria1):
-            print("Voy a la estanteria de mi lado")
-            ejecutor(ESTANTERIA_VASOS_1X, ESTANTERIA_VASOS_1Y,
-                     juego, math.radians(180))
-            juego.estanterias.estanteria1 = 0
-            actuadores("R", juego)
-        elif (juego.brujula == "D"):
-            print("Voy a mirar la brujula")
-            ejecutor(CAMARA_X, CAMARA_Y,
-                     juego, math.radians(90))
-            camara(juego)
-        else:
-            print("No tengo que hacer nada")
-            if(juego.brujula == "N"):
-                ejecutor(PUERTO_SUR_GRISX, PUERTO_SUR_GRISY, juego, 180)
+    if(juego.tiempo <= 90):  # Hay tiempo
+        if(juego.posavasos.robot.disponible):  # Posavasos no esta ocupado
+            if(juego.experimento):
+                print("Activo el experimento")
+                ejecutor(ACTIVAR_EXPERIMENTO, POSAVASOS, juego)
+            elif(juego.posavasos.ventosas_ocupada):
+                print("Vamos a la bahia a descargar los vasos")
+                ejecutor(BAHIA_SOLTAR, POSAVASOS, juego)
+            elif (juego.estanterias.estanteria_neutro_cerca):
+                print("Voy a la estanteria del medio")
+                ejecutor(ESTANTERIAS_NEUTRO_CERCA, POSAVASOS, juego)
+            elif (juego.estanterias.estanteria_casa):
+                print("Voy a la estanteria de mi lado")
+                ejecutor(ESTANTERIAS_CERCA, POSAVASOS, juego)
+            elif (juego.brujula == 'N'):
+                print("Voy a mirar la brujula")
+                ejecutor(ACTUALIZAR_BRUJULA, POSAVASOS, juego)
             else:
-                ejecutor(PUERTO_NORTE_GRISX, PUERTO_NORTE_GRISY, juego, 180)
-            juego.puntos = juego.puntos+15
-            juego.tiempo = 140
-
+                print("No tengo que hacer nada")
+                ejecutor(CASA, POSAVASOS, juego)
+    # if(juego.parejitas.disponible):
+    #    print("Parejitas es tu turno")
     else:
         print("Rapido pirate")
-        if(juego.brujula == "N"):
-            ejecutor(PUERTO_SUR_GRISX, PUERTO_SUR_GRISY, juego, 180)
-        else:
-            ejecutor(PUERTO_NORTE_GRISX, PUERTO_NORTE_GRISY, juego, 180)
-        juego.puntos = juego.puntos+15
+        ejecutor(CASA, POSAVASOS, juego)
+        ejecutor(CASA, PAREJITAS, juego)
 
 
 # Ejecutor recrea TyM parcialmente, es decir recibe que ha de hacer y lo traduce en  instrucciones
-def ejecutor(Objx, Objy, juego, orientacion_final):
+def ejecutor(orden, robot, juego):
     # (Falta por implementar la creación de los waypoints, asi que solo hace gira->avanza)
-    distancia, angulo_giro1, angulo_giro2 = calculo_giro_avanzo_giro(
-        juego.robot.pos[0], juego.robot.pos[1], Objx, Objy, juego.robot.orientacion, orientacion_final)
-    print(distancia)
-    print(angulo_giro1)
-    print(angulo_giro2)
-    feedback = control(distancia, angulo_giro1+angulo_giro2, juego)
-    if(feedback):
-        juego.robot.pos[0] = Objx
-        juego.robot.pos[1] = Objy
-        juego.robot.orientacion = orientacion_final
-        return 1
-    else:
-        print("Error")
-        return 0
-    # Simula el nivel bajo
-    # def control(juego, instrucciones)
+    if(orden == ACTIVAR_EXPERIMENTO):
+        if(juego.lado == AMARILLO):
+            print("Activo faro amarillo")
+            Objx = ACTIVACION_EXPERIMENTOX_AMARILLO
+            Objy = ACTIVACION_EXPERIMENTOY_AMARILLO
+
+        elif(juego.lado == AZUL):
+            print("Activo faro azul")
+            Objx = ACTIVACION_EXPERIMENTOX_AZUL
+            Objy = ACTIVACION_EXPERIMENTOY_AZUL
+
+        Orientacion_final = math.radians(90)
+
+        # Publicaria en un topic
+        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        juego.experimento = False
+        juego.puntos = juego.puntos+15
+    elif(orden == BAHIA_SOLTAR):
+        if(juego.lado == AMARILLO):
+            Objx = BAHIA_AMARILLOX
+            Objy = BAHIA_AMARILLOY
+        elif(juego.lado == AZUL):
+            Objx = BAHIA_AZULX
+            Objy = BAHIA_AZULY
+        Orientacion_final = math.radians(270)
+        # Publicaria en un topic
+        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        actuadores("S", juego)
+
+        juego.puntos = juego.puntos+14
+    elif(orden == ESTANTERIAS_CERCA):
+        if(juego.lado == AMARILLO):
+            Objx = ESTANTERIA_VASOS_4X
+            Objy = ESTANTERIA_VASOS_4Y
+            Orientacion_final = math.radians(0)
+        elif(juego.lado == AZUL):
+            Objx = ESTANTERIA_VASOS_1X
+            Objy = ESTANTERIA_VASOS_1Y
+            Orientacion_final = math.radians(180)
+        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        actuadores("R", juego)
+        juego.estanterias.estanteria_casa = False
+    elif(orden == ESTANTERIAS_NEUTRO_CERCA):
+        if(juego.lado == AMARILLO):
+            Objx = ESTANTERIA_VASOS_3X
+            Objy = ESTANTERIA_VASOS_3Y
+        elif(juego.lado == AZUL):
+            Objx = ESTANTERIA_VASOS_2X
+            Objy = ESTANTERIA_VASOS_2Y
+        Orientacion_final = math.radians(90)
+        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        actuadores("R", juego)
+        juego.estanterias.estanteria_neutro_cerca = False
+    elif(orden == ACTUALIZAR_BRUJULA):
+        Objx = CAMARA_X
+        Objy = CAMARA_Y
+        Orientacion_final = math.radians(90)
+        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        camara(juego)
+        juego.brujula
+    elif(orden == CASA):
+        if(juego.lado == AMARILLO):
+            if(juego.brujula == 'N'):
+                Objx = PUERTO_NORTE_AMARILLOX
+                Objy = PUERTO_NORTE_AMARILLOY
+            else:
+                Objx = PUERTO_SUR_AMARILLOX
+                Objy = PUERTO_SUR_AMARILLOY
+            Orientacion_final = 0
+        elif(juego.lado == AZUL):
+            if(juego.brujula == 'N'):
+                Objx = PUERTO_NORTE_AZULX
+                Objy = PUERTO_NORTE_AZULY
+            else:
+                Objx = PUERTO_SUR_AZULX
+                Objy = PUERTO_SUR_AZULY
+            Orientacion_final = math.radians(180)
+        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        juego.puntos = juego.puntos+10
+        juego.Activo = False
 
 
 def main():
-    juego = game(-1500, -700, 0, 0)
-    while juego.tiempo < 140:
+    print("Selecciona el lado (1 para amarillo y 2 para el Azul ):")
+    lado = int(input())
+    if(lado == AMARILLO):
+        print("AMARILLO")
+        juego = game(AMARILLO, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY +
+                     20, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY-20, math.pi)
+
+    else:
+        print("AZUL")
+        juego = game(AZUL, PUERTO_SUR_AZULX, PUERTO_SUR_AZULY+20,
+                     PUERTO_SUR_AZULX, PUERTO_SUR_AZULY-20, 0)
+    print("Situación inicial:")
+    print("Posicion de parejitas")
+    print(juego.parejitas.robot.pos[0])
+    print(juego.parejitas.robot.pos[1])
+    print("Posicion de posavasos")
+    print(juego.posavasos.robot.pos[0])
+    print(juego.posavasos.robot.pos[1])
+    time.sleep(3)
+    while juego.Activo:
+
         planificador(juego)
         print("Vamos por el segundo de partido:")
         print(juego.tiempo)
-        print("Tenemos los siguientes puntos")
-        print(juego.puntos)
-        # print(juego.campo.vaso1.color)
-        # print(juego.campo)
+
+    print("Partido acabado")
+    print("Resumen:")
+    print("Ha durando tantos segundos:")
+    print(juego.tiempo)
+    print("Hemos conseguido tantos puntos:")
+    print(juego.puntos)
 
 
 main()
