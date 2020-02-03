@@ -20,10 +20,9 @@
 //#define BIT_PRIO buffer[0]
 #define T_INSTRUCCION buffer[0] //Primer char, es el que identifica la instrucción
 //Argumentos
-#define BIT_SIGNO_DISTANCIA buffer[1]
-#define BIT_C_DISTANCIA buffer[2]
-#define BIT_D_DISTANCIA buffer[3]
-#define BIT_U_DISTANCIA buffer[4]
+#define BIT_C_DISTANCIA buffer[1]
+#define BIT_D_DISTANCIA buffer[2]
+#define BIT_U_DISTANCIA buffer[3]
 
 
 extern char *ptr_rx;     // Puntero de recepción
