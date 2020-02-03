@@ -177,7 +177,7 @@ void Traduccion_Variables(void)
         Instruccion_Codigo = T_INSTRUCCION;
         Instruccion_Prioridad = 0;
         distancia = (BIT_M_DISTANCIA - '0') * 1000 + (BIT_C_DISTANCIA - '0') * 100 + (BIT_D_DISTANCIA - '0') * 10 + (BIT_U_DISTANCIA - '0');
-        velocidad = (BIT_M_V - '0') * 1000 + (BIT_C_V - '0') * 100 + (BIT_D_V - '0') * 10 + (BIT_U_V - '0');
+        velocidad_final = (BIT_M_V_FINAL - '0') * 1000 + (BIT_C_V_FINAL - '0') * 100 + (BIT_D_V_FINAL - '0') * 10 + (BIT_U_V_FINAL - '0');
         velocidad_maxima = (BIT_M_VMAX - '0') * 1000 + (BIT_C_VMAX - '0') * 100 + (BIT_D_VMAX - '0') * 10 + (BIT_U_VMAX - '0');
         if (BIT_SIGNO_GRADOS == '+')
             distancia = distancia;
@@ -190,7 +190,7 @@ void Traduccion_Variables(void)
         Instruccion_Codigo = T_INSTRUCCION;
         Instruccion_Prioridad = 0;
         distancia = (BIT_M_DISTANCIA_C - '0') * 1000 + (BIT_C_DISTANCIA_C - '0') * 100 + (BIT_D_DISTANCIA_C - '0') * 10 + (BIT_U_DISTANCIA_C - '0');
-        velocidad = (BIT_M_V_C - '0') * 1000 + (BIT_C_V_C - '0') * 100 + (BIT_D_V_C - '0') * 10 + (BIT_U_V_C - '0');
+        velocidad_final = (BIT_M_V_FINAL_C - '0') * 1000 + (BIT_C_V_FINAL_C - '0') * 100 + (BIT_D_V_FINAL_C - '0') * 10 + (BIT_U_V_FINAL_C - '0');
         velocidad_maxima = (BIT_M_VMAX_C - '0') * 1000 + (BIT_C_VMAX_C - '0') * 100 + (BIT_D_VMAX_C - '0') * 10 + (BIT_U_VMAX_C - '0');
         radio = (BIT_M_RADIO_C - '0') * 1000 + (BIT_C_RADIO_C - '0') * 100 + (BIT_D_RADIO_C - '0') * 10 + (BIT_U_RADIO_C - '0');
         break;

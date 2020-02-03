@@ -1,3 +1,41 @@
+""" 
+    Funciones de la comunicación de la Raspy
+"""
+# Importo las bibliotecas:
+import serial  # Necesaria
+#from serialpacking import POSE_TO_MSG
+
+
+def envio_instrucciones_traccion(instruccion_1, instruccion_2, instruccion_3):
+    # Puertos usados en la demo:
+    # MDK2_Port = serial.Serial('/dev/ttyUSB0', 115200, timeout=1) #Si estamos en la Raspberry py y conectamos la MDK2 por el puerto de arriba a la derecha.
+    # Puerto usado en la demo para probar cosas
+    MDK2_Port = serial.Serial('COM3', 115200, timeout=0.02)
+    instruccion = (instruccion_1, instruccion_2, instruccion_3)
+    acabado = 0
+    i = 0
+    c = 1
+    while acabado != 1:
+        mensaje_recibido = MDK2_Port.readline()  # Guardo lo que leo en un string
+
+        if(c):
+            # ENVIAMOS MENSAJE:
+            mensaje = instruccion[i] + '\0'
+            MDK2_Port.write(mensaje.encode())
+            print("S")
+            c = 0
+
+        if mensaje_recibido == b'A':
+            print("A")
+            i = i+1
+            if(i < len(instruccion)):
+                mensaje = instruccion[i] + '\0'
+                MDK2_Port.write(mensaje.encode())
+            else:
+                acabado = 1
+    print("Programa acabado")
+    MDK2_Port.close()  # Cierro el puerto al finalizar el programa
+
 """
 
 """
@@ -81,3 +119,4 @@ def angle_to_msg(Grados):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+

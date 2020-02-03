@@ -1,5 +1,5 @@
 import math
-
+from serialpacking import angle_to_msg, poste_to_msg
 
 def calculo_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjetivoy, orientacion_original, orientacion_final):
     """
@@ -66,11 +66,11 @@ def instrucciones_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjeti
     """
     distancia_total, angulo_giro1, angulo_giro2 = calculo_giro_avanzo_giro(
         posrobotx, posroboty, posobjetivox, posobjetivoy, orientacion, orientacion_final)
-    instruccion_giro1 = "G"+str(angulo_giro1)
+    instruccion_giro1 = "0" + "G"+angle_to_msg(angulo_giro1) 
     print(instruccion_giro1)
-    instruccion_distancia = "D"+str(int(distancia_total))
+    instruccion_distancia = "0" + "D" +poste_to_msg(distancia_total) + "0500" +"1000"
     print(instruccion_distancia)
-    instruccion_giro2 = "G"+str(angulo_giro2)
+    instruccion_giro2 = "0" +"G" + angle_to_msg(angulo_giro2)
     print(instruccion_giro2)
     return instruccion_giro1, instruccion_distancia, instruccion_giro2
 

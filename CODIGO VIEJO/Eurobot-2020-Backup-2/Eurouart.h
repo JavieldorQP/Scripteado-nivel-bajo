@@ -30,10 +30,10 @@
 #define BIT_C_DISTANCIA buffer[4]
 #define BIT_D_DISTANCIA buffer[5]
 #define BIT_U_DISTANCIA buffer[6]
-#define BIT_M_V buffer[7]
-#define BIT_C_V buffer[8]
-#define BIT_D_V buffer[9]
-#define BIT_U_V buffer[10]
+#define BIT_M_V_FINAL buffer[7]
+#define BIT_C_V_FINAL buffer[8]
+#define BIT_D_V_FINAL buffer[9]
+#define BIT_U_V_FINAL buffer[10]
 #define BIT_M_VMAX buffer[11]
 #define BIT_C_VMAX buffer[12]
 #define BIT_D_VMAX buffer[13]
@@ -43,10 +43,10 @@
 #define BIT_C_DISTANCIA_C buffer[3]
 #define BIT_D_DISTANCIA_C buffer[4]
 #define BIT_U_DISTANCIA_C buffer[5]
-#define BIT_M_V_C buffer[6]
-#define BIT_C_V_C buffer[7]
-#define BIT_D_V_C buffer[8]
-#define BIT_U_V_C buffer[9]
+#define BIT_M_V_FINAL_C buffer[6]
+#define BIT_C_V_FINAL_C buffer[7]
+#define BIT_D_V_FINAL_C buffer[8]
+#define BIT_U_V_FINAL_C buffer[9]
 #define BIT_M_VMAX_C buffer[10]
 #define BIT_C_VMAX_C buffer[11]
 #define BIT_D_VMAX_C buffer[12]
@@ -64,7 +64,7 @@ extern char buffer[70];  // Buffer de recepción de caracteres
 
 extern char estado;
 extern int distancia;
-extern int velocidad;
+extern int velocidad_final;
 extern int velocidad_maxima;
 extern int radio;
 extern int grados_giro;
