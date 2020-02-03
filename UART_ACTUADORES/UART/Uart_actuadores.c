@@ -184,3 +184,4 @@ void Traduccion_Variables(void)
         break;
     }
 }
+
