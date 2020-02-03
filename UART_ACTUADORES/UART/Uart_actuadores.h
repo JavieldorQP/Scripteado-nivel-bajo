@@ -31,14 +31,10 @@ extern char *ptr_tx;     // Puntero de transmisión
 extern char tx_completa; // Flag de transmision completa
 extern char buffer[70];  // Buffer de recepción de caracteres
 
-extern char estado;
+//Variables de MIguel
 extern int distancia;
-extern int velocidad;
-extern int velocidad_maxima;
-extern int radio;
-extern int grados_giro;
 extern char Instruccion_Codigo;
-extern char Instruccion_Prioridad;
+
 
 extern void uart0_init(int baudrate);
 extern void transmitir_cadenaUART0(char *cadena);

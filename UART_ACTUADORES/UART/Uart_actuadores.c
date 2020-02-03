@@ -158,7 +158,6 @@ void Traduccion_Variables(void)
     {
     case ('B'):              //Bajar
         Instruccion_Codigo = T_INSTRUCCION;
-        Instruccion_Prioridad = 0;
         distancia = (BIT_C_DISTANCIA - '0') * 100 + (BIT_D_DISTANCIA - '0') * 10 + (BIT_U_DISTANCIA - '0');
         if (distancia <= 250)
             distancia = distancia;
@@ -170,9 +169,8 @@ void Traduccion_Variables(void)
 
     case ('S'):             //Subir
         Instruccion_Codigo = T_INSTRUCCION;
-        Instruccion_Prioridad = 0;
-        distancia = -1*(BIT_C_DISTANCIA - '0') * 100 + (BIT_D_DISTANCIA - '0') * 10 + (BIT_U_DISTANCIA - '0');
-        if (distancia <= -250)      //Por si acaso
+        distancia = (BIT_C_DISTANCIA - '0') * 100 + (BIT_D_DISTANCIA - '0') * 10 + (BIT_U_DISTANCIA - '0');
+        if (distancia <= 250)      //Por si
             distancia = distancia;
         else
             transmitir_cadenaUART0("E");
@@ -180,6 +178,7 @@ void Traduccion_Variables(void)
     case ('C'):             //Calibrar
         Instruccion_Codigo = T_INSTRUCCION;
         break;
+    
     default:
         transmitir_cadenaUART0("Instruccion no valida")
         break;
