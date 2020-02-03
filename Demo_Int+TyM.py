@@ -75,12 +75,10 @@ class robot:  # Clase tipo robot donde se almacenan todos los valores insteresan
         self.velocidadangular = [0]
         self.orientacion = orientacion
 
-
 class Posavasos:
     def __init__(self, posx, posy, orientacion):
         self.robot = robot(posx, posy, orientacion)  # Datos por concretar
         self.ventosas_ocupada = False  # No ha cogido ningún vaso
-
 
 class Parejitas:
     def __init__(self, posx, posy, orientacion):
@@ -88,14 +86,12 @@ class Parejitas:
         self.compuertas = False  # Estan abiertas
         self.actuador_banda = False
 
-
 class vasos():  #
     def __init__(self, vaso1, vaso2, vaso3, vaso4):
         self.vaso1 = vaso1
         self.vaso2 = vaso2
         self.vaso3 = vaso4
         self.vaso4 = vaso4
-
 
 class estanterias():  #
     def __init__(self, estanteria_casa, estanteria_neutro_cerca, estanteria3, estanteria4):
@@ -168,9 +164,10 @@ def ejecutor(orden, robot, juego):
 
         Orientacion_final = 90
         instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
-        
+        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
         juego.experimento = False
         juego.puntos = juego.puntos+15
+
     elif(orden == BAHIA_SOLTAR):
         if(juego.lado == AMARILLO):
             Objx = BAHIA_AMARILLOX
@@ -181,16 +178,13 @@ def ejecutor(orden, robot, juego):
             Objy = BAHIA_AZULY
             Orientacion_final = 180
         # Publicaria en un topic
-        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
-        actuadores("S", juego)
-
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
+        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
+        envio_instrucciones_actuadores("B250")
         juego.puntos = juego.puntos+14
+
     elif(orden == ESTANTERIAS_CERCA):
         if(juego.lado == AMARILLO):
-            print("Holi holi amarillo")
-            print(juego.posavasos.robot.pos[0])
-            print(juego.posavasos.robot.pos[1])
-            print(juego.posavasos.robot.orientacion)
             Objx = ESTANTERIA_VASOS_4X
             Objy = ESTANTERIA_VASOS_4Y
             Orientacion_final = 0
@@ -198,10 +192,10 @@ def ejecutor(orden, robot, juego):
             Objx = ESTANTERIA_VASOS_1X
             Objy = ESTANTERIA_VASOS_1Y
             Orientacion_final = 180
-
-        instrucciones_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjetivoy, orientacion, orientacion_final)
-        actuadores("R", juego)
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
+        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
         juego.estanterias.estanteria_casa = False
+    
     elif(orden == ESTANTERIAS_NEUTRO_CERCA):
         if(juego.lado == AMARILLO):
             Objx = ESTANTERIA_VASOS_3X
@@ -210,16 +204,19 @@ def ejecutor(orden, robot, juego):
             Objx = ESTANTERIA_VASOS_2X
             Objy = ESTANTERIA_VASOS_2Y
         Orientacion_final = 90
-        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
-        actuadores("R", juego)
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
+        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
+        envio_instrucciones_actuadores("S250")
         juego.estanterias.estanteria_neutro_cerca = False
+        
     elif(orden == ACTUALIZAR_BRUJULA):
         Objx = CAMARA_X
         Objy = CAMARA_Y
         Orientacion_final = 90
-        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
-        camara(juego)
-        juego.brujula
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
+        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
+        juego.brujula = 'N'
+    
     elif(orden == CASA):
         if(juego.lado == AMARILLO):
             if(juego.brujula == 'N'):
@@ -237,10 +234,10 @@ def ejecutor(orden, robot, juego):
                 Objx = PUERTO_SUR_AZULX
                 Objy = PUERTO_SUR_AZULY
             Orientacion_final = 180
-        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
+        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
         juego.puntos = juego.puntos+10
         juego.Activo = False
-
 
 def main():
     print("Selecciona el lado (1 para amarillo y 2 para el Azul ):")
@@ -249,7 +246,6 @@ def main():
         print("AMARILLO")
         juego = game(AMARILLO, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY +
                      20, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY-20, 180)
-
     else:
         print("AZUL")
         juego = game(AZUL, PUERTO_SUR_AZULX, PUERTO_SUR_AZULY+20,

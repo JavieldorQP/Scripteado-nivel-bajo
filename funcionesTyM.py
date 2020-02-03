@@ -1,5 +1,5 @@
 import math
-from serialpacking import angle_to_msg, poste_to_msg
+from Eurocomunicacion_raspy_funciones import angle_to_msg, poste_to_msg   
 
 def calculo_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjetivoy, orientacion_original, orientacion_final):
     """

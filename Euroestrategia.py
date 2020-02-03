@@ -99,6 +99,7 @@ DESCARGAR_VASOS = 16
 PAREJITAS = 0
 POSAVASOS = 1
 # Lados
+códigos = [1,2]
 AMARILLO = 1
 AZUL = 2
 #Función trayectoria correcta para siguiente Vaso
@@ -456,43 +457,58 @@ def ejecutor(orden, robot, juego):
 def main():
     #Selección del lado y configuración en función del valor escaneado.
     print("Selecciona el lado (1 para amarillo y 2 para el Azul ):")             
-    lado = int(input())
-    if(lado == AMARILLO):
-        print("AMARILLO")
-        juego = game(AMARILLO, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY +
-                     20, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY-20, 180)
-
+    
+    try:
+        entrada = input("")
+        lado    = int(valor)
+    except ValueError:
+        print(f"Este valor {entrada} es convertible a entero!")
+    except Exception:
+        print("Excepcion no reconocida")
     else:
-        print("AZUL")
-        juego = game(AZUL, PUERTO_SUR_AZULX, PUERTO_SUR_AZULY+20,
-                     PUERTO_SUR_AZULX, PUERTO_SUR_AZULY-20, 0)
-    print("Situación inicial:")
-    print("Posicion de parejitas")
-    print(juego.parejitas.robot.pos[0])
-    print(juego.parejitas.robot.pos[1])
-    print("Posicion de posavasos")
-    print(juego.posavasos.robot.pos[0])
-    print(juego.posavasos.robot.pos[1])
+        if lado in códigos:
+            if(lado == 1 ):    # AMARILLO
+                print("AMARILLO")
+                juego = game(AMARILLO, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY +
+                            20, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY-20, 180)
 
-    while juego.Activo:                                             # Mientras  el juego este en su trancurso
-        planificador(juego)                                            
-        juego.tiempo = juego.tiempo+1
-        if(juego.tiempo == juego.posavasos.robot.tiempo_bloqueado):
-            juego.posavasos.robot.disponible = True
-            print("Posavasos ha acabado su anterior tarea")
-            time.sleep(5)
-        if(juego.tiempo == juego.parejitas.robot.tiempo_bloqueado):
-            juego.parejitas.robot.disponible = True    
-            print("Parejitas ha acabado su anterior tarea")
-            time.sleep(5)
+            elif (lado == 2 ): # AZUL
+                print("AZUL")
+                juego = game(AZUL, PUERTO_SUR_AZULX, PUERTO_SUR_AZULY+20,
+                            PUERTO_SUR_AZULX, PUERTO_SUR_AZULY-20, 0)
+            else:
+                print(f"Confguracion de lado {lado} no reconocida")
 
-    #Una vez acabado se resume
-    print("Partido acabado")
-    print("Resumen:")
-    print("Ha durando tantos segundos:")
-    print(juego.tiempo)
-    print("Hemos conseguido tantos puntos:")
-    print(juego.puntos)
+            print("Situación inicial:")
+            print("Posicion de parejitas")
+            print(juego.parejitas.robot.pos[0])
+            print(juego.parejitas.robot.pos[1])
+            print("Posicion de posavasos")
+            print(juego.posavasos.robot.pos[0])
+            print(juego.posavasos.robot.pos[1])
 
+            while juego.Activo:                                             # Mientras  el juego este en su trancurso
+                planificador(juego)                                            
+                juego.tiempo = juego.tiempo+1
+                if(juego.tiempo == juego.posavasos.robot.tiempo_bloqueado):
+                    juego.posavasos.robot.disponible = True
+                    print("Posavasos ha acabado su anterior tarea")
+                    time.sleep(5)
+                if(juego.tiempo == juego.parejitas.robot.tiempo_bloqueado):
+                    juego.parejitas.robot.disponible = True    
+                    print("Parejitas ha acabado su anterior tarea")
+                    time.sleep(5)
+
+            #Una vez acabado se resume
+            print("Partido acabado")
+            print("Resumen:")
+            print("Ha durando tantos segundos:")
+            print(juego.tiempo)
+            print("Hemos conseguido tantos puntos:")
+            print(juego.puntos)
+        else:
+            print(f"El código {código} no es un valor válido")
+    finally:
+        print("programa terminado")
 
 main()
