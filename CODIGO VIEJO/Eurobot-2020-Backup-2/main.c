@@ -4,14 +4,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "GLCD.h"
+
 #include "Eurouart.h"
 #include "funciones_pwm.h"
-#include "funciones_timer.h"
+#include "funciones_desplazamiento.h"
 #include "funciones_control.h"
-#include "maquina_estados.h"
 #include "configuraciones.h"
+#include "funciones_timer.h"
 #include "variables.h"
-#include "GLCD.h"
+
 
 #define FPCLK 25e6
 
@@ -68,9 +70,7 @@ int Flag_EstadoFinalizado = 1;                           //La inicializo a 1 par
 int Siguiente_Estado = ST_INICIAL; 	
 int Estado = ST_INICIAL;
 
-/****  Variables odometria  ****/
-#define 	AVANZA					1
-#define 	RETROCEDE				0
+
 
 #define 	LONG_EJE 				34										//Longitud del eje en cm
 #define 	DIAMETRO				12.2 									//Diametro en cm
@@ -79,7 +79,7 @@ int Estado = ST_INICIAL;
 #define 	p_a_cm					DIAMETRO*PI/(pulsos*reduct)				//Numero de cm recorrido por pulso  
 
 /**** Funciones odometría ****/
-
+/*
 void act_odom(int DIR_I, int DIR_D) 
 {
 	timer_counters TC;
@@ -108,7 +108,7 @@ void act_odom(int DIR_I, int DIR_D)
 		Robot.Orientacion += 360;	
 
 }
-
+*/
 void reset_odometria(void){
 	LPC_TIM2->TC=0;
 	LPC_TIM3->TC=0;
@@ -120,6 +120,8 @@ sprintf(aux,"%d\n",Estado),
 transmitir_cadenaUART0(aux);
 	
 }
+
+
 /**** Funciones de la máquina de estados ****/
 
 //ESTRUCTURA GENERAL DE LOS COMANDOS
@@ -178,8 +180,11 @@ static char Inicio = 1;
 	{
 		Inicio=0;
 		Flag_EstadoFinalizado=0;				//En ST_PARADO SÍ hay que hacerlo inicialmente ya que solemos llegar por ENEMIGO
-		velocidad_derecha(0,&maxon);
-		velocidad_izquierda(0,&maxon); 								//Repite la instrucción de parar por si ha llegado aquí por mensaje aleatorio, no mediante una frenada anterior
+		apaga_motores();
+		Robot.VelActual = 0;
+		Robot.Orientacion = 0;
+		Robot.Pos.X = 0;
+		Robot.Pos.Y = 0;
 		transmitir_estado();
 	}
 
@@ -207,44 +212,75 @@ int CMD_Recta(void){
 //Avanzamos una distancia en línea recta a velocidad máxima definida
 
 static char Inicio = 1;
+static char Flag_Frenada = 1;
 
 if(Inicio){
 	Inicio = 0;
 	Flag_EstadoFinalizado = 0;
+	
 	reset_odometria();
 	transmitir_estado();
-	lazo_abierto.distancia_total_rad = (distancia/2)/maxon.diametro;
-	lazo_abierto.velocidad_final = velocidad_maxima;
-	lazo_abierto.velocidad_inicial = 0;			//Cuando sea capaz de empalmar comandos sería Robot.VelActual
 
-	avanza_recto(&lazo_abierto,&maxon);
+
+	calcula_parametros_recta(&lazo_abierto,&maxon);
+
+	
+	motores(&lazo_abierto,&maxon);
 	
 }
 
 	//Evalúo el error que tengo en cada ciclo hasta que "llego" con el TIMER1
+	if (lazo_abierto.error_posicion_actual_derecha < lazo_abierto.distancia_frenada || 
+	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.distancia_frenada || Flag_Frenada)
+	{
+		//Actualmente esto frena al final, no encadena velocidades aún
+		Flag_Frenada = 0;
+		velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
+		velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
+	}
 	
 
-	if(lazo_abierto.error_pos_act_derecha < 0.1 || lazo_abierto.error_pos_act_izquierda < 0.1){
-		//Actualmente esto frena al final, no encadena velocidades aún
-		//Modificar funciones_desplazamiento
-				velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
-				velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
-		
-				Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
-   	 		Inicio = 1;
-			}
+	if(lazo_abierto.error_posicion_actual_derecha < 0.1 || lazo_abierto.error_posicion_actual_izquierda < 0.1)
+	{
+		//CUANDO LLEGA A LA POSICION FINAL SALE DEL ESTADO Y CARGA EL SIGUIENTE
+		Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
+		Inicio = 1;
+		Flag_Frenada = 1;
+	}
 	return 0;
 }
 
 int CMD_Giro(void){
 //Giramos sobre el eje del robot un ángulo definido a velocidad máxima definida
 
+static char Inicio = 1;
 
-/*
-if(grados_giro>0)
-act_odom(RETROCEDE,AVANZA);
-*/
+if(Inicio){
+	Inicio = 0;
+	Flag_EstadoFinalizado = 0;
+	reset_odometria();
+	transmitir_estado();
+
+
+	calcula_parametros_giro(&lazo_abierto,&maxon);
+
 	
+	motores(&lazo_abierto,&maxon);
+	
+}
+
+	//Evalúo el error que tengo en cada ciclo hasta que "llego" con el TIMER1
+	
+
+	if(lazo_abierto.error_posicion_actual_derecha < 0.1 || lazo_abierto.error_posicion_actual_izquierda < 0.1){
+		//CUANDO LLEGA A LA POSICION FINAL SALE DEL ESTADO Y CARGA EL SIGUIENTE
+		//en caso de que tenga error extraño puede ser por frenar y no esperar para cargar la siguiente instruccion
+				velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
+				velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
+		
+				Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
+   	 			Inicio = 1;
+			}
 	
 return 0;
 }
@@ -252,8 +288,6 @@ return 0;
 int CMD_Curva(void){
 //Tomamos una curva de radio determinado y angulo de arco determinado a velocidad máxima definida
 
-	
-	
 	return 0;
 }
 
@@ -266,15 +300,11 @@ static int Inicio = 1;
 	{
 		Inicio = 0;
 		Flag_EstadoFinalizado = 0;
-		
-		lazo_abierto.error_pos_act_derecha = 1;											//Le asigno un valor mayor que la comprobacion del if del main
-		lazo_abierto.error_pos_act_izquierda = 1;										//Le asigno un valor mayor que la comprobacion del if del main
-		calculo_d_frenada(&lazo_abierto,&maxon);
-		lazo_abierto.distancia_acel_vel_cte = lazo_abierto.distancia_frenada;
-		reset_odometria();
-		velocidad_derecha(0,&maxon);
-		velocidad_izquierda(0,&maxon); 					//Paramos en cuanto recibimos el comando
-		
+		calculo_de_frenada(&lazo_abierto,&maxon);									//REVISAR ANTES DE DORMIR
+		lazo_abierto.velocidad_final=0;
+
+		motores(&lazo_abierto,&maxon);
+				
 		transmitir_estado();
 		
 	}
@@ -283,9 +313,10 @@ static int Inicio = 1;
 	//Evalúo el error que tengo en cada ciclo hasta que "llego" con el TIMER1
 	
 	
-	if(lazo_abierto.error_pos_act_derecha < 0.1 || lazo_abierto.error_pos_act_izquierda < 0.1){
+	if(lazo_abierto.error_posicion_actual_derecha < 0.1 || lazo_abierto.error_posicion_actual_izquierda < 0.1){
 			Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
 			Inicio = 1;
+			apaga_motores();
 			Instruccion_Codigo = ST_PARADO;		//Al no estar entre las opciones, se irá al default que es ST_PARADO
 		
 	//transmitir_odometria();				//Transmitimos la distancia que nos hemos movido. Esta funcion debería ser bloqueante
@@ -349,6 +380,8 @@ int main(){
 
 init_pwm();
 config_TIMER1();
+config_TIMER2();
+config_TIMER3();
 configuracion_parametros_mecanicos(&maxon,&lazo_abierto);
 uart0_init(BAUDRATE);
 
@@ -412,7 +445,7 @@ uart0_init(BAUDRATE);
 																											//PAREN LAS ROTATIVAS
 																											//Hago lo mismo que en INICIAL 
 							CMD_Parado();
-							Estado = ST_PARADO;
+							Instruccion_Codigo= ST_PARADO;
 							break;
             }
 	}

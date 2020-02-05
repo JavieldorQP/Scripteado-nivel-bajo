@@ -7,4 +7,3 @@
 .\configuraciones.o: C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h
 .\configuraciones.o: C:\Keil\ARM\ARMCC\bin\..\include\math.h
 .\configuraciones.o: variables.h
-.\configuraciones.o: C:\Keil\ARM\ARMCC\bin\..\include\stdbool.h

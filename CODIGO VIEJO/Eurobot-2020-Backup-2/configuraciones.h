@@ -8,7 +8,7 @@
 #define Fpclk 25e6 					//Frecuencia de reloj de 25MHz
 #define T_muestreo 0.02 		//Periodo de muestreo del TIM1 de 20ms
 #define FPWM 1000						//Frecuencia de la PWM de 1kHz
-#define PI 3.141592
+
 
 void config_TIMER1(void);
 void config_TIMER2(void);

@@ -351,7 +351,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>..\Eurobot-2020-Backup-2</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -433,11 +433,6 @@
               <FilePath>.\AsciiLib.c</FilePath>
             </File>
             <File>
-              <FileName>maquina_estados.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\maquina_estados.c</FilePath>
-            </File>
-            <File>
               <FileName>funciones_control.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\funciones_control.c</FilePath>
@@ -456,6 +451,11 @@
               <FileName>funciones_pwm.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\funciones_pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>funciones_desplazamiento.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\funciones_desplazamiento.c</FilePath>
             </File>
           </Files>
         </Group>
