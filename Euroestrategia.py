@@ -12,20 +12,43 @@
 """
 # Biliotecas:
 import time
-import math
 from Simulo_robot import simula_movimiento, actuadores, camara
-# Constantes
-# Definir vaso 1 como una tupla
-# Indicar cuantos robots hay
-VASO_1X = 0
-VASO_1Y = 0
+
+# Constantes:
+# Vasos (Con definir bien el vaso 1 basta):
+VASO_1X = -1200
+VASO_1Y = -200
+VASO_2X = VASO_1X + 150 
+VASO_2Y = VASO_1Y + 120
+VASO_3X = VASO_1X
+VASO_3Y = VASO_1Y + 800
+VASO_4X = VASO_2X
+VASO_4Y = VASO_1Y + 490
+VASO_5X = VASO_1X + 530
+VASO_5Y = VASO_3X + 300
+VASO_6X = VASO_1X +650
+VASO_6Y = VASO_3Y
+VASO_7X = VASO_1X + 800
+VASO_7Y = VASO_1Y + 400
+VASO_8X = VASO_1X + 970
+VASO_8Y = VASO_1Y
+VASO_9X = VASO_1X + 705
+VASO_9Y = VASO_1Y - 755
+VASO_10X = VASO_9X + 60
+VASO_10Y = VASO_9Y + 355
+VASO_11X = VASO_9X + 330
+VASO_11Y = VASO_10Y
+VASO_12X = VASO_9X + 390
+VASO_12Y = VASO_9Y
+
+# Experimento
 ACTIVACION_EXPERIMENTOX_AZUL = -1200
 ACTIVACION_EXPERIMENTOY_AZUL = 800
 ACTIVACION_EXPERIMENTOX_AMARILLO = -ACTIVACION_EXPERIMENTOX_AZUL
 ACTIVACION_EXPERIMENTOY_AMARILLO = ACTIVACION_EXPERIMENTOY_AZUL
 # Estanterias:
-ESTANTERIA_VASOS_1X = -3000
-ESTANTERIA_VASOS_1Y = -1150
+ESTANTERIA_VASOS_1X = -1500
+ESTANTERIA_VASOS_1Y = -800
 ESTANTERIA_VASOS_2X = -575
 ESTANTERIA_VASOS_2Y = 900
 ESTANTERIA_VASOS_3X = -ESTANTERIA_VASOS_2X
@@ -41,16 +64,17 @@ BAHIA_AZULX = -1300
 BAHIA_AZULY = 200
 BAHIA_AMARILLOX = -BAHIA_AZULX
 BAHIA_AMARILLOY = BAHIA_AZULY
-# Puertos:
+# Puertos Azules:
 PUERTO_SUR_AZULX = -1200
 PUERTO_SUR_AZULY = -300
-PUERTO_SUR_AMARILLOX = -PUERTO_SUR_AZULX
-PUERTO_SUR_AMARILLOY = PUERTO_SUR_AZULY
 PUERTO_NORTE_AZULX = PUERTO_SUR_AZULX
 PUERTO_NORTE_AZULY = 550
+# Puertos Amarillos:
+PUERTO_SUR_AMARILLOX = -PUERTO_SUR_AZULX
+PUERTO_SUR_AMARILLOY = PUERTO_SUR_AZULY
 PUERTO_NORTE_AMARILLOX = -PUERTO_NORTE_AZULX
 PUERTO_NORTE_AMARILLOY = PUERTO_NORTE_AZULY
-# Posición para ver la camara:
+# Posición para ver con la camara:
 CAMARA_X = 0
 CAMARA_Y = 800
 # Instrucciones
@@ -62,104 +86,172 @@ ESTANTERIAS_NEUTRO_ENEMIGO = 4
 ESTANTERIAS_ENEMIGO = 5
 ACTUALIZAR_BRUJULA = 6
 CASA = 7
+VASO_3 = 8
+VASO_4 = 9
+VASO_5 = 10
+VASO_6 = 11
+VASO_7 = 12
+VASO_8 = 13
+VASO_S7 = 14
+VASO_S8 = 15
+DESCARGAR_VASOS = 16
 # ROBOTS
 PAREJITAS = 0
 POSAVASOS = 1
 # Lados
+códigos = [1,2]
 AMARILLO = 1
 AZUL = 2
+#Función trayectoria correcta para siguiente Vaso
 
-
-class robot:  # Clase tipo robot donde se almacenan todos los valores insteresantes del propio estado del robot
+class robot:         # Clase tipo robot donde se almacenan todos los valores insteresantes del propio estado del robot:
     def __init__(self, posx, posy, orientacion):
         self.disponible = True
         self.pos = [posx, posy]
-        self.bandera = 0
         self.velocidad = [0, 0]
         self.velocidadangular = [0]
-        self.orientacion = math.radians(orientacion)
+        self.orientacion = orientacion
+        self.tiempo_bloqueado = 0                                  # Característica propia de simulación, es el tiempo que le falta parar estar disponible
 
-
-class Posavasos:
+class Posavasos:     # Clase que representa toda la información de posavasos:
     def __init__(self, posx, posy, orientacion):
-        self.robot = robot(posx, posy, orientacion)  # Datos por concretar
-        self.ventosas_ocupada = False  # No ha cogido ningún vaso
+        self.robot = robot(posx, posy, orientacion)                 
+        self.ventosas_ocupada = False                               # No ha cogido ningún vaso
 
 
-class Parejitas:
+class Parejitas:  # Clase que representa toda la información de parejitas
     def __init__(self, posx, posy, orientacion):
-        self.robot = robot(posx, posy, orientacion)  # Datos por concretar
-        self.compuertas = False  # Estan abiertas
-        self.actuador_banda = False
+        self.robot = robot(posx, posy, orientacion)  
+        self.compuertas = False                                     # Estan abiertas
+        self.actuador_manga = False                                 # Actuador para tirar las mangas de viento
+        self.bandera = 0
+        self.deposito_total = 0                                            # Ha sacado ya la bandera
+        self.deposito_vasos_rojo = 0
+        self.deposito_vasos_verde = 0
+
+class vasos:         # Almacena la información de la disponibilidad de los vasos
+    def __init__(self):
+        self.vaso1 = True                                         
+        self.vaso2 = True
+        self.vaso3 = True
+        self.vaso4 = True
+        self.vaso5 = True
+        self.vaso6 = True
+        self.vaso7 = True
+        self.vaso8 = True
+        self.vaso9 = True
+        self.vaso10 = True
+        self.vaso11 = True
+        self.vaso12 = True
+        self.vaso_S1 = True                                         
+        self.vaso_S2 = True
+        self.vaso_S3 = True
+        self.vaso_S4 = True
+        self.vaso_S5 = True
+        self.vaso_S6 = True
+        self.vaso_S7 = True
+        self.vaso_S8 = True
+        self.vaso_S9 = True
+        self.vaso_S10 = True
+        self.vaso_S11 = True
+        self.vaso_S12 = True
+
+class estanterias:   # Almacena la información de las estanterias y si esta disponible
+    def __init__(self, estanteria_casa, estanteria_neutro_cerca, estanteria_neutro_lejos, estanteria_enemigo):
+        self.estanteria_casa = estanteria_casa                      # Disponibilidad de mi lado del mapa
+        self.estanteria_neutro_cerca = estanteria_neutro_cerca      # Disponibilidad de la estanteria más cercana a casa del neutro
+        self.estanteria_neutro_lejos = estanteria_neutro_lejos      # Disponibilidad de la estanteria más cercana a casa del neutro
+        self.estanteria_enemigo = estanteria_enemigo                # Disponibilidad de la estanteria del enemigo
 
 
-class vasos():  #
-    def __init__(self, vaso1, vaso2, vaso3, vaso4):
-        self.vaso1 = vaso1
-        self.vaso2 = vaso2
-        self.vaso3 = vaso4
-        self.vaso4 = vaso4
-
-
-class estanterias():  #
-    def __init__(self, estanteria_casa, estanteria_neutro_cerca, estanteria3, estanteria4):
-        self.estanteria_casa = estanteria_casa
-        self.estanteria_neutro_cerca = estanteria_neutro_cerca
-        self.estanteria3 = estanteria3
-        self.estanteria4 = estanteria4
-
-
-class game:  # Clase tipo game, donde se almacenan toda la información del partido y con un vistazo obtienes toda la información
+class game:          # Clase tipo game, donde se almacenan toda la información del partido y con un vistazo obtienes toda la información
     def __init__(self, lado, pos_inicio_parejitasx, pos_inicio_parejitasy, pos_inicio_posavasosx, pos_inicio_posavasosy, orientacion_inicial):
-        self.Activo = True
-        self.tiempo = 0
-        self.puntos = 0
-        self.lado = lado
-        self.posavasos = Posavasos(
+        self.Activo = True                                          # El partido esta activo
+        self.tiempo = 0                                             # El segundo de partido por el que vamos
+        self.puntos = 0                                             # Los puntos que tenemos
+        self.lado = lado                                            # Nuestro lado, puede ser el azul o el amarillo
+        self.posavasos = Posavasos(                                 # La clase posavasos
             pos_inicio_posavasosx, pos_inicio_posavasosy, orientacion_inicial)
-        self.parejitas = Parejitas(
+        self.parejitas = Parejitas(                                 # La clase parejtas
             pos_inicio_parejitasx, pos_inicio_parejitasy, orientacion_inicial)
-        self.vasos = vasos(True, True, True, True)
-        self.estanterias = estanterias(True, True, True, True)
-        self.experimento = True
-        self.brujula = "D"
+        self.vasos = vasos                  # Disponibilidad de los vasos
+        self.estanterias = estanterias(True, True, True, True)      # Disponibilidad de las estanterias
+        self.experimento = True                                     # Se puede activar el experimento
+        self.brujula = "D"                                          # Color de la brujula desconocida
 
-
-# Revisa el estado de la clase juego y decide que hacer, hecho esto cede el contro a ejecutor
 
 
 def planificador(juego):
-    if(juego.tiempo <= 90):  # Hay tiempo
-        if(juego.posavasos.robot.disponible):  # Posavasos no esta ocupado
-            if(juego.experimento):
+    """
+    Planificador:
+        Esta función se encarga de mirar el estado de juego y en función de eso 
+        decide que debe de hacer el robot, una vez lo decide le cede el control
+        a ejecutor.
+    """
+    if(juego.tiempo <= 90):                                         # Si hay tiempo pensamos en que se puede hacer
+        if(juego.posavasos.robot.disponible):                       # Si posavasos no esta ocupado busca que orden mandarle
+            if(juego.experimento):                                  # Activar el experimento es prioritario y coincide con la ruta de posavasos
                 print("Activo el experimento")
-                ejecutor(ACTIVAR_EXPERIMENTO, POSAVASOS, juego)
-            elif(juego.posavasos.ventosas_ocupada):
+                ejecutor(ACTIVAR_EXPERIMENTO, POSAVASOS, juego)           
+            elif(juego.posavasos.ventosas_ocupada):                 # Si tienes el acutador ocupado lo prioritario es soltar los vasos en nuestra bahia
                 print("Vamos a la bahia a descargar los vasos")
                 ejecutor(BAHIA_SOLTAR, POSAVASOS, juego)
-            elif (juego.estanterias.estanteria_neutro_cerca):
+            elif (juego.estanterias.estanteria_neutro_cerca):       # Si aun estan disponibles los vasos en el neutro lo recomendable es ir a por ello
                 print("Voy a la estanteria del medio")
                 ejecutor(ESTANTERIAS_NEUTRO_CERCA, POSAVASOS, juego)
             elif (juego.estanterias.estanteria_casa):
-                print("Voy a la estanteria de mi lado")
+                print("Voy a la estanteria de mi lado")             # Una vez has recogido el resto de estanterias, hay que ir a la de nuestra casa
                 ejecutor(ESTANTERIAS_CERCA, POSAVASOS, juego)
-            elif (juego.brujula == 'N'):
+            elif (juego.brujula == 'N'):                            # Si no es conocida la posición de la brújula y no tienes nada más que hacer ve a revisarla
                 print("Voy a mirar la brujula")
                 ejecutor(ACTUALIZAR_BRUJULA, POSAVASOS, juego)
-            else:
+            else:                                                   # Si ya no tiene nada más que hacer que vuelva a casa para asegurar los puntos de anclaje
                 print("No tengo que hacer nada")
                 ejecutor(CASA, POSAVASOS, juego)
-    # if(juego.parejitas.disponible):
-    #    print("Parejitas es tu turno")
-    else:
+        if(juego.parejitas.robot.disponible):
+            print("Parejitas es tu turno")
+            if(juego.parejitas.deposito_total == 8):
+                print("Nuestro deposito esta lleno")
+                ejecutor(BAHIA_SOLTAR, PAREJITAS, juego)
+            elif(juego.vasos.vaso1):
+                print ("A por un vaso:")
+                ejecutor(VASO_4, PAREJITAS, juego)    
+            elif(juego.vasos.vaso3):
+                print ("A por un vaso:")
+                ejecutor(VASO_3, PAREJITAS, juego)
+            elif(juego.vasos.vaso5):
+                print ("A por un vaso:")
+                ejecutor(VASO_5, PAREJITAS, juego)
+            elif(juego.vasos.vaso6):
+                print ("A por un vaso:")
+                ejecutor(VASO_6, PAREJITAS, juego)
+            elif(juego.vasos.vasoS7):
+                print ("A por un vaso:")
+                ejecutor(VASO_S7, PAREJITAS, juego)
+            elif(juego.vasos.vaso_S8):
+                print ("A por un vaso:")
+                ejecutor(VASO_S8, PAREJITAS, juego)
+            else:                                                   # Si ya no tiene nada más que hacer que vuelva a casa para asegurar los puntos de anclaje
+                print("No tengo que hacer nada")
+                ejecutor(CASA, PAREJITAS, juego)
+
+    else:                                                           # No queda tiempo para hacer nada más ambos robots se tienen que ir a casa para puntuar los puntos de anclaje
         print("Rapido pirate")
         ejecutor(CASA, POSAVASOS, juego)
         ejecutor(CASA, PAREJITAS, juego)
 
 
-# Ejecutor recrea TyM parcialmente, es decir recibe que ha de hacer y lo traduce en  instrucciones
 def ejecutor(orden, robot, juego):
-    # (Falta por implementar la creación de los waypoints, asi que solo hace gira->avanza)
+    """
+    Ejecutor:
+        Esta función recibe una orden de planificador y se la manda a la MDK2, una vez la 
+        MDK2 ha realizado la orden, ejecutor se encarga de actualizar el estado de juego
+        y espera a que planificador le mande otra orden.
+        Para simular la actuación de la MDK2 se crean distintas funciones que estan en
+        la biblioteca Simulo_robot.
+
+    """
+
     if(orden == ACTIVAR_EXPERIMENTO):
         if(juego.lado == AMARILLO):
             print("Activo faro amarillo")
@@ -171,37 +263,43 @@ def ejecutor(orden, robot, juego):
             Objx = ACTIVACION_EXPERIMENTOX_AZUL
             Objy = ACTIVACION_EXPERIMENTOY_AZUL
 
-        Orientacion_final = math.radians(90)
-
-        # Publicaria en un topic
-        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        Orientacion_final = 90
+        t = simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
         juego.experimento = False
         juego.puntos = juego.puntos+15
+        juego.posavasos.robot.disponible = False
+        juego.posavasos.robot.tiempo_bloqueado = juego.tiempo + t
+
     elif(orden == BAHIA_SOLTAR):
         if(juego.lado == AMARILLO):
             Objx = BAHIA_AMARILLOX
             Objy = BAHIA_AMARILLOY
+            Orientacion_final = 0
         elif(juego.lado == AZUL):
             Objx = BAHIA_AZULX
             Objy = BAHIA_AZULY
-        Orientacion_final = math.radians(270)
+            Orientacion_final = 180
         # Publicaria en un topic
-        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
-        actuadores("S", juego)
-
+        t = simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        t = actuadores("S", juego) + t
         juego.puntos = juego.puntos+14
+        juego.posavasos.robot.disponible = False
+        juego.posavasos.robot.tiempo_bloqueado = juego.tiempo + t
     elif(orden == ESTANTERIAS_CERCA):
         if(juego.lado == AMARILLO):
             Objx = ESTANTERIA_VASOS_4X
             Objy = ESTANTERIA_VASOS_4Y
-            Orientacion_final = math.radians(0)
+            Orientacion_final = 0
         elif(juego.lado == AZUL):
             Objx = ESTANTERIA_VASOS_1X
             Objy = ESTANTERIA_VASOS_1Y
-            Orientacion_final = math.radians(180)
-        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
-        actuadores("R", juego)
+            Orientacion_final = 180
+        t=simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        t=actuadores("R", juego) + t
+        juego.posavasos.robot.disponible = False
+        juego.posavasos.robot.tiempo_bloqueado = juego.tiempo + t
         juego.estanterias.estanteria_casa = False
+
     elif(orden == ESTANTERIAS_NEUTRO_CERCA):
         if(juego.lado == AMARILLO):
             Objx = ESTANTERIA_VASOS_3X
@@ -209,17 +307,131 @@ def ejecutor(orden, robot, juego):
         elif(juego.lado == AZUL):
             Objx = ESTANTERIA_VASOS_2X
             Objy = ESTANTERIA_VASOS_2Y
-        Orientacion_final = math.radians(90)
-        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
-        actuadores("R", juego)
+        Orientacion_final = 90
+        t = simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        t = actuadores("R", juego)
         juego.estanterias.estanteria_neutro_cerca = False
+        juego.posavasos.robot.tiempo_bloqueado = juego.tiempo + t
+        juego.posavasos.robot.disponible = False
+
     elif(orden == ACTUALIZAR_BRUJULA):
         Objx = CAMARA_X
         Objy = CAMARA_Y
-        Orientacion_final = math.radians(90)
-        simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
-        camara(juego)
-        juego.brujula
+        Orientacion_final = 90
+        t = simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        t = camara(juego) + t
+        juego.posavasos.robot.tiempo_bloqueado = juego.tiempo + t
+        juego.posavasos.robot.disponible = False
+    
+    elif(orden == VASO_4):
+        if(juego.lado == AMARILLO):
+            Objx = -VASO_4X
+            Objy = VASO_4Y
+            Orientacion_final = 45
+        elif(juego.lado == AZUL):
+            Objx = VASO_4X
+            Objy = VASO_4Y
+            Orientacion_final = 135
+        t = simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        juego.vasos.vaso4 = False
+        juego.parejitas.depostito_total = juego.parejitas.depostito_total + 1 
+        juego.parejitas.robot.tiempo_bloqueado = juego.tiempo + t
+        juego.parejitas.robot.disponible = False
+
+    elif(orden == VASO_3):
+        if(juego.lado == AMARILLO):
+            Objx = -VASO_3X
+            Objy = VASO_3Y
+            Orientacion_final = 135
+        elif(juego.lado == AZUL):
+            Objx = VASO_3X
+            Objy = VASO_3Y
+            Orientacion_final = 45
+        t = simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        juego.vasos.vaso3 = False
+        juego.parejitas.depostito_total = juego.parejitas.depostito_total + 1 
+        juego.parejitas.robot.tiempo_bloqueado = juego.tiempo + t
+        juego.parejitas.robot.disponible = False
+    elif(orden == VASO_5):
+        if(juego.lado == AMARILLO):
+            Objx = -VASO_5X
+            Objy = VASO_5Y
+            Orientacion_final = 240
+        elif(juego.lado == AZUL):
+            Objx = VASO_5X
+            Objy = VASO_5Y
+            Orientacion_final = 300
+        t = simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        juego.vasos.vaso5 = False
+        juego.parejitas.depostito_total = juego.parejitas.depostito_total + 1 
+        juego.parejitas.robot.tiempo_bloqueado = juego.tiempo + t
+        juego.parejitas.robot.disponible = False
+    elif(orden == VASO_6):
+        if(juego.lado == AMARILLO):
+            Objx = -VASO_6X
+            Objy = VASO_6Y
+            Orientacion_final = 210
+        elif(juego.lado == AZUL):
+            Objx = VASO_6X
+            Objy = VASO_6Y
+            Orientacion_final = 330
+        t = simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        juego.vasos.vaso6 = False
+        juego.parejitas.depostito_total = juego.parejitas.depostito_total + 1 
+        juego.parejitas.robot.tiempo_bloqueado = juego.tiempo + t
+        juego.parejitas.robot.disponible = False
+    elif(orden == VASO_S7):
+        if(juego.lado == AMARILLO):
+            Objx = VASO_7X
+            Objy = VASO_7Y
+            Orientacion_final = 250
+        elif(juego.lado == AZUL):
+            Objx = -VASO_7X
+            Objy = VASO_7Y
+            Orientacion_final = 290
+        t = simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        juego.vasos.vaso_S7 = False
+        juego.parejitas.depostito_total = juego.parejitas.depostito_total + 1 
+        juego.parejitas.robot.tiempo_bloqueado = juego.tiempo + t
+        juego.parejitas.robot.disponible = False
+    elif(orden == VASO_S8):
+        if(juego.lado == AMARILLO):
+            Objx = VASO_8X
+            Objy = VASO_8Y
+            Orientacion_final = 270
+        elif(juego.lado == AZUL):
+            Objx = -VASO_8X
+            Objy = VASO_8Y
+            Orientacion_final = 270
+        t = simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        juego.vasos.vaso_S8 = False
+        juego.parejitas.depostito_total = juego.parejitas.depostito_total + 1 
+        juego.parejitas.robot.tiempo_bloqueado = juego.tiempo + t
+        juego.parejitas.robot.disponible = False
+    elif(orden == DESCARGAR_VASOS):
+        #ACTUADORES PAREJITAS
+        if(juego.lado == AMARILLO):
+            if(juego.vasos.vaso_S10 or juego.vasos.vaso_S11):
+                Objx = BAHIA_CENTRAL_AMARILLOX
+                Objy = BAHIA_CENTRAL_AMARILLOY
+                Orientacion_final = 270
+            else:
+                Objx = BAHIA_AMARILLOX
+                Objy = BAHIA_AMARILLOY
+        elif(juego.lado == AZUL):
+            if(juego.vasos.vaso_S10 or juego.vasos.vaso_S11):
+                Objx = BAHIA_CENTRAL_AZULX
+                Objy = BAHIA_CENTRAL_AZULY
+                Orientacion_final = 270
+        t = simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
+        juego.vasos.vaso_S10 = False
+        juego.vasos.vaso_S11 = False
+        #Actuador parejitas se abre
+        juego.parejitas.depostito_total = 0
+        juego.puntos = juego.puntos + 24
+        juego.posavasos.robot.tiempo_bloqueado = juego.tiempo + t
+        juego.posavasos.robot.disponible = False
+
     elif(orden == CASA):
         if(juego.lado == AMARILLO):
             if(juego.brujula == 'N'):
@@ -236,44 +448,67 @@ def ejecutor(orden, robot, juego):
             else:
                 Objx = PUERTO_SUR_AZULX
                 Objy = PUERTO_SUR_AZULY
-            Orientacion_final = math.radians(180)
+            Orientacion_final = 180
         simula_movimiento(juego, robot, Objx, Objy, Orientacion_final)
         juego.puntos = juego.puntos+10
         juego.Activo = False
 
 
 def main():
-    print("Selecciona el lado (1 para amarillo y 2 para el Azul ):")
-    lado = int(input())
-    if(lado == AMARILLO):
-        print("AMARILLO")
-        juego = game(AMARILLO, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY +
-                     20, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY-20, math.pi)
-
+    #Selección del lado y configuración en función del valor escaneado.
+    print("Selecciona el lado (1 para amarillo y 2 para el Azul ):")             
+    
+    try:
+        entrada = input("")
+        lado    = int(valor)
+    except ValueError:
+        print(f"Este valor {entrada} es convertible a entero!")
+    except Exception:
+        print("Excepcion no reconocida")
     else:
-        print("AZUL")
-        juego = game(AZUL, PUERTO_SUR_AZULX, PUERTO_SUR_AZULY+20,
-                     PUERTO_SUR_AZULX, PUERTO_SUR_AZULY-20, 0)
-    print("Situación inicial:")
-    print("Posicion de parejitas")
-    print(juego.parejitas.robot.pos[0])
-    print(juego.parejitas.robot.pos[1])
-    print("Posicion de posavasos")
-    print(juego.posavasos.robot.pos[0])
-    print(juego.posavasos.robot.pos[1])
-    time.sleep(3)
-    while juego.Activo:
+        if lado in códigos:
+            if(lado == 1 ):    # AMARILLO
+                print("AMARILLO")
+                juego = game(AMARILLO, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY +
+                            20, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY-20, 180)
 
-        planificador(juego)
-        print("Vamos por el segundo de partido:")
-        print(juego.tiempo)
+            elif (lado == 2 ): # AZUL
+                print("AZUL")
+                juego = game(AZUL, PUERTO_SUR_AZULX, PUERTO_SUR_AZULY+20,
+                            PUERTO_SUR_AZULX, PUERTO_SUR_AZULY-20, 0)
+            else:
+                print(f"Confguracion de lado {lado} no reconocida")
 
-    print("Partido acabado")
-    print("Resumen:")
-    print("Ha durando tantos segundos:")
-    print(juego.tiempo)
-    print("Hemos conseguido tantos puntos:")
-    print(juego.puntos)
+            print("Situación inicial:")
+            print("Posicion de parejitas")
+            print(juego.parejitas.robot.pos[0])
+            print(juego.parejitas.robot.pos[1])
+            print("Posicion de posavasos")
+            print(juego.posavasos.robot.pos[0])
+            print(juego.posavasos.robot.pos[1])
 
+            while juego.Activo:                                             # Mientras  el juego este en su trancurso
+                planificador(juego)                                            
+                juego.tiempo = juego.tiempo+1
+                if(juego.tiempo == juego.posavasos.robot.tiempo_bloqueado):
+                    juego.posavasos.robot.disponible = True
+                    print("Posavasos ha acabado su anterior tarea")
+                    time.sleep(5)
+                if(juego.tiempo == juego.parejitas.robot.tiempo_bloqueado):
+                    juego.parejitas.robot.disponible = True    
+                    print("Parejitas ha acabado su anterior tarea")
+                    time.sleep(5)
+
+            #Una vez acabado se resume
+            print("Partido acabado")
+            print("Resumen:")
+            print("Ha durando tantos segundos:")
+            print(juego.tiempo)
+            print("Hemos conseguido tantos puntos:")
+            print(juego.puntos)
+        else:
+            print(f"El código {código} no es un valor válido")
+    finally:
+        print("programa terminado")
 
 main()

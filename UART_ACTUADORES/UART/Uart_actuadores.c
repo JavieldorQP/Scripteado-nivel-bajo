@@ -1,4 +1,5 @@
 /*
+    UART DE LOS ACTUADORES (POSAVASOS):
     En esta biblioteca incluyo las funciones clásicas de la UART y las propias del protocolo de este año(Eurobot 2020).
     Las funciones de este año se encuentran al final del documento
 
@@ -8,7 +9,7 @@
 
 */
 
-#include "Eurouart.h" //Enlazo con la biblioteca
+#include "Uart_actuadores.h" //Enlazo con la biblioteca
 #include <LPC17xx.h>
 
 //Configuraci�n de la Baudrate
@@ -155,47 +156,32 @@ void Traduccion_Variables(void)
 { //Se encarga de leer el mensaje recibido, actualizar las variables y levantar los flags.
     switch (T_INSTRUCCION)
     {
-    case ('G'):
+    case ('B'):              //Bajar
         Instruccion_Codigo = T_INSTRUCCION;
-        Instruccion_Prioridad = 0;
-        grados_giro = (BIT_C_GRADOS - '0') * 100 + (BIT_D_GRADOS - '0') * 10 + (BIT_U_GRADOS - '0');
-        if (BIT_SIGNO_GRADOS == '+')
-        {
-            grados_giro = grados_giro;
-        }
-        else if (BIT_SIGNO_GRADOS == '-')
-        {
-            grados_giro = -1 * grados_giro;
-        }
-        else
-        {
-            transmitir_cadenaUART0("E");
-        }
-
-        break;
-    case ('D'):
-        Instruccion_Codigo = T_INSTRUCCION;
-        Instruccion_Prioridad = 0;
-        distancia = (BIT_M_DISTANCIA - '0') * 1000 + (BIT_C_DISTANCIA - '0') * 100 + (BIT_D_DISTANCIA - '0') * 10 + (BIT_U_DISTANCIA - '0');
-        velocidad_final = (BIT_M_V_FINAL - '0') * 1000 + (BIT_C_V_FINAL - '0') * 100 + (BIT_D_V_FINAL - '0') * 10 + (BIT_U_V_FINAL - '0');
-        velocidad_maxima = (BIT_M_VMAX - '0') * 1000 + (BIT_C_VMAX - '0') * 100 + (BIT_D_VMAX - '0') * 10 + (BIT_U_VMAX - '0');
-        if (BIT_SIGNO_GRADOS == '+')
+        distancia = (BIT_C_DISTANCIA - '0') * 100 + (BIT_D_DISTANCIA - '0') * 10 + (BIT_U_DISTANCIA - '0');
+        if (distancia <= 250)
             distancia = distancia;
-        else if (BIT_SIGNO_GRADOS == '-')
-            distancia = -1 * distancia;
+
         else
             transmitir_cadenaUART0("E");
-        break;
-    case ('C'):
-        Instruccion_Codigo = T_INSTRUCCION;
-        Instruccion_Prioridad = 0;
-        distancia = (BIT_M_DISTANCIA_C - '0') * 1000 + (BIT_C_DISTANCIA_C - '0') * 100 + (BIT_D_DISTANCIA_C - '0') * 10 + (BIT_U_DISTANCIA_C - '0');
-        velocidad_final = (BIT_M_V_FINAL_C - '0') * 1000 + (BIT_C_V_FINAL_C - '0') * 100 + (BIT_D_V_FINAL_C - '0') * 10 + (BIT_U_V_FINAL_C - '0');
-        velocidad_maxima = (BIT_M_VMAX_C - '0') * 1000 + (BIT_C_VMAX_C - '0') * 100 + (BIT_D_VMAX_C - '0') * 10 + (BIT_U_VMAX_C - '0');
-        radio = (BIT_M_RADIO_C - '0') * 1000 + (BIT_C_RADIO_C - '0') * 100 + (BIT_D_RADIO_C - '0') * 10 + (BIT_U_RADIO_C - '0');
+
         break;
 
-        //Hay que añadir el freno
-        //Instruccion_Prioridad = BIT_PRIO - '0'; //URGENTE PARAR
+    case ('S'):             //Subir
+        Instruccion_Codigo = T_INSTRUCCION;
+        distancia = (BIT_C_DISTANCIA - '0') * 100 + (BIT_D_DISTANCIA - '0') * 10 + (BIT_U_DISTANCIA - '0');
+        if (distancia <= 250)      //Por si
+            distancia = distancia;
+        else
+            transmitir_cadenaUART0("E");
+
+    case ('C'):             //Calibrar
+        Instruccion_Codigo = T_INSTRUCCION;
+        break;
+    
+    default:
+        transmitir_cadenaUART0("Instruccion no valida")
+        break;
     }
 }
+
