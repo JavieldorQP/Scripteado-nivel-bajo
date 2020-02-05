@@ -197,5 +197,11 @@ void Traduccion_Variables(void)
 
         //Hay que añadir el freno
         //Instruccion_Prioridad = BIT_PRIO - '0'; //URGENTE PARAR
+    case ('F'):
+        Instruccion_Codigo = T_INSTRUCCION;
+        Instruccion_Prioridad = 1; 
+    default:
+        transmitir_cadenaUART0("EI")
+    
     }
 }

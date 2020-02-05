@@ -68,7 +68,7 @@ def instrucciones_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjeti
         posrobotx, posroboty, posobjetivox, posobjetivoy, orientacion, orientacion_final)
     instruccion_giro1 = "0" + "G"+angle_to_msg(angulo_giro1) 
     print(instruccion_giro1)
-    instruccion_distancia = "0" + "D" +poste_to_msg(distancia_total) + "0500" +"1000"
+    instruccion_distancia = "0" + "D" +poste_to_msg(distancia_total) + "0500" +"0000"
     print(instruccion_distancia)
     instruccion_giro2 = "0" +"G" + angle_to_msg(angulo_giro2)
     print(instruccion_giro2)
@@ -96,14 +96,14 @@ def instrucciones_lidar(posrobotx, posroboty, poslidarx, poslidary):
             proyeccion_de_seguridad = distancia_total * \
                 math.cos(angulo_objeto)-radio_seguridad
             if(proyeccion_de_seguridad < medio_lado_robot):
-                return 1, 'S'  # Para, que te lo comes
+                return 1, 'F'  # Para, que te lo comes
             else:
                 return 0, 'V'  # Reduce la velocidad
         elif(angulo_objeto < 0):
             proyeccion_de_seguridad = +radio_seguridad - \
                 distancia_total*math.cos(angulo_objeto)
             if(proyeccion_de_seguridad > -1*medio_lado_robot):
-                return 1, 'S'  # Para, que te lo comes
+                return 1, 'F'  # Para, que te lo comes
             else:
                 return 0, 'V'  # Reduce la velocidad, en el futuro dependera de la zona y el ángulo
         else:
