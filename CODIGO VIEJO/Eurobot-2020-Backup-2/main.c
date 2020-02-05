@@ -28,7 +28,7 @@ char tx_completa; // Flag de transmisi�n de cadena que se activa al transmitir
 
 //char estado = 'NULL';
 int distancia = 0;
-int velocidad = 0;
+int velocidad_final = 0;
 int velocidad_maxima = 0;
 int radio = 0;
 int grados_giro = 0;
@@ -115,10 +115,11 @@ void reset_odometria(void){
 }
 
 void transmitir_estado(void){
-
+/*
 sprintf(aux,"%d\n",Estado),
 transmitir_cadenaUART0(aux);
-	
+*/
+	transmitir_cadenaUART0("S");
 }
 
 
@@ -160,7 +161,7 @@ static char Inicio = 1;
 		Robot.Orientacion = 0;
 		Robot.Pos.X = 0;
 		Robot.Pos.Y = 0;
-		transmitir_estado();		//TRANSMITIR A LESMUS UNA S
+		//transmitir_estado();		//TRANSMITIR A LESMUS UNA S
 	}
 
 	//ESTE ESTADO NO HACE NADA APARTE DE INICIALIZAR
@@ -204,7 +205,10 @@ static char Inicio = 1;
 	
 	
 	if(Siguiente_Estado != Estado) 
+	{
 		Flag_EstadoFinalizado = 1;
+		Inicio = 1;
+	}
 	return 0;
 }
 
@@ -218,10 +222,10 @@ if(Inicio){
 	Inicio = 0;
 	Flag_EstadoFinalizado = 0;
 	
-	reset_odometria();
+	//reset_odometria();
 	transmitir_estado();
 
-
+	reset_odometria();
 	calcula_parametros_recta(&lazo_abierto,&maxon);
 
 	
@@ -230,8 +234,8 @@ if(Inicio){
 }
 
 	//Evalúo el error que tengo en cada ciclo hasta que "llego" con el TIMER1
-	if (lazo_abierto.error_posicion_actual_derecha < lazo_abierto.distancia_frenada || 
-	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.distancia_frenada || Flag_Frenada)
+	if ( (lazo_abierto.error_posicion_actual_derecha < lazo_abierto.distancia_frenada || 
+	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.distancia_frenada) && Flag_Frenada)
 	{
 		//Actualmente esto frena al final, no encadena velocidades aún
 		Flag_Frenada = 0;
@@ -240,9 +244,10 @@ if(Inicio){
 	}
 	
 
-	if(lazo_abierto.error_posicion_actual_derecha < 0.1 || lazo_abierto.error_posicion_actual_izquierda < 0.1)
+	if(lazo_abierto.error_posicion_actual_derecha < 0.5 || lazo_abierto.error_posicion_actual_izquierda < 0.5)
 	{
 		//CUANDO LLEGA A LA POSICION FINAL SALE DEL ESTADO Y CARGA EL SIGUIENTE
+		apaga_motores();
 		Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
 		Inicio = 1;
 		Flag_Frenada = 1;

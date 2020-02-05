@@ -3,8 +3,8 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
-C:\Users\santi\Code\Scripteado-nivel-bajo\UART_NUEVA\MDK2\MDK2_demo.uvproj
-Project File Date:  01/25/2020
+C:\Users\Javier\Desktop\Scripteado-nivel-bajo\UART_NUEVA\MDK2\MDK2_demo.uvproj
+Project File Date:  01/29/2020
 
 <h2>Output:</h2>
 Rebuild target 'Target 1'
@@ -13,3 +13,197 @@ compiling system_LPC17xx.c...
 system_LPC17xx.c: Error:  #5: cannot open source input file "D:\Programas_Universidad\Keil\ARM\Startup\NXP\LPC17xx\system_LPC17xx.c": No such file or directory
 ".\MDK2_demo.axf" - 1 Errors, 0 Warning(s).
 Target not created
+Rebuild target 'Target 1'
+assembling startup_LPC17xx.s...
+compiling system_LPC17xx.c...
+system_LPC17xx.c: Error:  #5: cannot open source input file "D:\Programas_Universidad\Keil\ARM\Startup\NXP\LPC17xx\system_LPC17xx.c": No such file or directory
+".\MDK2_demo.axf" - 1 Errors, 0 Warning(s).
+Target not created
+Rebuild target 'Target 1'
+assembling startup_LPC17xx.s...
+compiling system_LPC17xx.c...
+compiling main.c...
+main.c(25): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(25): warning:  #69-D: integer conversion resulted in truncation
+main.c(51): warning:  #223-D: function "traduccion_de_variables" declared implicitly
+main.c(105): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(105): warning:  #69-D: integer conversion resulted in truncation
+compiling pantalla.c...
+pantalla.c: Error:  #5: cannot open source input file "pantalla.c": No such file or directory
+".\MDK2_demo.axf" - 1 Errors, 5 Warning(s).
+Target not created
+Rebuild target 'Target 1'
+assembling startup_LPC17xx.s...
+compiling system_LPC17xx.c...
+compiling main.c...
+main.c(25): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(25): warning:  #69-D: integer conversion resulted in truncation
+main.c(51): warning:  #223-D: function "traduccion_de_variables" declared implicitly
+main.c(105): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(105): warning:  #69-D: integer conversion resulted in truncation
+compiling AsciiLib.c...
+compiling GLCD.c...
+compiling Eurouart.c...
+Eurouart.c(206): error:  #65: expected a ";"
+".\MDK2_demo.axf" - 1 Errors, 5 Warning(s).
+Target not created
+Rebuild target 'Target 1'
+assembling startup_LPC17xx.s...
+compiling system_LPC17xx.c...
+compiling main.c...
+main.c(25): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(25): warning:  #69-D: integer conversion resulted in truncation
+main.c(51): warning:  #223-D: function "traduccion_de_variables" declared implicitly
+main.c(105): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(105): warning:  #69-D: integer conversion resulted in truncation
+compiling AsciiLib.c...
+compiling GLCD.c...
+compiling Eurouart.c...
+linking...
+.\MDK2_demo.axf: Error: L6218E: Undefined symbol traduccion_de_variables (referred from main.o).
+.\MDK2_demo.axf: Error: L6218E: Undefined symbol velocidad_final (referred from main.o).
+.\MDK2_demo.axf: Error: L6218E: Undefined symbol Instruccion_Codigo (referred from eurouart.o).
+".\MDK2_demo.axf" - 3 Errors, 5 Warning(s).
+Target not created
+Rebuild target 'Target 1'
+assembling startup_LPC17xx.s...
+compiling system_LPC17xx.c...
+compiling main.c...
+main.c(25): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(25): warning:  #69-D: integer conversion resulted in truncation
+main.c(105): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(105): warning:  #69-D: integer conversion resulted in truncation
+compiling AsciiLib.c...
+compiling GLCD.c...
+compiling Eurouart.c...
+linking...
+.\MDK2_demo.axf: Error: L6218E: Undefined symbol Instruccion_Codigo (referred from eurouart.o).
+".\MDK2_demo.axf" - 1 Errors, 4 Warning(s).
+Target not created
+Rebuild target 'Target 1'
+assembling startup_LPC17xx.s...
+compiling system_LPC17xx.c...
+compiling main.c...
+main.c(25): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(25): warning:  #69-D: integer conversion resulted in truncation
+main.c(33): error:  #148: variable "Instruccion_Codigo" has already been initialized
+main.c(106): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(106): warning:  #69-D: integer conversion resulted in truncation
+compiling AsciiLib.c...
+compiling GLCD.c...
+compiling Eurouart.c...
+".\MDK2_demo.axf" - 1 Errors, 4 Warning(s).
+Target not created
+Rebuild target 'Target 1'
+assembling startup_LPC17xx.s...
+compiling system_LPC17xx.c...
+compiling main.c...
+main.c(25): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(25): warning:  #69-D: integer conversion resulted in truncation
+main.c(105): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(105): warning:  #69-D: integer conversion resulted in truncation
+compiling AsciiLib.c...
+compiling GLCD.c...
+compiling Eurouart.c...
+linking...
+Program Size: Code=16254 RO-data=1758 RW-data=60 ZI-data=684  
+".\MDK2_demo.axf" - 0 Errors, 4 Warning(s).
+Rebuild target 'Target 1'
+assembling startup_LPC17xx.s...
+compiling system_LPC17xx.c...
+compiling main.c...
+main.c(25): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(25): warning:  #69-D: integer conversion resulted in truncation
+main.c(105): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(105): warning:  #69-D: integer conversion resulted in truncation
+compiling AsciiLib.c...
+compiling GLCD.c...
+compiling Eurouart.c...
+linking...
+Program Size: Code=16254 RO-data=1758 RW-data=60 ZI-data=684  
+".\MDK2_demo.axf" - 0 Errors, 4 Warning(s).
+Load "C:\\Users\\Javier\\Desktop\\Scripteado-nivel-bajo\\UART_NUEVA\\MDK2\\MDK2_demo.axf" 
+Set JLink Project File to "C:\Users\Javier\Desktop\Scripteado-nivel-bajo\UART_NUEVA\MDK2\JLinkSettings.ini"
+* JLink Info: Device "LPC1768" selected (512 KB flash, 32 KB RAM).
+ 
+JLink info:
+------------
+DLL: V4.68a, compiled Apr 12 2013 13:26:50
+Firmware: J-Link ARM-OB STM32 compiled Aug 22 2012 19:52:04
+Hardware: V7.00
+Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
+ 
+* JLink Info: TotalIRLen = 4, IRPrint = 0x01
+* JLink Info: Found Cortex-M3 r2p0, Little endian.
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+ROMTableAddr = 0xE00FF003
+* JLink Info: Found Cortex-M3 r2p0, Little endian.
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+ 
+Target info:
+------------
+Device: LPC1768
+VTarget = 3.300V
+State of Pins: 
+TCK: 1, TDI: 0, TDO: 1, TMS: 0, TRES: 1, TRST: 1
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 4000 kHz
+ 
+No Algorithm found for: 00000000H - 00004697H
+Erase skipped!
+Rebuild target 'Target 1'
+assembling startup_LPC17xx.s...
+compiling system_LPC17xx.c...
+compiling main.c...
+main.c(25): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(25): warning:  #69-D: integer conversion resulted in truncation
+main.c(105): warning:  #2548-D: multicharacter character literal (potential portability problem)
+main.c(105): warning:  #69-D: integer conversion resulted in truncation
+compiling AsciiLib.c...
+compiling GLCD.c...
+compiling Eurouart.c...
+linking...
+Program Size: Code=16254 RO-data=1758 RW-data=60 ZI-data=684  
+".\MDK2_demo.axf" - 0 Errors, 4 Warning(s).
+Load "C:\\Users\\Javier\\Desktop\\Scripteado-nivel-bajo\\UART_NUEVA\\MDK2\\MDK2_demo.axf" 
+Set JLink Project File to "C:\Users\Javier\Desktop\Scripteado-nivel-bajo\UART_NUEVA\MDK2\JLinkSettings.ini"
+* JLink Info: Device "LPC1768" selected (512 KB flash, 32 KB RAM).
+ 
+JLink info:
+------------
+DLL: V4.68a, compiled Apr 12 2013 13:26:50
+Firmware: J-Link ARM-OB STM32 compiled Aug 22 2012 19:52:04
+Hardware: V7.00
+Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
+ 
+* JLink Info: TotalIRLen = 4, IRPrint = 0x01
+* JLink Info: Found Cortex-M3 r2p0, Little endian.
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+ROMTableAddr = 0xE00FF003
+* JLink Info: Found Cortex-M3 r2p0, Little endian.
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+ 
+Target info:
+------------
+Device: LPC1768
+VTarget = 3.300V
+State of Pins: 
+TCK: 1, TDI: 0, TDO: 1, TMS: 0, TRES: 1, TRST: 1
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 4000 kHz
+ 
+Erase Done.
+Programming Done.
+Verify OK.

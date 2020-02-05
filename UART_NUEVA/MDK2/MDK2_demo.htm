@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\MDK2_demo.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\MDK2_demo.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Thu Jan 23 20:55:37 2020
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Wed Feb 05 16:58:08 2020
 <BR><P>
 <H3>Maximum Stack Usage =        160 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -455,31 +455,26 @@ Global Symbols
 <P><STRONG><a name="[31]"></a>SystemInit</STRONG> (Thumb, 290 bytes, Stack size 0 bytes, system_lpc17xx.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_lpc17xx.o(.text)
 </UL>
-<P><STRONG><a name="[41]"></a>main</STRONG> (Thumb, 410 bytes, Stack size 40 bytes, main.o(.text))
+<P><STRONG><a name="[41]"></a>main</STRONG> (Thumb, 406 bytes, Stack size 40 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 160 + Unknown Stack Size
 <LI>Call Chain = main &rArr; __2sprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
 <LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart0_init
-<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;transmitir_cadenaUART0
-<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;traduccion_de_variables
-<LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Initializtion
-<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Clear
-<LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Text
+<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;transmitir_cadenaUART0
+<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Traduccion_Variables
+<LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Clear
+<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Text
 </UL>
 <BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[4e]"></a>LCD_Initializtion</STRONG> (Thumb, 9748 bytes, Stack size 32 bytes, glcd.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = LCD_Initializtion
-</UL>
-<BR>[Calls]<UL><LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
+<P><STRONG><a name="[52]"></a>LCD_Initializtion</STRONG> (Thumb, 9748 bytes, Stack size 32 bytes, glcd.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
 <LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Configuration
 </UL>
-<BR>[Called By]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-</UL>
 
-<P><STRONG><a name="[4f]"></a>LCD_Clear</STRONG> (Thumb, 536 bytes, Stack size 20 bytes, glcd.o(.text))
+<P><STRONG><a name="[4e]"></a>LCD_Clear</STRONG> (Thumb, 536 bytes, Stack size 20 bytes, glcd.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = LCD_Clear
 </UL>
 <BR>[Called By]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -506,10 +501,10 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPoint
 <LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetASCIICode
 </UL>
-<BR>[Called By]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Text
+<BR>[Called By]<UL><LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Text
 </UL>
 
-<P><STRONG><a name="[52]"></a>GUI_Text</STRONG> (Thumb, 80 bytes, Stack size 32 bytes, glcd.o(.text))
+<P><STRONG><a name="[51]"></a>GUI_Text</STRONG> (Thumb, 80 bytes, Stack size 32 bytes, glcd.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = GUI_Text &rArr; PutChar &rArr; LCD_SetPoint
 </UL>
 <BR>[Calls]<UL><LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PutChar
@@ -525,20 +520,25 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[50]"></a>transmitir_cadenaUART0</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, eurouart.o(.text))
+<P><STRONG><a name="[4f]"></a>transmitir_cadenaUART0</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, eurouart.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[13]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART0_IRQHandler
+<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Traduccion_Variables
 <LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[13]"></a>UART0_IRQHandler</STRONG> (Thumb, 116 bytes, Stack size 4 bytes, eurouart.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = UART0_IRQHandler
 </UL>
-<BR>[Calls]<UL><LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;transmitir_cadenaUART0
+<BR>[Calls]<UL><LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;transmitir_cadenaUART0
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_lpc17xx.o(RESET)
 </UL>
-<P><STRONG><a name="[51]"></a>traduccion_de_variables</STRONG> (Thumb, 480 bytes, Stack size 0 bytes, eurouart.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<P><STRONG><a name="[50]"></a>Traduccion_Variables</STRONG> (Thumb, 620 bytes, Stack size 4 bytes, eurouart.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = Traduccion_Variables
+</UL>
+<BR>[Calls]<UL><LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;transmitir_cadenaUART0
+</UL>
+<BR>[Called By]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[5b]"></a>__printf</STRONG> (Thumb, 104 bytes, Stack size 24 bytes, __printf.o(.text))
@@ -622,12 +622,12 @@ Global Symbols
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[54]"></a>LCD_Configuration</STRONG> (Thumb, 44 bytes, Stack size 0 bytes, glcd.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Initializtion
+<P><STRONG><a name="[54]"></a>LCD_Configuration</STRONG> (Thumb, 44 bytes, Stack size 0 bytes, glcd.o(.text), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Initializtion
 </UL>
 
-<P><STRONG><a name="[53]"></a>delay_ms</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, glcd.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Initializtion
+<P><STRONG><a name="[53]"></a>delay_ms</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, glcd.o(.text), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Initializtion
 </UL>
 
 <P><STRONG><a name="[56]"></a>LCD_BGR2RGB</STRONG> (Thumb, 26 bytes, Stack size 12 bytes, glcd.o(.text), UNUSED)

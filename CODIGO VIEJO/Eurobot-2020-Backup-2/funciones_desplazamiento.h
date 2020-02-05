@@ -14,4 +14,5 @@ void velocidad_derecha (double rad_por_s,param_mecanicos *mecanica);			//Esta fu
 void velocidad_izquierda (double rad_por_s,param_mecanicos *mecanica);		//Esta funci�n pone en la rueda izquierda la velocidad que se le indica en rad/s
 void motores (cinematica *variable, param_mecanicos *mecanica);
 void apaga_motores (void);
+void enciende_motores (void);
 #endif

@@ -201,7 +201,7 @@ void Traduccion_Variables(void)
         Instruccion_Codigo = T_INSTRUCCION;
         Instruccion_Prioridad = 1; 
     default:
-        transmitir_cadenaUART0("EI")
+        transmitir_cadenaUART0("EI");
     
     }
 }

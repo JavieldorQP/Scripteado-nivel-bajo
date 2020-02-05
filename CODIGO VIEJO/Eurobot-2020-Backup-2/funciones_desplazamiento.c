@@ -17,20 +17,20 @@ void sentido_motores (int m_izquierdo, int m_derecho)
 
 	if(m_izquierdo)
 	{
-		LPC_GPIO3->FIOPIN3|=(1<<2);			//AVANZA EL IZQUIERDO
+		LPC_GPIO3->FIOPIN3&=~(1<<2);			//AVANZA EL IZQUIERDO
 	}
 	else 
 	{
-		LPC_GPIO3->FIOPIN3&=~(1<<2);			//RETROCEDE EL IZQUIERDO
+		LPC_GPIO3->FIOPIN3|=(1<<2);			//RETROCEDE EL IZQUIERDO
 	}
 
 	if(m_derecho)
 	{
-		LPC_GPIO3->FIOPIN3|=(1<<1);			//AVANZA EL DERECHO
+		LPC_GPIO3->FIOPIN3&=~(1<<1);			//AVANZA EL DERECHO
 	}
 	else
 	{
-		LPC_GPIO3->FIOPIN3&=~(1<<1);			//RETROCEDE EL DERECHO
+		LPC_GPIO3->FIOPIN3|=(1<<1);			//RETROCEDE EL DERECHO
 	}
 	
 }
@@ -45,15 +45,22 @@ void velocidad_izquierda (double rad_por_s,param_mecanicos *mecanica)	//Esta fun
 	PWM3_SetDuty((float)rad_por_s*800/mecanica->vel_max);
 }
 
-void motores (cinematica *variable, param_mecanicos *mecanica)
-{
-	//Ponemos las velocidades en las ruedas
-	velocidad_derecha(variable->velocidad_final, mecanica);
-	velocidad_izquierda(variable->velocidad_final, mecanica);
-
-}
 
 void apaga_motores (void)
 {
 	LPC_GPIO2->FIOCLR1	|=	(3<<3);	
+}
+
+void enciende_motores (void)
+{
+	LPC_GPIO2->FIOSET1 |=	(3<<3);
+}
+
+void motores (cinematica *variable, param_mecanicos *mecanica)
+{
+	//Ponemos las velocidades en las ruedas
+	enciende_motores();
+	velocidad_derecha(variable->velocidad_final, mecanica);
+	velocidad_izquierda(variable->velocidad_final, mecanica);
+
 }

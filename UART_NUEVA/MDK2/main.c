@@ -22,9 +22,9 @@ char *ptr_tx;     // puntero de transmisión
 char tx_completa; // Flag de transmisión de cadena que se activa al transmitir el caracter null (fin de cadena)
 
 //Variables de la demo que se esperan recibir
-char estado = 'NULL';
+char Instruccion_Codigo = 'NULL';
 int distancia = 0;
-int velocidad = 0;
+int velocidad_final= 0;
 int velocidad_maxima = 0;
 int radio = 0;
 int grados_giro = 0;
@@ -34,12 +34,12 @@ int Instruccion_Prioridad = 0;
 
 //Declaración de funciones:
 
-int main() //Función principal con maquina de estados sencillita para la demo
+int main() //Función principal con maquina de Instruccion_Codigos sencillita para la demo
 {
     char mensaje_enviado[30];
     int i = 0;
     uart0_init(115200);
-    LCD_Initializtion();
+    //LCD_Initializtion();
     LCD_Clear(White);
     transmitir_cadenaUART0("S");
 
@@ -48,11 +48,11 @@ int main() //Función principal con maquina de estados sencillita para la demo
         if (rx_completa)
         {
             rx_completa = 0;
-            traduccion_de_variables();
+            Traduccion_Variables();
         }
         else
         {
-            switch (estado)
+            switch (Instruccion_Codigo)
             {
             case 'G':
                 LCD_Clear(White);
@@ -60,7 +60,7 @@ int main() //Función principal con maquina de estados sencillita para la demo
                 GUI_Text(130, 100, (uint8_t *)mensaje_enviado, Cyan, Black);
                 if (i == 100)
                 {
-                    estado = 'A';
+                    Instruccion_Codigo = 'A';
                     i = 0;
                 }
                 else
@@ -76,7 +76,7 @@ int main() //Función principal con maquina de estados sencillita para la demo
                 GUI_Text(130, 60, (uint8_t *)mensaje_enviado, Cyan, Black);
                 if (i == 100)
                 {
-                    estado = 'A';
+                    Instruccion_Codigo = 'A';
                     i = 0;
                 }
                 else
@@ -94,7 +94,7 @@ int main() //Función principal con maquina de estados sencillita para la demo
                 GUI_Text(130, 40, (uint8_t *)mensaje_enviado, Cyan, Black);
                 if (i == 100)
                 {
-                    estado = 'A';
+                    Instruccion_Codigo = 'A';
                     i = 0;
                 }
                 else
@@ -102,7 +102,7 @@ int main() //Función principal con maquina de estados sencillita para la demo
                 break;
             case 'A':
                 transmitir_cadenaUART0("A");
-                estado = 'NULL';
+                Instruccion_Codigo = 'NULL';
                 break;
             }
         }

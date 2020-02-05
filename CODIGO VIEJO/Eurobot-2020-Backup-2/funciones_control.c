@@ -10,7 +10,7 @@
 bool vel_fin_cambiar;
 
 extern int distancia;
-extern int velocidad;
+extern int velocidad_final;
 extern int velocidad_maxima ;
 extern int radio;
 extern int grados_giro;
@@ -42,8 +42,8 @@ void calculo_de_frenada(cinematica *variable,param_mecanicos *mecanica)
 //Funcion que calcula los parametros de la cinematica, dicha funcion se llamara cuando tenga que avanzar o hacer un giro--
 void calcula_parametros_recta (cinematica *variable, param_mecanicos *mecanica)
 {	
-	variable->distancia_total_rad=	distancia/(mecanica->diametro/2);					
-	variable->velocidad_final = velocidad_maxima;
+	variable->distancia_total_rad=	fabs(distancia/10)/(mecanica->diametro/2);					
+	variable->velocidad_final = velocidad_final/100;
 	
 	if(distancia>0)
 	{
@@ -71,13 +71,15 @@ void calcula_parametros_recta (cinematica *variable, param_mecanicos *mecanica)
 				//Asignamos el nuevo valor a distancia_acel_vel_cte que ser� el 50 % de la distancia total
 				variable->distancia_acel_vel_cte = 0.5 * variable->distancia_total_rad;
 			}
+
 }
 
 
 void calcula_parametros_giro (cinematica *variable, param_mecanicos *mecanica)
 {		
-	variable->distancia_total_rad= ( PI * (grados_giro*(1-(OFFSET_ANGULAR))) * mecanica->L ) / (360 * ( mecanica->diametro /2 ) );
-
+	variable->distancia_total_rad= ( PI * (fabs(grados_giro)*(1-(OFFSET_ANGULAR))) * mecanica->L ) / (360 * ( mecanica->diametro /2 ) );
+	variable->velocidad_final = 2;
+	
 	if(grados_giro>0)
 		{
 			sentido_motores(RETROCEDE,AVANZA);
@@ -87,8 +89,9 @@ void calcula_parametros_giro (cinematica *variable, param_mecanicos *mecanica)
 			sentido_motores(AVANZA,RETROCEDE);
 		}
 
-	variable->error_posicion_actual_derecha = 1;											//Le asigno un valor mayor que la comprobacion del if del main
-	variable->error_posicion_actual_izquierda = 1;
+	variable->error_posicion_actual_derecha = 100;											//Le asigno un valor mayor que la comprobacion del if del main
+	variable->error_posicion_actual_izquierda = 100;
+
 }
 
 void calcula_error_rueda_derecha (cinematica *variable, param_mecanicos *mecanica)
