@@ -169,7 +169,7 @@ void Traduccion_Variables(void)
         }
         else
         {
-            transmitir_cadenaUART0("E");
+            transmitir_cadenaUART0("ES");
         }
 
         break;
@@ -184,7 +184,7 @@ void Traduccion_Variables(void)
         else if (BIT_SIGNO_GRADOS == '-')
             distancia = -1 * distancia;
         else
-            transmitir_cadenaUART0("E");
+            transmitir_cadenaUART0("ES");
         break;
     case ('C'):
         Instruccion_Codigo = T_INSTRUCCION;
