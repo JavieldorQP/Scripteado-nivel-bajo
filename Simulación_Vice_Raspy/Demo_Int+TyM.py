@@ -20,40 +20,42 @@ Partida_Amarilla_X = -Partida_Azul_X
 Partida_Amarilla_Y = Partida_Azul_Y
 
 #Activación de experimentos
-ACTIVACION_EXPERIMENTOX_AZUL = Partida_Azul_X +1070 
-ACTIVACION_EXPERIMENTOY_AZUL = Partida_Azul_Y 
+ACTIVACION_EXPERIMENTOX_AZUL = Partida_Azul_X 
+ACTIVACION_EXPERIMENTOY_AZUL = Partida_Azul_Y + 1070 
 ACTIVACION_EXPERIMENTOX_AMARILLO = -ACTIVACION_EXPERIMENTOX_AZUL
 ACTIVACION_EXPERIMENTOY_AMARILLO = ACTIVACION_EXPERIMENTOY_AZUL
 # Estanterias:
 ESTANTERIA_VASOS_1X = Partida_Azul_X
-ESTANTERIA_VASOS_1Y = Partida_Azul_X -470 
+ESTANTERIA_VASOS_1Y = Partida_Azul_Y -470 
 ESTANTERIA_VASOS_2X = Partida_Azul_X + 850
 ESTANTERIA_VASOS_2Y =  ACTIVACION_EXPERIMENTOY_AZUL
 ESTANTERIA_VASOS_3X = -ESTANTERIA_VASOS_2X
 ESTANTERIA_VASOS_3Y = ESTANTERIA_VASOS_2Y
 ESTANTERIA_VASOS_4X = -ESTANTERIA_VASOS_1X
 ESTANTERIA_VASOS_4Y = ESTANTERIA_VASOS_1Y
-# Bahia:
-BAHIA_CENTRAL_AMARILLOX = -400  # Tener en cuenta que es la del otro lado
-BAHIA_CENTRAL_AMARILLOY = -650
-BAHIA_CENTRAL_AZULX = -BAHIA_CENTRAL_AMARILLOX
-BAHIA_CENTRAL_AZULY = BAHIA_CENTRAL_AMARILLOY
-BAHIA_AZULX = -1300
-BAHIA_AZULY = 200
+# Bahias laterales:
+BAHIA_AZULX = Partida_Azul_X
+BAHIA_AZULY = Partida_Azul_Y + 500
 BAHIA_AMARILLOX = -BAHIA_AZULX
 BAHIA_AMARILLOY = BAHIA_AZULY
+# Bahias centrales:
+BAHIA_CENTRAL_AZULX = Partida_Azul_X + 1650
+BAHIA_CENTRAL_AZULY = Partida_Azul_Y - 450
+BAHIA_CENTRAL_AMARILLOX = -BAHIA_CENTRAL_AZULX
+BAHIA_CENTRAL_AMARILLOY = -BAHIA_CENTRAL_AZULY
+
 # Puertos Azules:
-PUERTO_SUR_AZULX = -1200
-PUERTO_SUR_AZULY = -300
-PUERTO_NORTE_AZULX = PUERTO_SUR_AZULX
-PUERTO_NORTE_AZULY = 550
+PUERTO_SUR_AZULX = Partida_Azul_X 
+PUERTO_SUR_AZULY = Partida_Azul_Y - 230
+PUERTO_NORTE_AZULX = Partida_Azul_X
+PUERTO_NORTE_AZULY = Partida_Azul_Y + 770
 # Puertos Amarillos:
 PUERTO_SUR_AMARILLOX = -PUERTO_SUR_AZULX
 PUERTO_SUR_AMARILLOY = PUERTO_SUR_AZULY
-
 PUERTO_NORTE_AMARILLOX = -PUERTO_NORTE_AZULX
 PUERTO_NORTE_AMARILLOY = PUERTO_NORTE_AZULY
-# Posición para ver la camara:
+
+# Posición para ver la camara:      #Completamente orientativo
 CAMARA_X = 0
 CAMARA_Y = 800
 # Instrucciones
@@ -138,11 +140,11 @@ def planificador(juego):
             elif(juego.posavasos.ventosas_ocupada):
                 print("Vamos a la bahia a descargar los vasos")
                 ejecutor(BAHIA_SOLTAR, POSAVASOS, juego)
-                
+                time.sleep(40)
             elif (juego.estanterias.estanteria_neutro_cerca):
                 print("Voy a la estanteria del medio")
                 ejecutor(ESTANTERIAS_NEUTRO_CERCA, POSAVASOS, juego)
-
+                time.sleep(40)
             elif (juego.estanterias.estanteria_casa):
                 print("Voy a la estanteria de mi lado")
                 ejecutor(ESTANTERIAS_CERCA, POSAVASOS, juego)
@@ -150,7 +152,7 @@ def planificador(juego):
             elif (juego.brujula == 'N'):
                 print("Voy a mirar la brujula")
                 ejecutor(ACTUALIZAR_BRUJULA, POSAVASOS, juego)
-                
+                time.sleep(40)
             else:
                 print("No tengo que hacer nada")
                 ejecutor(CASA, POSAVASOS, juego)
@@ -180,6 +182,10 @@ def ejecutor(orden, robot, juego):
         envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
         juego.experimento = False
         juego.puntos = juego.puntos+15
+        juego.posavasos.robot.pos[0]=Objx
+        juego.posavasos.robot.pos[1]=Objy
+        juego.posavasos.robot.orientacion = Orientacion_final
+        
 
     elif(orden == BAHIA_SOLTAR):
         if(juego.lado == AMARILLO):
@@ -196,6 +202,9 @@ def ejecutor(orden, robot, juego):
         #envio_instrucciones_actuadores("B250")
         juego.puntos = juego.puntos+14
         juego.posavasos.ventosas_ocupada = False
+        juego.posavasos.robot.pos[0]=Objx
+        juego.posavasos.robot.pos[1]=Objy
+        juego.posavasos.robot.orientacion = Orientacion_final
 
     elif(orden == ESTANTERIAS_CERCA):
         if(juego.lado == AMARILLO):
@@ -207,9 +216,12 @@ def ejecutor(orden, robot, juego):
             Objy = ESTANTERIA_VASOS_1Y
             Orientacion_final = 180
         instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
-        #envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
+        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
         juego.posavasos.ventosas_ocupada = True
         juego.estanterias.estanteria_casa = False
+        juego.posavasos.robot.pos[0]=Objx
+        juego.posavasos.robot.pos[1]=Objy
+        juego.posavasos.robot.orientacion = Orientacion_final
     
     elif(orden == ESTANTERIAS_NEUTRO_CERCA):
         if(juego.lado == AMARILLO):
@@ -224,6 +236,9 @@ def ejecutor(orden, robot, juego):
         #envio_instrucciones_actuadores("S250")
         juego.posavasos.ventosas_ocupada = True
         juego.estanterias.estanteria_neutro_cerca = False
+        juego.posavasos.robot.pos[0]=Objx
+        juego.posavasos.robot.pos[1]=Objy
+        juego.posavasos.robot.orientacion = Orientacion_final
         
     elif(orden == ACTUALIZAR_BRUJULA):
         Objx = CAMARA_X
@@ -232,6 +247,9 @@ def ejecutor(orden, robot, juego):
         instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
         envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
         juego.brujula = 'N'
+        juego.posavasos.robot.pos[0]=Objx
+        juego.posavasos.robot.pos[1]=Objy
+        juego.posavasos.robot.orientacion = Orientacion_final
     
     elif(orden == CASA):
         if(juego.lado == AMARILLO):
@@ -254,6 +272,12 @@ def ejecutor(orden, robot, juego):
         envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
         juego.puntos = juego.puntos+10
         juego.Activo = False
+        juego.posavasos.robot.pos[0]=Objx
+        juego.posavasos.robot.pos[1]=Objy
+        juego.posavasos.robot.orientacion = Orientacion_final
+    print(f"Posción actual {juego.posavasos.robot.pos[0]}, {juego.posavasos.robot.pos[1]}")
+    print(f"Angulo actual {juego.posavasos.robot.orientacion}")
+    
 
 def main():
     print("Selecciona el lado (1 para amarillo y 2 para el Azul ):")

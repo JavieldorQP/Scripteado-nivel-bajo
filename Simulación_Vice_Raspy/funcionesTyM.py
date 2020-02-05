@@ -7,11 +7,11 @@ def calculo_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjetivoy, o
         Recibe la posición del robot, su orientación y la posición del objetivo
         y calcula el ángulo de giro que ha de realizar.
         >>> calculo_giro_avanzo_giro(1200,-320,1200,800,180,90)
-        (1120.0,-90.0, 0.0)
+        (1120,-90, 0)
         >>> calculo_giro_avanzo_giro(-1300,1250,-1500,500 ,270,180)
         (1019.803902718557, 168.6900675259798, 101.3099324740202)
-        >>> calculo_giro_avanzo_giro(-1350,1250, 500,1500,90,90)
-        (1019.803902718557, -90 , 90)
+        >>> calculo_giro_avanzo_giro(-1350,1250, -500,1250,90,90)
+        (850, -90 , 90)
         >>> calculo_giro_avanzo_giro(-1350,180,-1350,1250, 0,90)
         (1070, 90, 0)
     """
@@ -53,11 +53,8 @@ def calculo_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjetivoy, o
     angulo_giro1 = math.degrees(angulo_giro1)
     angulo_giro2 = math.degrees(angulo_giro2)
     # Printeos para asegurar que todo ha ido bien
-    print("Se ha de girar este angulo primero:")
     print(angulo_giro1)
-    print("Y esta es la distancia que se ha de recorrer: ")
     print(distancia_total)
-    print("Por último se gira:")
     print(angulo_giro2)
     return distancia_total, angulo_giro1, angulo_giro2
 
