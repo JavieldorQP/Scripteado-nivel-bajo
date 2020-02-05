@@ -6,14 +6,11 @@
 #include "variables.h"
 #include "funciones_pwm.h"
 
-
-#define PI 3.141592
-
-void calculo_d_frenada(cinematica *variable,param_mecanicos *mecanica);
-void velocidad_derecha (double rad_por_s,param_mecanicos *mecanica);
-void velocidad_izquierda (double rad_por_s,param_mecanicos *mecanica);
-void calcula_parametros_cinematica (cinematica *variable, param_mecanicos *mecanica);
+void calculo_de_frenada(cinematica *variable,param_mecanicos *mecanica);
+void calcula_parametros_recta (cinematica *variable, param_mecanicos *mecanica);
+void calcula_parametros_giro (cinematica *variable, param_mecanicos *mecanica);
 void calcula_error_rueda_derecha (cinematica *variable, param_mecanicos *mecanica);
 void calcula_error_rueda_izquierda (cinematica *variable, param_mecanicos *mecanica);
+
 
 #endif

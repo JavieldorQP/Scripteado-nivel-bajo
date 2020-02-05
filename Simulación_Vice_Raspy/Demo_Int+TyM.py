@@ -7,7 +7,9 @@
     Año: Eurobot 2020
 """
 # Biliotecas:
-from Simulo_robot import simula_movimiento, actuadores, camara
+from Eurocomunicacion_raspy_funciones import envio_instrucciones_actuadores, envio_instrucciones_traccion
+from funcionesTyM import instrucciones_giro_avanzo_giro
+import time
 # Constantes
 # Definir vaso 1 como una tupla
 # Indicar cuantos robots hay

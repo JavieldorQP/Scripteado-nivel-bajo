@@ -7,5 +7,6 @@
 .\funciones_control.o: C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h
 .\funciones_control.o: C:\Keil\ARM\ARMCC\bin\..\include\math.h
 .\funciones_control.o: variables.h
-.\funciones_control.o: C:\Keil\ARM\ARMCC\bin\..\include\stdbool.h
 .\funciones_control.o: funciones_pwm.h
+.\funciones_control.o: funciones_desplazamiento.h
+.\funciones_control.o: C:\Keil\ARM\ARMCC\bin\..\include\stdbool.h
