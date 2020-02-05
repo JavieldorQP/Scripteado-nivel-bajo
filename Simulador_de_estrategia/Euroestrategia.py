@@ -41,6 +41,7 @@ VASO_11Y = VASO_10Y
 VASO_12X = VASO_9X + 390
 VASO_12Y = VASO_9Y
 
+posiciones_vasos = ((VASO_1X, VASO_1Y),)
 # Experimento
 ACTIVACION_EXPERIMENTOX_AZUL = -1200
 ACTIVACION_EXPERIMENTOY_AZUL = 800
@@ -50,7 +51,7 @@ ACTIVACION_EXPERIMENTOY_AMARILLO = ACTIVACION_EXPERIMENTOY_AZUL
 ESTANTERIA_VASOS_1X = -1500
 ESTANTERIA_VASOS_1Y = -800
 ESTANTERIA_VASOS_2X = -575
-ESTANTERIA_VASOS_2Y = 900
+ESTANTERIA_VASOS_2Y = ACTIVACION_EXPERIMENTOY_AMARILLO
 ESTANTERIA_VASOS_3X = -ESTANTERIA_VASOS_2X
 ESTANTERIA_VASOS_3Y = ESTANTERIA_VASOS_2Y
 ESTANTERIA_VASOS_4X = -ESTANTERIA_VASOS_1X
@@ -128,7 +129,10 @@ class Parejitas:  # Clase que representa toda la información de parejitas
         self.deposito_total = 0                                            # Ha sacado ya la bandera
         self.deposito_vasos_rojo = 0
         self.deposito_vasos_verde = 0
-
+class vaso:
+    def __init__(self,posx ,posy):
+        self.pos = (posx, posy)
+        self.estado = True
 class vasos:         # Almacena la información de la disponibilidad de los vasos
     def __init__(self):
         self.vaso1 = True                                         

@@ -12,18 +12,23 @@ from funcionesTyM import instrucciones_giro_avanzo_giro
 import time
 # Constantes
 # Definir vaso 1 como una tupla
-# Indicar cuantos robots hay
-VASO_1X = 0
-VASO_1Y = 0
-ACTIVACION_EXPERIMENTOX_AZUL = -1200
-ACTIVACION_EXPERIMENTOY_AZUL = 800
+#El centro del campo es el centro del código aruco (1500,1250)
+#PUNTOS DE PARTIDA:
+Partida_Azul_X = -1350  #Como el centro del robot esta aprox de unos 150
+Partida_Azul_Y = 180
+Partida_Amarilla_X = -Partida_Azul_X
+Partida_Amarilla_Y = Partida_Azul_Y
+
+#Activación de experimentos
+ACTIVACION_EXPERIMENTOX_AZUL = Partida_Azul_X +1070 
+ACTIVACION_EXPERIMENTOY_AZUL = Partida_Azul_Y 
 ACTIVACION_EXPERIMENTOX_AMARILLO = -ACTIVACION_EXPERIMENTOX_AZUL
 ACTIVACION_EXPERIMENTOY_AMARILLO = ACTIVACION_EXPERIMENTOY_AZUL
 # Estanterias:
-ESTANTERIA_VASOS_1X = -1500
-ESTANTERIA_VASOS_1Y = -800
-ESTANTERIA_VASOS_2X = -575
-ESTANTERIA_VASOS_2Y = 900
+ESTANTERIA_VASOS_1X = Partida_Azul_X
+ESTANTERIA_VASOS_1Y = Partida_Azul_X -470 
+ESTANTERIA_VASOS_2X = Partida_Azul_X + 850
+ESTANTERIA_VASOS_2Y =  ACTIVACION_EXPERIMENTOY_AZUL
 ESTANTERIA_VASOS_3X = -ESTANTERIA_VASOS_2X
 ESTANTERIA_VASOS_3Y = ESTANTERIA_VASOS_2Y
 ESTANTERIA_VASOS_4X = -ESTANTERIA_VASOS_1X
@@ -124,22 +129,28 @@ class game:  # Clase tipo game, donde se almacenan toda la información del part
 
 def planificador(juego):
     if(juego.tiempo <= 90):  # Hay tiempo
+        
         if(juego.posavasos.robot.disponible):  # Posavasos no esta ocupado
             if(juego.experimento):
                 print("Activo el experimento")
                 ejecutor(ACTIVAR_EXPERIMENTO, POSAVASOS, juego)
+                
             elif(juego.posavasos.ventosas_ocupada):
                 print("Vamos a la bahia a descargar los vasos")
                 ejecutor(BAHIA_SOLTAR, POSAVASOS, juego)
+                
             elif (juego.estanterias.estanteria_neutro_cerca):
                 print("Voy a la estanteria del medio")
                 ejecutor(ESTANTERIAS_NEUTRO_CERCA, POSAVASOS, juego)
+
             elif (juego.estanterias.estanteria_casa):
                 print("Voy a la estanteria de mi lado")
                 ejecutor(ESTANTERIAS_CERCA, POSAVASOS, juego)
+                
             elif (juego.brujula == 'N'):
                 print("Voy a mirar la brujula")
                 ejecutor(ACTUALIZAR_BRUJULA, POSAVASOS, juego)
+                
             else:
                 print("No tengo que hacer nada")
                 ejecutor(CASA, POSAVASOS, juego)
@@ -182,8 +193,9 @@ def ejecutor(orden, robot, juego):
         # Publicaria en un topic
         instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
         envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
-        envio_instrucciones_actuadores("B250")
+        #envio_instrucciones_actuadores("B250")
         juego.puntos = juego.puntos+14
+        juego.posavasos.ventosas_ocupada = False
 
     elif(orden == ESTANTERIAS_CERCA):
         if(juego.lado == AMARILLO):
@@ -195,7 +207,8 @@ def ejecutor(orden, robot, juego):
             Objy = ESTANTERIA_VASOS_1Y
             Orientacion_final = 180
         instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
-        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
+        #envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
+        juego.posavasos.ventosas_ocupada = True
         juego.estanterias.estanteria_casa = False
     
     elif(orden == ESTANTERIAS_NEUTRO_CERCA):
@@ -208,7 +221,8 @@ def ejecutor(orden, robot, juego):
         Orientacion_final = 90
         instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
         envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
-        envio_instrucciones_actuadores("S250")
+        #envio_instrucciones_actuadores("S250")
+        juego.posavasos.ventosas_ocupada = True
         juego.estanterias.estanteria_neutro_cerca = False
         
     elif(orden == ACTUALIZAR_BRUJULA):
@@ -246,12 +260,12 @@ def main():
     lado = int(input())
     if(lado == AMARILLO):
         print("AMARILLO")
-        juego = game(AMARILLO, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY +
-                     20, PUERTO_SUR_AMARILLOX, PUERTO_SUR_AMARILLOY-20, 180)
+        juego = game(AMARILLO, Partida_Amarilla_X , Partida_Amarilla_Y
+                     , Partida_Amarilla_X, Partida_Amarilla_Y, 180)
     else:
         print("AZUL")
-        juego = game(AZUL, PUERTO_SUR_AZULX, PUERTO_SUR_AZULY+20,
-                     PUERTO_SUR_AZULX, PUERTO_SUR_AZULY-20, 0)
+        juego = game(AZUL, Partida_Azul_X , Partida_Azul_Y ,
+                     Partida_Azul_X, Partida_Azul_Y, 0)
     print("Situación inicial:")
     print("Posicion de parejitas")
     print(juego.parejitas.robot.pos[0])
@@ -259,9 +273,7 @@ def main():
     print("Posicion de posavasos")
     print(juego.posavasos.robot.pos[0])
     print(juego.posavasos.robot.pos[1])
-    time.sleep(3)
     while juego.Activo:
-
         planificador(juego)
         print("Vamos por el segundo de partido:")
         print(juego.tiempo)

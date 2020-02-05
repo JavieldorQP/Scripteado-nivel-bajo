@@ -3,12 +3,11 @@
 """
 # Importo las bibliotecas:
 import serial  # Necesaria
-
 def envio_instrucciones_traccion(instruccion_1, instruccion_2, instruccion_3):
     # Puertos usados en la demo:
-    # MDK2_Port_traccion = serial.Serial('/dev/ttyUSB0', 115200, timeout=1) #Si estamos en la Raspberry py y conectamos la MDK2 por el puerto de arriba a la derecha.
+    MDK2_Port_traccion = serial.Serial('/dev/ttyUSB0', 115200, timeout=1) #Si estamos en la Raspberry py y conectamos la MDK2 por el puerto de arriba a la derecha.
     # Puerto usado en la demo para probar cosas
-    MDK2_Port_traccion = serial.Serial('COM3', 115200, timeout=0.02)
+    #MDK2_Port_traccion = serial.Serial('COM3', 115200, timeout=0.02)
     instruccion = (instruccion_1, instruccion_2, instruccion_3)
     acabado = 0
     i = 0
@@ -23,10 +22,10 @@ def envio_instrucciones_traccion(instruccion_1, instruccion_2, instruccion_3):
             print("S")
             c = 0
 
-        if mensaje_recibido == b'A':
-            print("A")
+        if mensaje_recibido == b'S':
+            print("S")
             i = i+1
-            if(i < len(instruccion)):
+            if(i < len(instruccion)-1):
                 mensaje = instruccion[i] + '\0'
                 MDK2_Port_traccion.write(mensaje.encode())
             else:
@@ -50,7 +49,7 @@ def envio_instrucciones_actuadores(instruccion):
             mensaje = instruccion + '\0'
             MDK2_Port_actuadores.write(mensaje.encode())
             c = 0
-        if (mensaje_recibido == b'A'):
+        if (mensaje_recibido == b'S'):
             acabado = 1
     MDK2_Port_actuadores.close() 
 

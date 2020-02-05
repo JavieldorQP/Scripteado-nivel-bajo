@@ -1,5 +1,5 @@
 import math
-from Eurocomunicacion_raspy_funciones import angle_to_msg, poste_to_msg   
+from Eurocomunicacion_raspy_funciones import angle_to_msg, pose_to_msg
 
 def calculo_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjetivoy, orientacion_original, orientacion_final):
     """
@@ -8,8 +8,12 @@ def calculo_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjetivoy, o
         y calcula el ángulo de giro que ha de realizar.
         >>> calculo_giro_avanzo_giro(1200,-320,1200,800,180,90)
         (1120.0,-90.0, 0.0)
-        >>> calculo_giro_avanzo_giro(-1300,200,-1500,-800,270,180)
+        >>> calculo_giro_avanzo_giro(-1300,1250,-1500,500 ,270,180)
         (1019.803902718557, 168.6900675259798, 101.3099324740202)
+        >>> calculo_giro_avanzo_giro(-1350,1250, 500,1500,90,90)
+        (1019.803902718557, -90 , 90)
+        >>> calculo_giro_avanzo_giro(-1350,180,-1350,1250, 0,90)
+        (1070, 90, 0)
     """
     # Calculo las distancias:
     distancia_x = posobjetivox-posrobotx
@@ -68,7 +72,7 @@ def instrucciones_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjeti
         posrobotx, posroboty, posobjetivox, posobjetivoy, orientacion, orientacion_final)
     instruccion_giro1 = "0" + "G"+angle_to_msg(angulo_giro1) 
     print(instruccion_giro1)
-    instruccion_distancia = "0" + "D" +poste_to_msg(distancia_total) + "0500" +"0000"
+    instruccion_distancia = "0" + "D" +pose_to_msg(distancia_total) + "0500" +"0000"
     print(instruccion_distancia)
     instruccion_giro2 = "0" +"G" + angle_to_msg(angulo_giro2)
     print(instruccion_giro2)
