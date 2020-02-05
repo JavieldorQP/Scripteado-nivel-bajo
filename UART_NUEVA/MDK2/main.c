@@ -30,6 +30,7 @@ int radio = 0;
 int grados_giro = 0;
 int posx = -1500;
 int posy = 500;
+int Instruccion_Prioridad = 0;
 
 //Declaración de funciones:
 
@@ -69,7 +70,7 @@ int main() //Función principal con maquina de estados sencillita para la demo
                 LCD_Clear(White);
                 sprintf(mensaje_enviado, "Distancia %d", distancia);
                 GUI_Text(130, 100, (uint8_t *)mensaje_enviado, Cyan, Black);
-                sprintf(mensaje_enviado, "Velocidad %d", velocidad);
+                sprintf(mensaje_enviado, "Velocidad %d", velocidad_final);
                 GUI_Text(130, 80, (uint8_t *)mensaje_enviado, Cyan, Black);
                 sprintf(mensaje_enviado, "V_max %d", velocidad_maxima);
                 GUI_Text(130, 60, (uint8_t *)mensaje_enviado, Cyan, Black);
@@ -85,7 +86,7 @@ int main() //Función principal con maquina de estados sencillita para la demo
                 LCD_Clear(White);
                 sprintf(mensaje_enviado, "Distancia %d", distancia);
                 GUI_Text(130, 100, (uint8_t *)mensaje_enviado, Cyan, Black);
-                sprintf(mensaje_enviado, "Velocidad %d", velocidad);
+                sprintf(mensaje_enviado, "Velocidad %d", velocidad_final);
                 GUI_Text(130, 80, (uint8_t *)mensaje_enviado, Cyan, Black);
                 sprintf(mensaje_enviado, "V_max %d", velocidad_maxima);
                 GUI_Text(130, 60, (uint8_t *)mensaje_enviado, Cyan, Black);
