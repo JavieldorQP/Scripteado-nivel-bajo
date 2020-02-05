@@ -37,7 +37,7 @@ def main():
         elif mensaje_recibido == b'S':
             print("A")
             i = i+1
-            if(i < 5):
+            if(i <len(instruccion)-1):
                 mensaje = instruccion[i] + '\0'
                 MDK2_Port.write(mensaje.encode())
             else:
