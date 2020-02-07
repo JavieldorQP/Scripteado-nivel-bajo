@@ -10,9 +10,9 @@
 .\main.o: C:\Keil\ARM\ARMCC\bin\..\include\math.h
 .\main.o: GLCD.h
 .\main.o: Eurouart.h
+.\main.o: variables.h
 .\main.o: funciones_pwm.h
 .\main.o: funciones_desplazamiento.h
-.\main.o: ..\Eurobot-2020-Backup-2\variables.h
 .\main.o: funciones_control.h
 .\main.o: configuraciones.h
 .\main.o: funciones_timer.h

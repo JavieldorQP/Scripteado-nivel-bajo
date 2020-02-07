@@ -10,7 +10,7 @@
 
 #include "Eurouart.h" //Enlazo con la biblioteca
 #include <LPC17xx.h>
-
+#include "variables.h"
 //Configuraci�n de la Baudrate
 static int uart0_set_baudrate(unsigned int baudrate) //Esta funci�n nos permite ajustar los registros de la MiniDK2 para ajustar al BAUDRATE con una gran precision. Funcion extraida de un ejemplo de la bb.
 {
@@ -125,7 +125,7 @@ void UART0_IRQHandler(void)
         if (buffer[i] < 31) // Caracter return --> Cadena completa
 
         {
-            transmitir_cadenaUART0("R");
+            //transmitir_cadenaUART0("R");
             /*if (i != bits_esperados)
                 error_longitud = 1; */
             i = 0;
@@ -151,7 +151,7 @@ void transmitir_cadenaUART0(char *cadena)
 } // activar flag interrupci�n por registro transmisor vacio
 
 //Funciones nuevas:
-void Traduccion_Variables(void)
+void Traduccion_Variables(cinematica *variable)
 { //Se encarga de leer el mensaje recibido, actualizar las variables y levantar los flags.
     switch (T_INSTRUCCION)
     {
@@ -159,6 +159,7 @@ void Traduccion_Variables(void)
         Instruccion_Codigo = T_INSTRUCCION;
         Instruccion_Prioridad = 0;
         grados_giro = (BIT_C_GRADOS - '0') * 100 + (BIT_D_GRADOS - '0') * 10 + (BIT_U_GRADOS - '0');
+				variable->angulo=grados_giro;
         if (BIT_SIGNO_GRADOS == '+')
         {
             grados_giro = grados_giro;
@@ -177,6 +178,7 @@ void Traduccion_Variables(void)
         Instruccion_Codigo = T_INSTRUCCION;
         Instruccion_Prioridad = 0;
         distancia = (BIT_M_DISTANCIA - '0') * 1000 + (BIT_C_DISTANCIA - '0') * 100 + (BIT_D_DISTANCIA - '0') * 10 + (BIT_U_DISTANCIA - '0');
+				variable->distancia=distancia;
         velocidad_final = (BIT_M_V_FINAL - '0') * 1000 + (BIT_C_V_FINAL - '0') * 100 + (BIT_D_V_FINAL - '0') * 10 + (BIT_U_V_FINAL - '0');
         velocidad_maxima = (BIT_M_VMAX - '0') * 1000 + (BIT_C_VMAX - '0') * 100 + (BIT_D_VMAX - '0') * 10 + (BIT_U_VMAX - '0');
         if (BIT_SIGNO_GRADOS == '+')

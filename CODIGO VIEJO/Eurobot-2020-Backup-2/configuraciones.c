@@ -90,6 +90,10 @@ void configuracion_parametros_mecanicos (param_mecanicos *mecanica,cinematica *v
 	mecanica->vel_max = mecanica->vel_eje_max * PI / 30 / mecanica->reductora;
 	mecanica->pulsos_por_rev = 256;
 	mecanica->L = 34.5;
+	
+	variable->offset_lineal = 0.0;
+	variable->offset_angular = 0.0;
+	
 	variable->velocidad_final = 5;																								//Velocidad final que queremos que alcancen los motores siempre
 	variable->velocidad_inicial = 0;	
 	//Formula que calcula la deceleracion, se ha obtenido de forma experimental calculando el error que cometia cuando le metia una velocidad y le decia que avanzara 1m, de esta forma 
@@ -98,6 +102,6 @@ void configuracion_parametros_mecanicos (param_mecanicos *mecanica,cinematica *v
 	//si que experimentaba un cambio, asi que usando matlab repeti el experimento para una distancia de 1m e iba variando las velocidades, despues obtenia la deceleracion, ponia 
 	//decelacion vs velocidad y le aplicaba una aproximacion matematica con una de las herramientas de matlab para sacar una ecuacion aproximada del comprotamiento de la aceleracion ante variaciones
 	//de velocidad
-	mecanica->deceleracion = ( -0.59*pow(variable->velocidad_final,3) + 5.4*pow(variable->velocidad_final,2) - 14*variable->velocidad_final + 17)*(mecanica->reductora)*(1/(2*PI))*60;
+	mecanica->deceleracion = 3000;										//( -0.59*pow(variable->velocidad_final,3) + 5.4*pow(variable->velocidad_final,2) - 14*variable->velocidad_final + 17)*(mecanica->reductora)*(1/(2*PI))*60;
 }
 

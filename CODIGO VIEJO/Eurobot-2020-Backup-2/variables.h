@@ -5,7 +5,6 @@
 
 
 #define 	PI 							3.141592
-#define OFFSET_ANGULAR				14/760
 
 /****  Variables odometria  ****/
 #define 	AVANZA					1
@@ -13,7 +12,7 @@
 
 
 extern uint8_t fl_fin_timer;
-
+extern int contador;
 typedef struct								//Estructura para los parametros de la cinematica
 {
 	double 	distancia_total_rad,			//distancia total a recorrer que se nos pasa desde alto nivel convertida a radianes
@@ -23,8 +22,18 @@ typedef struct								//Estructura para los parametros de la cinematica
 					error_posicion_actual_derecha,
 					error_posicion_actual_izquierda,
 	
+					error_posicion_actual_derecha_total,
+					error_posicion_actual_izquierda_total,
+	
+					distancia,
+					angulo,
+					ajustar_distancia,
+	
 					velocidad_inicial,	//velocidad inicial en rad/s
 					velocidad_final;		//velocidad final en rad/s
+	
+	float		offset_lineal,
+					offset_angular;
 	
 }cinematica;
 

@@ -37,12 +37,94 @@ void calculo_de_frenada(cinematica *variable,param_mecanicos *mecanica)
 		vel_fin_cambiar = false;
 	}		
 }
+void Ajustar_distancia_giro (cinematica *variable)
+{
+	uint8_t caso;
+			
+		caso = 1 + (variable->angulo > 15) + (variable->angulo > 30) + (variable->angulo > 60) +
+		(variable->angulo > 90) + (variable->angulo > 120) + (variable->angulo > 150);
+	
+		switch (caso)
+		{
+			case 1:
+				variable->ajustar_distancia = 0.005;
+			break;
+		
+			case 2:
+				variable->ajustar_distancia = 0.01;
+			break;
+		
+			case 3:
+				variable->ajustar_distancia = 0.015;
+			break;
+		
+			case 4:
+				variable->ajustar_distancia = 0.08;
+			break;
+		
+			case 5:
+				variable->ajustar_distancia = 0.1;
+			break;
+		
+			case 6:
+				variable->ajustar_distancia = 0.15;
+			break;
+		
+			case 7:
+				variable->ajustar_distancia = 0.25;
+			break;
+			
+		}
+	}
+	
+	
+	
+void Ajustar_distancia_recta (cinematica	*variable){
 
+	uint8_t caso;
+
+		
+		caso = 1 + (variable->distancia > 50) + (variable->distancia > 100) + (variable->distancia > 250) +
+		(variable->distancia > 500) + (variable->distancia > 750) + (variable->distancia >= 1000);
+	
+		switch (caso)
+		{
+			case 1:
+				variable->ajustar_distancia = 0.005;
+			break;
+		
+			case 2:
+				variable->ajustar_distancia = 0.01;
+			break;
+		
+			case 3:
+				variable->ajustar_distancia = 0.015;
+			break;
+		
+			case 4:
+				variable->ajustar_distancia = 0.05;
+			break;
+		
+			case 5:
+				variable->ajustar_distancia = 0.1;
+			break;
+		
+			case 6:
+				variable->ajustar_distancia = 0.15;
+			break;
+		
+			case 7:
+				variable->ajustar_distancia = 0.2;
+			break;
+			
+		}
+	}
+	
 
 //Funcion que calcula los parametros de la cinematica, dicha funcion se llamara cuando tenga que avanzar o hacer un giro--
 void calcula_parametros_recta (cinematica *variable, param_mecanicos *mecanica)
 {	
-	variable->distancia_total_rad=	fabs(distancia/10)/(mecanica->diametro/2);					
+	variable->distancia_total_rad=	fabs(distancia*(1-variable->offset_lineal)/10)/(mecanica->diametro/2);					
 	variable->velocidad_final = velocidad_final/100;
 	
 	if(distancia>0)
@@ -58,6 +140,9 @@ void calcula_parametros_recta (cinematica *variable, param_mecanicos *mecanica)
 	variable->error_posicion_actual_derecha = 100;											//Le asigno un valor mayor que la comprobacion del if del main
 	variable->error_posicion_actual_izquierda = 100;										//Le asigno un valor mayor que la comprobacion del if del main
 	
+	variable->error_posicion_actual_derecha_total = 0;
+	variable->error_posicion_actual_izquierda_total = 0;
+	
 	//Calcular la distancia que tiene que recorrer cuando acelere y vaya a velocidad constante
 	calculo_de_frenada(variable,mecanica);
 	variable->distancia_acel_vel_cte = variable->distancia_total_rad - variable->distancia_frenada; 
@@ -71,14 +156,17 @@ void calcula_parametros_recta (cinematica *variable, param_mecanicos *mecanica)
 				//Asignamos el nuevo valor a distancia_acel_vel_cte que ser� el 50 % de la distancia total
 				variable->distancia_acel_vel_cte = 0.5 * variable->distancia_total_rad;
 			}
-
+	Ajustar_distancia_recta(variable);
 }
 
 
 void calcula_parametros_giro (cinematica *variable, param_mecanicos *mecanica)
 {		
-	variable->distancia_total_rad= ( PI * (fabs(grados_giro)*(1-(OFFSET_ANGULAR))) * mecanica->L ) / (360 * ( mecanica->diametro /2 ) );
-	variable->velocidad_final = 2;
+	variable->distancia_total_rad = ( PI * fabs(grados_giro *(1-variable->offset_angular) )) * mecanica->L / (360 * ( mecanica->diametro /2 ) );
+	variable->velocidad_final = 5;
+	
+	calculo_de_frenada(variable,mecanica);
+	variable->distancia_acel_vel_cte = variable->distancia_total_rad - variable->distancia_frenada; 
 	
 	if(grados_giro>0)
 		{
@@ -90,18 +178,32 @@ void calcula_parametros_giro (cinematica *variable, param_mecanicos *mecanica)
 		}
 
 	variable->error_posicion_actual_derecha = 100;											//Le asigno un valor mayor que la comprobacion del if del main
-	variable->error_posicion_actual_izquierda = 100;
-
+	variable->error_posicion_actual_izquierda = 100;										//Le asigno un valor mayor que la comprobacion del if del main
+	
+	variable->error_posicion_actual_derecha_total = 10;
+	variable->error_posicion_actual_izquierda_total = 10;
+	Ajustar_distancia_giro(variable);
 }
 
 void calcula_error_rueda_derecha (cinematica *variable, param_mecanicos *mecanica)
 {
-	variable->error_posicion_actual_derecha = variable->distancia_total_rad - ( ( (LPC_TIM2->TC) * 2 * PI ) /
+	variable->error_posicion_actual_derecha = variable->distancia_acel_vel_cte - ( ( (LPC_TIM2->TC) * 2 * PI ) /
 	( mecanica->pulsos_por_rev * mecanica->reductora ) );
 }
 
 void calcula_error_rueda_izquierda (cinematica *variable, param_mecanicos *mecanica)
 {
-	variable->error_posicion_actual_izquierda = variable->distancia_total_rad - ( ( (LPC_TIM3->TC) * 2 * PI ) /
+	variable->error_posicion_actual_izquierda = variable->distancia_acel_vel_cte - ( ( (LPC_TIM3->TC) * 2 * PI ) /
+	( mecanica->pulsos_por_rev * mecanica->reductora ) );
+}
+void calcula_error_rueda_derecha_final (cinematica *variable, param_mecanicos *mecanica)
+{
+	variable->error_posicion_actual_derecha_total = variable->distancia_total_rad - ( ( (LPC_TIM2->TC) * 2 * PI ) /
+	( mecanica->pulsos_por_rev * mecanica->reductora ) );
+}
+
+void calcula_error_rueda_izquierda_final (cinematica *variable, param_mecanicos *mecanica)
+{
+	variable->error_posicion_actual_izquierda_total = variable->distancia_total_rad - ( ( (LPC_TIM3->TC) * 2 * PI ) /
 	( mecanica->pulsos_por_rev * mecanica->reductora ) );
 }

@@ -109,6 +109,9 @@ void act_odom(int DIR_I, int DIR_D)
 
 }
 */
+
+int contador = 0;
+
 void reset_odometria(void){
 	LPC_TIM2->TC=0;
 	LPC_TIM3->TC=0;
@@ -177,18 +180,29 @@ int CMD_Parado(void){
 //Seguramente estamos aquí por un mensaje de FRENO
 
 static char Inicio = 1;
+static char flag_timer = 1;
 	if(Inicio)
 	{
+		contador = 0;
 		Inicio=0;
 		Flag_EstadoFinalizado=0;				//En ST_PARADO SÍ hay que hacerlo inicialmente ya que solemos llegar por ENEMIGO
+		
+	}
+
+		if(contador > 25 && flag_timer){
+			
+		flag_timer = 0;
 		apaga_motores();
 		Robot.VelActual = 0;
 		Robot.Orientacion = 0;
 		Robot.Pos.X = 0;
 		Robot.Pos.Y = 0;
-		transmitir_estado();
+		//transmitir_estado();
 	}
 
+	
+	
+	
 	//Analiza todo lo que necesite mientras esta en reposo
 /*
 	if(sensor.laser)								//hay moros en la costa
@@ -204,10 +218,11 @@ static char Inicio = 1;
 	*/
 	
 	
-	if(Siguiente_Estado != Estado) 
+	if(Siguiente_Estado != Estado ) 
 	{
 		Flag_EstadoFinalizado = 1;
 		Inicio = 1;
+		flag_timer = 1;
 	}
 	return 0;
 }
@@ -217,40 +232,49 @@ int CMD_Recta(void){
 
 static char Inicio = 1;
 static char Flag_Frenada = 1;
-
+static char flag_timer = 1;
 if(Inicio){
 	Inicio = 0;
+	contador = 0;
 	Flag_EstadoFinalizado = 0;
 	
 	//reset_odometria();
-	transmitir_estado();
+	
 
 	reset_odometria();
 	calcula_parametros_recta(&lazo_abierto,&maxon);
 
 	
-	motores(&lazo_abierto,&maxon);
+	
 	
 }
 
+
+	if( flag_timer && contador > 15 ){
+		flag_timer = 0;
+		transmitir_estado();
+		motores(&lazo_abierto,&maxon);
+	}
 	//Evalúo el error que tengo en cada ciclo hasta que "llego" con el TIMER1
-	if ( (lazo_abierto.error_posicion_actual_derecha < lazo_abierto.distancia_frenada || 
-	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.distancia_frenada) && Flag_Frenada)
+	if ( (lazo_abierto.error_posicion_actual_derecha < lazo_abierto.ajustar_distancia || 
+	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada)
 	{
 		//Actualmente esto frena al final, no encadena velocidades aún
-		Flag_Frenada = 0;
+		
 		velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
 		velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
+		Flag_Frenada = 0;
 	}
 	
 
-	if(lazo_abierto.error_posicion_actual_derecha < 0.5 || lazo_abierto.error_posicion_actual_izquierda < 0.5)
+	else if((lazo_abierto.error_posicion_actual_derecha_total < lazo_abierto.ajustar_distancia || lazo_abierto.error_posicion_actual_izquierda_total < lazo_abierto.ajustar_distancia) && !Flag_Frenada)
 	{
 		//CUANDO LLEGA A LA POSICION FINAL SALE DEL ESTADO Y CARGA EL SIGUIENTE
-		apaga_motores();
+		//apaga_motores();
 		Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
 		Inicio = 1;
 		Flag_Frenada = 1;
+		flag_timer = 1;
 	}
 	return 0;
 }
@@ -259,32 +283,52 @@ int CMD_Giro(void){
 //Giramos sobre el eje del robot un ángulo definido a velocidad máxima definida
 
 static char Inicio = 1;
-
+static char Flag_Frenada = 1;
+static char flag_timer = 1;
 if(Inicio){
 	Inicio = 0;
+	contador = 0;
 	Flag_EstadoFinalizado = 0;
 	reset_odometria();
-	transmitir_estado();
+	
 
 
 	calcula_parametros_giro(&lazo_abierto,&maxon);
 
 	
-	motores(&lazo_abierto,&maxon);
+	
 	
 }
 
-	//Evalúo el error que tengo en cada ciclo hasta que "llego" con el TIMER1
-	
 
-	if(lazo_abierto.error_posicion_actual_derecha < 0.1 || lazo_abierto.error_posicion_actual_izquierda < 0.1){
+	if( flag_timer && contador >15 ){
+	
+		flag_timer = 0;
+		transmitir_estado();
+		motores(&lazo_abierto,&maxon);
+	}
+	
+	//Evalúo el error que tengo en cada ciclo hasta que "llego" con el TIMER1
+	if ( (lazo_abierto.error_posicion_actual_derecha < lazo_abierto.ajustar_distancia || 
+	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada)
+	{
+		//Actualmente esto frena al final, no encadena velocidades aún
+		
+		velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
+		velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
+		Flag_Frenada = 0;
+	}
+
+	else if((lazo_abierto.error_posicion_actual_derecha_total < lazo_abierto.ajustar_distancia || lazo_abierto.error_posicion_actual_izquierda_total < lazo_abierto.ajustar_distancia) && !Flag_Frenada){
 		//CUANDO LLEGA A LA POSICION FINAL SALE DEL ESTADO Y CARGA EL SIGUIENTE
 		//en caso de que tenga error extraño puede ser por frenar y no esperar para cargar la siguiente instruccion
 				velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
 				velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
 		
 				Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
-   	 			Inicio = 1;
+				Inicio = 1;
+				Flag_Frenada = 1;
+				flag_timer = 1;
 			}
 	
 return 0;
@@ -369,7 +413,7 @@ int Maquina_Estados(void){
 		
 		if(rx_completa)
 		{
-		Traduccion_Variables();
+		Traduccion_Variables(&lazo_abierto);
 		rx_completa=0;
 		}
 		return 0;
@@ -388,7 +432,7 @@ config_TIMER1();
 config_TIMER2();
 config_TIMER3();
 configuracion_parametros_mecanicos(&maxon,&lazo_abierto);
-uart0_init(BAUDRATE);
+uart0_init(BAUDRATE); 
 
 		while(1){
 			

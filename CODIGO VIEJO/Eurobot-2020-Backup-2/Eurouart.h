@@ -1,6 +1,8 @@
 #ifndef UART_H_
 #define UART_H_
 
+#include "variables.h"
+
 // Accepted Error baud rate value (in percent unit)
 
 //Parametros inamovibles comunicación:
@@ -73,6 +75,6 @@ extern char Instruccion_Prioridad;
 
 extern void uart0_init(int baudrate);
 extern void transmitir_cadenaUART0(char *cadena);
-extern void Traduccion_Variables(void);
+extern void Traduccion_Variables(cinematica *variable);
 
 #endif /* UART_H_ */

@@ -9,6 +9,8 @@
 extern cinematica lazo_abierto;
 extern param_mecanicos maxon;
 
+extern int contador;
+
 void TIMER1_IRQHandler(void)
 {
 	
@@ -16,5 +18,9 @@ void TIMER1_IRQHandler(void)
 	
 	calcula_error_rueda_izquierda (&lazo_abierto, &maxon);
 	calcula_error_rueda_derecha (&lazo_abierto, &maxon);
+
+	calcula_error_rueda_derecha_final (&lazo_abierto, &maxon);
+	calcula_error_rueda_izquierda_final (&lazo_abierto, &maxon);
 	
+	contador++;
 }
