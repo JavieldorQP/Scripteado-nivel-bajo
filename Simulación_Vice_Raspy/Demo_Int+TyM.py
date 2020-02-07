@@ -25,8 +25,8 @@ ACTIVACION_EXPERIMENTOY_AZUL = Partida_Azul_Y + 1070
 ACTIVACION_EXPERIMENTOX_AMARILLO = -ACTIVACION_EXPERIMENTOX_AZUL
 ACTIVACION_EXPERIMENTOY_AMARILLO = ACTIVACION_EXPERIMENTOY_AZUL
 # Estanterias:
-ESTANTERIA_VASOS_1X = Partida_Azul_X
-ESTANTERIA_VASOS_1Y = Partida_Azul_Y -470 
+ESTANTERIA_VASOS_1X = Partida_Azul_X 
+ESTANTERIA_VASOS_1Y = Partida_Azul_Y -250 
 ESTANTERIA_VASOS_2X = Partida_Azul_X + 850
 ESTANTERIA_VASOS_2Y =  ACTIVACION_EXPERIMENTOY_AZUL
 ESTANTERIA_VASOS_3X = -ESTANTERIA_VASOS_2X
@@ -57,7 +57,7 @@ PUERTO_NORTE_AMARILLOY = PUERTO_NORTE_AZULY
 
 # Posición para ver la camara:      #Completamente orientativo
 CAMARA_X = 0
-CAMARA_Y = 800
+CAMARA_Y = 1000
 # Instrucciones
 ACTIVAR_EXPERIMENTO = 0
 BAHIA_SOLTAR = 1
@@ -68,8 +68,8 @@ ESTANTERIAS_ENEMIGO = 5
 ACTUALIZAR_BRUJULA = 6
 CASA = 7
 # ROBOTS
-PAREJITAS = 0
-POSAVASOS = 1
+PAREJITAS = 1
+POSAVASOS = 2
 # Lados
 AMARILLO = 1
 AZUL = 2
@@ -109,9 +109,9 @@ class vaso:
         self.pos = (posx, posy)
         self.estado = True
 
-#vasos =  []
-#for numero_vaso in (1,12):
-#    vasos +=  [vaso(posiciones_vasos [numero_vaso][0],posiciones_vasos [numero_vaso][1])]
+vasos =  []
+for numero_vaso in (1,12):
+    vasos +=  [vaso(posiciones_vasos [numero_vaso-1][0],posiciones_vasos [numero_vaso-1][1])]
 
 class estanterias():  #
     def __init__(self, estanteria_casa, estanteria_neutro_cerca, estanteria3, estanteria4):
@@ -215,6 +215,7 @@ def ejecutor(orden, robot, juego):
         juego.posavasos.ventosas_ocupada = False
         juego.posavasos.robot.pos[0] = Objx
         juego.posavasos.robot.pos[1] = Objy
+        time.sleep(26)
         juego.posavasos.robot.orientacion = Orientacion_final
 
     elif(orden == ESTANTERIAS_CERCA):
@@ -291,27 +292,47 @@ def ejecutor(orden, robot, juego):
     
 
 def main():
-    print("Selecciona el lado (1 para amarillo y 2 para el Azul ):")
-    lado = int(input())
-    if(lado == AMARILLO):
-        print("AMARILLO")
-        juego = game(AMARILLO, Partida_Amarilla_X , Partida_Amarilla_Y
-                     , Partida_Amarilla_X, Partida_Amarilla_Y, 180)
+    print("Este script es una demo de la estrategia de cada uno de los robots")
+    #print("Seleccione el robot con el que simular la demo (1 para posavasos y 2 para parejitas):")
+    try:
+        dispositivo = int(input("Seleccione el robot con el que simular la demo (1 para parejitas y 2 para parejitas):"))
+    except ValueError:
+        print("Dato no reconocido")
     else:
-        print("AZUL")
-        juego = game(AZUL, Partida_Azul_X , Partida_Azul_Y ,
-                     Partida_Azul_X, Partida_Azul_Y, 0)
-    print("Situación inicial:")
-    print("Posicion de parejitas")
-    print(juego.parejitas.robot.pos[0])
-    print(juego.parejitas.robot.pos[1])
-    print("Posicion de posavasos")
-    print(juego.posavasos.robot.pos[0])
-    print(juego.posavasos.robot.pos[1])
-    while juego.Activo:
-        planificador(juego)
-        print("Vamos por el segundo de partido:")
-        print(juego.tiempo)
+        if(dispositivo == POSAVASOS):
+            print("Has escogido a posavasos")
+        elif(dispositivo == PAREJITAS):
+            print("Has escogido a parejitas")
+        else:
+            print("Número incorrecto, inicie de nuevo el programa")
+            raise Exception
+        try:
+            lado = int(input("Selecciona el lado (1 para amarillo y 2 para el Azul ):"))
+        except ValueError:
+            print("Dato no reconocido")
+        else:
+            if(lado == AMARILLO):
+                print("AMARILLO")
+                juego = game(AMARILLO, Partida_Amarilla_X , Partida_Amarilla_Y
+                            , Partida_Amarilla_X, Partida_Amarilla_Y, 180)
+            elif(lado == AZUL):
+                print("AZUL")
+                juego = game(AZUL, Partida_Azul_X , Partida_Azul_Y ,
+                            Partida_Azul_X, Partida_Azul_Y, 0)
+            else:
+                print("Error seleccionando lado cargue de nuevo el programa")
+                raise Exception
+            print("Situación inicial:")
+            print("Posicion de parejitas")
+            print(juego.parejitas.robot.pos[0])
+            print(juego.parejitas.robot.pos[1])
+            print("Posicion de posavasos")
+            print(juego.posavasos.robot.pos[0])
+            print(juego.posavasos.robot.pos[1])
+            while juego.Activo:
+                planificador(juego)
+                print("Vamos por el segundo de partido:")
+                print(juego.tiempo)
 
     print("Partido acabado")
     print("Resumen:")
