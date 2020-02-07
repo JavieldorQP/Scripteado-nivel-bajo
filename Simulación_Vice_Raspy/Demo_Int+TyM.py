@@ -15,7 +15,7 @@ import time
 #El centro del campo es el centro del código aruco (1500,1250)
 #PUNTOS DE PARTIDA:
 Partida_Azul_X = -1350  #Como el centro del robot esta aprox de unos 150
-Partida_Azul_Y = 180
+Partida_Azul_Y = 500
 Partida_Amarilla_X = -Partida_Azul_X
 Partida_Amarilla_Y = Partida_Azul_Y
 
@@ -73,7 +73,9 @@ POSAVASOS = 1
 # Lados
 AMARILLO = 1
 AZUL = 2
-
+#Vaso sobre el que se definen los demas:
+VASO_1X = -1200
+VASO_1Y = +50
 
 class robot:  # Clase tipo robot donde se almacenan todos los valores insteresantes del propio estado del robot
     def __init__(self, posx, posy, orientacion):
@@ -95,12 +97,21 @@ class Parejitas:
         self.compuertas = False  # Estan abiertas
         self.actuador_banda = False
 
-class vasos():  #
-    def __init__(self, vaso1, vaso2, vaso3, vaso4):
-        self.vaso1 = vaso1
-        self.vaso2 = vaso2
-        self.vaso3 = vaso4
-        self.vaso4 = vaso4
+posiciones_vasos = [(VASO_1X,VASO_1Y),(VASO_1X + 150, VASO_1Y + 120 ),
+(VASO_1X,VASO_1Y + 800 ) ,(VASO_1X + 150, VASO_1Y + 490),
+(VASO_1X + 530, VASO_1Y + 1100 ),(VASO_1X +650,VASO_1Y + 800),
+(VASO_1X + 800, VASO_1Y + 400),(VASO_1X + 970,VASO_1Y),
+(VASO_1X + 705,VASO_1Y - 755),(VASO_1X + 765, VASO_1Y - 400),
+(VASO_1X + 1035 ,VASO_1Y - 400),(VASO_1X + 1095,VASO_1Y - 755)]
+
+class vaso:
+    def __init__(self,posx ,posy):
+        self.pos = (posx, posy)
+        self.estado = True
+
+#vasos =  []
+#for numero_vaso in (1,12):
+#    vasos +=  [vaso(posiciones_vasos [numero_vaso][0],posiciones_vasos [numero_vaso][1])]
 
 class estanterias():  #
     def __init__(self, estanteria_casa, estanteria_neutro_cerca, estanteria3, estanteria4):
@@ -120,7 +131,7 @@ class game:  # Clase tipo game, donde se almacenan toda la información del part
             pos_inicio_posavasosx, pos_inicio_posavasosy, orientacion_inicial)
         self.parejitas = Parejitas(
             pos_inicio_parejitasx, pos_inicio_parejitasy, orientacion_inicial)
-        self.vasos = vasos(True, True, True, True)
+        #self.vasos = vasos(True, True, True, True)
         self.estanterias = estanterias(True, True, True, True)
         self.experimento = True
         self.brujula = "D"
@@ -140,11 +151,11 @@ def planificador(juego):
             elif(juego.posavasos.ventosas_ocupada):
                 print("Vamos a la bahia a descargar los vasos")
                 ejecutor(BAHIA_SOLTAR, POSAVASOS, juego)
-                time.sleep(40)
+                
             elif (juego.estanterias.estanteria_neutro_cerca):
                 print("Voy a la estanteria del medio")
                 ejecutor(ESTANTERIAS_NEUTRO_CERCA, POSAVASOS, juego)
-                time.sleep(40)
+                #time.sleep(40)
             elif (juego.estanterias.estanteria_casa):
                 print("Voy a la estanteria de mi lado")
                 ejecutor(ESTANTERIAS_CERCA, POSAVASOS, juego)
@@ -152,7 +163,7 @@ def planificador(juego):
             elif (juego.brujula == 'N'):
                 print("Voy a mirar la brujula")
                 ejecutor(ACTUALIZAR_BRUJULA, POSAVASOS, juego)
-                time.sleep(40)
+                #time.sleep(40)
             else:
                 print("No tengo que hacer nada")
                 ejecutor(CASA, POSAVASOS, juego)
@@ -182,8 +193,8 @@ def ejecutor(orden, robot, juego):
         envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
         juego.experimento = False
         juego.puntos = juego.puntos+15
-        juego.posavasos.robot.pos[0]=Objx
-        juego.posavasos.robot.pos[1]=Objy
+        juego.posavasos.robot.pos[0] = Objx
+        juego.posavasos.robot.pos[1] = Objy
         juego.posavasos.robot.orientacion = Orientacion_final
         
 
@@ -202,8 +213,8 @@ def ejecutor(orden, robot, juego):
         #envio_instrucciones_actuadores("B250")
         juego.puntos = juego.puntos+14
         juego.posavasos.ventosas_ocupada = False
-        juego.posavasos.robot.pos[0]=Objx
-        juego.posavasos.robot.pos[1]=Objy
+        juego.posavasos.robot.pos[0] = Objx
+        juego.posavasos.robot.pos[1] = Objy
         juego.posavasos.robot.orientacion = Orientacion_final
 
     elif(orden == ESTANTERIAS_CERCA):
@@ -236,8 +247,8 @@ def ejecutor(orden, robot, juego):
         #envio_instrucciones_actuadores("S250")
         juego.posavasos.ventosas_ocupada = True
         juego.estanterias.estanteria_neutro_cerca = False
-        juego.posavasos.robot.pos[0]=Objx
-        juego.posavasos.robot.pos[1]=Objy
+        juego.posavasos.robot.pos[0] = Objx
+        juego.posavasos.robot.pos[1] = Objy
         juego.posavasos.robot.orientacion = Orientacion_final
         
     elif(orden == ACTUALIZAR_BRUJULA):
@@ -247,8 +258,8 @@ def ejecutor(orden, robot, juego):
         instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
         envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
         juego.brujula = 'N'
-        juego.posavasos.robot.pos[0]=Objx
-        juego.posavasos.robot.pos[1]=Objy
+        juego.posavasos.robot.pos[0] = Objx
+        juego.posavasos.robot.pos[1] = Objy
         juego.posavasos.robot.orientacion = Orientacion_final
     
     elif(orden == CASA):
@@ -272,8 +283,8 @@ def ejecutor(orden, robot, juego):
         envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
         juego.puntos = juego.puntos+10
         juego.Activo = False
-        juego.posavasos.robot.pos[0]=Objx
-        juego.posavasos.robot.pos[1]=Objy
+        juego.posavasos.robot.pos[0] = Objx
+        juego.posavasos.robot.pos[1] = Objy
         juego.posavasos.robot.orientacion = Orientacion_final
     print(f"Posción actual {juego.posavasos.robot.pos[0]}, {juego.posavasos.robot.pos[1]}")
     print(f"Angulo actual {juego.posavasos.robot.orientacion}")
@@ -308,6 +319,5 @@ def main():
     print(juego.tiempo)
     print("Hemos conseguido tantos puntos:")
     print(juego.puntos)
-
 
 main()

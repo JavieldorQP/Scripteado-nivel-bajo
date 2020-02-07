@@ -14,6 +14,8 @@ def calculo_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjetivoy, o
         (850, -90 , 90)
         >>> calculo_giro_avanzo_giro(-1350,180,-1350,1250, 0,90)
         (1070, 90, 0)
+       >>> calculo_giro_avanzo_giro(-500, +1570, -1350 , 1000, 90,180)
+        (+123.154 , 1023.42,  -33.15) 
     """
     # Calculo las distancias:
     distancia_x = posobjetivox-posrobotx
@@ -26,6 +28,12 @@ def calculo_giro_avanzo_giro(posrobotx, posroboty, posobjetivox, posobjetivoy, o
     # Si no es un caso especial, se aplica la arcotangente
     if(distancia_x != 0):
         angulo_objetivo = math.atan(distancia_y/distancia_x)
+        if((distancia_x<0) and (distancia_y<0)):
+            angulo_objetivo = angulo_objetivo + math.pi
+        elif((distancia_x > 0) and (distancia_y < 0)):
+            angulo_objetivo = angulo_objetivo + math.pi
+        else:
+            angulo_objetivo = angulo_objetivo
     # Para los casos especiales donde la arcotangete puede dar problemas
     else:
         if(distancia_y > 0):
