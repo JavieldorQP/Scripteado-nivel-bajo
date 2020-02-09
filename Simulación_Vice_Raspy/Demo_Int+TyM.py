@@ -54,11 +54,11 @@ PUERTO_SUR_AMARILLOX = -PUERTO_SUR_AZULX
 PUERTO_SUR_AMARILLOY = PUERTO_SUR_AZULY
 PUERTO_NORTE_AMARILLOX = -PUERTO_NORTE_AZULX
 PUERTO_NORTE_AMARILLOY = PUERTO_NORTE_AZULY
-
+#Mangas de viento
 # Posición para ver la camara:      #Completamente orientativo
 CAMARA_X = 0
 CAMARA_Y = 1000
-# Instrucciones
+# Instrucciones, dentro de poco lo pasare a un diccionario
 ACTIVAR_EXPERIMENTO = 0
 BAHIA_SOLTAR = 1
 ESTANTERIAS_NEUTRO_CERCA = 2
@@ -67,6 +67,19 @@ ESTANTERIAS_NEUTRO_ENEMIGO = 4
 ESTANTERIAS_ENEMIGO = 5
 ACTUALIZAR_BRUJULA = 6
 CASA = 7
+
+VASO_4 = 8
+VASO_5 = 9
+VASO_6 = 10
+VASO_7 = 11
+VASO_8 = 12
+DESCARGAR_NEUTRO = 13
+VASO_10 = 14
+VASO_11 = 15
+VASO_12 = 16
+VASO_3 = 17
+MANGA_1 = 18 
+MANGA_2 = 19
 # ROBOTS
 PAREJITAS = 1
 POSAVASOS = 2
@@ -76,6 +89,9 @@ AZUL = 2
 #Vaso sobre el que se definen los demas:
 VASO_1X = -1200
 VASO_1Y = +50
+#Manga de viento sobre la que se definen las demas
+MANGA_1X = 230
+MANGA_1Y = 600
 
 class robot:  # Clase tipo robot donde se almacenan todos los valores insteresantes del propio estado del robot
     def __init__(self, posx, posy, orientacion):
@@ -109,10 +125,22 @@ class vaso:
         self.pos = (posx, posy)
         self.estado = True
 
-vasos =  []
-for numero_vaso in (1,12):
-    vasos +=  [vaso(posiciones_vasos [numero_vaso-1][0],posiciones_vasos [numero_vaso-1][1])]
+vasos_lado_azul = [0]
+vasos_lado_amarillo = [0]
+for numero_vaso in range (1 , 12):
+    vasos_lado_azul += [vaso(posiciones_vasos[numero_vaso-1][0],posiciones_vasos [numero_vaso-1][1])]
+    vasos_lado_amarillo += [vaso(-1*posiciones_vasos[numero_vaso-1][0],posiciones_vasos [numero_vaso-1][1])]
 
+posiciones_mangas = [(MANGA_1X, MANGA_1Y),(MANGA_1X + 405, MANGA_1Y)]
+class manga:
+    def __init__(self, posx, posy): 
+        self.pos = (posx, posy)
+        self.estado = True
+mangas_lado_azul = [0]
+mangas_lado_amarillo = [0]
+for numero_manga in range (1,2):
+    mangas_lado_azul += [manga(posiciones_mangas[numero_manga-1][0],posiciones_mangas [numero_manga-1][1])]
+    mangas_lado_amarillo += [-1*manga(posiciones_mangas [numero_manga-1][0],posiciones_mangas [numero_manga-1][1])]
 class estanterias():  #
     def __init__(self, estanteria_casa, estanteria_neutro_cerca, estanteria3, estanteria4):
         self.estanteria_casa = estanteria_casa
@@ -123,7 +151,7 @@ class estanterias():  #
 
 class game:  # Clase tipo game, donde se almacenan toda la información del partido y con un vistazo obtienes toda la información
     def __init__(self, lado, pos_inicio_parejitasx, pos_inicio_parejitasy, pos_inicio_posavasosx, pos_inicio_posavasosy, orientacion_inicial):
-        self.Activo = True
+        self.activo = True
         self.tiempo = 0
         self.puntos = 0
         self.lado = lado
@@ -145,7 +173,7 @@ def planificador(juego):
         
         if(juego.posavasos.robot.disponible):  # Posavasos no esta ocupado
             if(juego.experimento):
-                print("Activo el experimento")
+                print("activo el experimento")
                 ejecutor(ACTIVAR_EXPERIMENTO, POSAVASOS, juego)
                 
             elif(juego.posavasos.ventosas_ocupada):
@@ -167,8 +195,38 @@ def planificador(juego):
             else:
                 print("No tengo que hacer nada")
                 ejecutor(CASA, POSAVASOS, juego)
-    # if(juego.parejitas.disponible):
-    #    print("Parejitas es tu turno")
+        if(juego.parejitas.robot.disponible):
+            print("Parejitas es tu turno")
+            if(juego.lado == AZUL):
+                if (vasos_lado_azul[4].estado):
+                    print("Vamos a por el vaso 4")
+                    ejecutor(VASO_4,PAREJITAS,juego)
+                elif(vasos_lado_azul[5].estado):
+                    print("Vamos a por el vaso 5")
+                    ejecutor(VASO_5,PAREJITAS,juego)
+                elif(vasos_lado_azul[6].estado):
+                    print("Vamos a por el vaso 6")
+                    ejecutor(VASO_6,PAREJITAS,juego)
+                elif(vasos_lado_amarillo[7].estado):
+                    print("Vamos a por el vaso 7")
+                    ejecutor(VASO_7,PAREJITAS,juego)
+                elif(vasos_lado_amarillo[8].estado):
+                    print("Vamos a por el vaso 8")
+                    ejecutor(VASO_8,PAREJITAS,juego)
+                elif(vasos_lado_amarillo[9].estado):
+                    print("Vamos a por el vaso 9 y a descargar")
+                    ejecutor(DESCARGAR_NEUTRO,PAREJITAS,juego)
+                elif(mangas_lado_azul[1].estado):
+                    print("Vamos a por a la manga 1")
+                    ejecutor(MANGA_1,PAREJITAS,juego)
+                elif(mangas_lado_azul[2].estado):
+                    print("Vamos a por a la manga 2")
+                    ejecutor(MANGA_2,PAREJITAS,juego)   
+                else:
+                    juego.activo= False
+            elif(juego.lado == AMARILLO):
+                print("Nada preparado")
+                juego.activo = False
     else:
         print("Rapido pirate")
         ejecutor(CASA, POSAVASOS, juego)
@@ -179,12 +237,12 @@ def ejecutor(orden, robot, juego):
     # (Falta por implementar la creación de los waypoints, asi que solo hace gira->avanza)
     if(orden == ACTIVAR_EXPERIMENTO):
         if(juego.lado == AMARILLO):
-            print("Activo faro amarillo")
+            print("activo faro amarillo")
             Objx = ACTIVACION_EXPERIMENTOX_AMARILLO
             Objy = ACTIVACION_EXPERIMENTOY_AMARILLO
 
         elif(juego.lado == AZUL):
-            print("Activo faro azul")
+            print("activo faro azul")
             Objx = ACTIVACION_EXPERIMENTOX_AZUL
             Objy = ACTIVACION_EXPERIMENTOY_AZUL
 
@@ -283,10 +341,101 @@ def ejecutor(orden, robot, juego):
         instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
         envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
         juego.puntos = juego.puntos+10
-        juego.Activo = False
+        juego.activo = False
         juego.posavasos.robot.pos[0] = Objx
         juego.posavasos.robot.pos[1] = Objy
         juego.posavasos.robot.orientacion = Orientacion_final
+    elif(orden == VASO_4):
+        Objx = vasos_lado_azul[4].pos[0] 
+        Objy = vasos_lado_azul[4].pos[1]
+        Orientacion_final = 120
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
+            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
+        juego.parejitas.robot.pos[0] = Objx
+        juego.parejitas.robot.pos[1] = Objy
+        juego.parejitas.robot.orientacion = Orientacion_final
+        vasos_lado_azul[4].estado = False
+    elif(orden == VASO_3):
+        Objx = vasos_lado_azul[3].pos[0] 
+        Objy = vasos_lado_azul[3].pos[1]
+        Orientacion_final = 80
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
+            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
+        juego.parejitas.robot.pos[0] = Objx
+        juego.parejitas.robot.pos[1] = Objy
+        juego.parejitas.robot.orientacion = Orientacion_final
+        vasos_lado_azul[3].estado = False    
+    elif(orden == VASO_5):
+        Objx = vasos_lado_azul[5].pos[0] 
+        Objy = vasos_lado_azul[5].pos[1]
+        Orientacion_final = 290
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
+            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
+        juego.parejitas.robot.pos[0] = Objx
+        juego.parejitas.robot.pos[1] = Objy
+        juego.parejitas.robot.orientacion = Orientacion_final
+        vasos_lado_azul[5].estado = False
+    elif(orden == VASO_6):
+        Objx = vasos_lado_azul[6].pos[0] 
+        Objy = vasos_lado_azul[6].pos[1]
+        Orientacion_final = 300
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
+            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
+        juego.parejitas.robot.pos[0] = Objx
+        juego.parejitas.robot.pos[1] = Objy
+        juego.parejitas.robot.orientacion = Orientacion_final
+        vasos_lado_azul[6].estado = False
+    elif(orden == VASO_7):
+        Objx = vasos_lado_amarillo[7].pos[0] 
+        Objy = vasos_lado_amarillo[7].pos[1]
+        Orientacion_final = 270
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
+            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
+        juego.parejitas.robot.pos[0] = Objx
+        juego.parejitas.robot.pos[1] = Objy
+        juego.parejitas.robot.orientacion = Orientacion_final
+        vasos_lado_amarillo[7].estado = False
+    elif(orden == VASO_8):
+        Objx = vasos_lado_amarillo[8].pos[0] 
+        Objy = vasos_lado_amarillo[8].pos[1]
+        Orientacion_final = 270
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
+            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
+        juego.parejitas.robot.pos[0] = Objx
+        juego.parejitas.robot.pos[1] = Objy
+        juego.parejitas.robot.orientacion = Orientacion_final
+        vasos_lado_amarillo[8].estado = False
+    elif(orden == DESCARGAR_NEUTRO):
+        Objx = BAHIA_CENTRAL_AZULX
+        Objy = BAHIA_CENTRAL_AZULY
+        Orientacion_final = 270
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
+            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
+        juego.parejitas.robot.pos[0] = Objx
+        juego.parejitas.robot.pos[1] = Objy
+        juego.parejitas.robot.orientacion = Orientacion_final
+        vasos_lado_amarillo[9].estado = False
+    elif(orden == MANGA_1):
+        Objx = mangas_lado_azul[1].pos[0]
+        Objy = mangas_lado_azul[1].pos[1]
+        Orientacion_final = 0
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
+            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
+        juego.parejitas.robot.pos[0] = Objx
+        juego.parejitas.robot.pos[1] = Objy
+        juego.parejitas.robot.orientacion = Orientacion_final
+        mangas_lado_azul[1].estado = False
+    elif(orden == MANGA_2):
+        Objx = mangas_lado_azul[2].pos[0]
+        Objy = mangas_lado_azul[2].pos[1]
+        Orientacion_final = 0
+        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
+            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
+        juego.parejitas.robot.pos[0] = Objx
+        juego.parejitas.robot.pos[1] = Objy
+        juego.parejitas.robot.orientacion = Orientacion_final
+        mangas_lado_azul[2].estado = False
+        
     print(f"Posción actual {juego.posavasos.robot.pos[0]}, {juego.posavasos.robot.pos[1]}")
     print(f"Angulo actual {juego.posavasos.robot.orientacion}")
     
@@ -295,41 +444,46 @@ def main():
     print("Este script es una demo de la estrategia de cada uno de los robots")
     #print("Seleccione el robot con el que simular la demo (1 para posavasos y 2 para parejitas):")
     try:
-        dispositivo = int(input("Seleccione el robot con el que simular la demo (1 para parejitas y 2 para parejitas):"))
+        lado = int(input("Selecciona el lado (1 para amarillo y 2 para el Azul ):"))
     except ValueError:
         print("Dato no reconocido")
     else:
-        if(dispositivo == POSAVASOS):
-            print("Has escogido a posavasos")
-        elif(dispositivo == PAREJITAS):
-            print("Has escogido a parejitas")
+        if(lado == AMARILLO):
+            print("AMARILLO")
+            juego = game(AMARILLO, Partida_Amarilla_X , Partida_Amarilla_Y
+                        , Partida_Amarilla_X, Partida_Amarilla_Y, 180)
+        elif(lado == AZUL):
+            print("AZUL")
+            juego = game(AZUL, Partida_Azul_X , Partida_Azul_Y ,
+                        Partida_Azul_X, Partida_Azul_Y, 0)                
         else:
-            print("Número incorrecto, inicie de nuevo el programa")
+            print("Error seleccionando lado cargue de nuevo el programa")
             raise Exception
         try:
-            lado = int(input("Selecciona el lado (1 para amarillo y 2 para el Azul ):"))
+            dispositivo = int(input("Seleccione el robot con el que simular la demo (1 para parejitas y 2 para posavasos):"))
         except ValueError:
             print("Dato no reconocido")
         else:
-            if(lado == AMARILLO):
-                print("AMARILLO")
-                juego = game(AMARILLO, Partida_Amarilla_X , Partida_Amarilla_Y
-                            , Partida_Amarilla_X, Partida_Amarilla_Y, 180)
-            elif(lado == AZUL):
-                print("AZUL")
-                juego = game(AZUL, Partida_Azul_X , Partida_Azul_Y ,
-                            Partida_Azul_X, Partida_Azul_Y, 0)
+            if(dispositivo == POSAVASOS):
+                print("Has escogido a posavasos")
+                juego.parejitas.robot.disponible = False
+            elif(dispositivo == PAREJITAS):
+                print("Has escogido a parejitas")
+                juego.posavasos.robot.disponible = False
             else:
-                print("Error seleccionando lado cargue de nuevo el programa")
+                print("Número incorrecto, inicie de nuevo el programa")
                 raise Exception
-            print("Situación inicial:")
-            print("Posicion de parejitas")
-            print(juego.parejitas.robot.pos[0])
-            print(juego.parejitas.robot.pos[1])
-            print("Posicion de posavasos")
-            print(juego.posavasos.robot.pos[0])
-            print(juego.posavasos.robot.pos[1])
-            while juego.Activo:
+            print(f"El juego va a comenzar en {5}")
+            time.sleep(1)
+            print(f"El juego va a comenzar en {4}")
+            time.sleep(1)
+            print(f"El juego va a comenzar en {3}")
+            time.sleep(1)
+            print(f"El juego va a comenzar en {2}")
+            time.sleep(1)
+            print(f"El juego va a comenzar en {1}")
+            time.sleep(1)
+            while juego.activo:
                 planificador(juego)
                 print("Vamos por el segundo de partido:")
                 print(juego.tiempo)
