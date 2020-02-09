@@ -21,14 +21,14 @@ Partida_Amarilla_Y = Partida_Azul_Y
 
 #Activación de experimentos
 ACTIVACION_EXPERIMENTOX_AZUL = Partida_Azul_X 
-ACTIVACION_EXPERIMENTOY_AZUL = Partida_Azul_Y + 1070 
+ACTIVACION_EXPERIMENTOY_AZUL = Partida_Azul_Y + 950                     #Teniendo en cuenta el diametro 
 ACTIVACION_EXPERIMENTOX_AMARILLO = -ACTIVACION_EXPERIMENTOX_AZUL
 ACTIVACION_EXPERIMENTOY_AMARILLO = ACTIVACION_EXPERIMENTOY_AZUL
 # Estanterias:
 ESTANTERIA_VASOS_1X = Partida_Azul_X 
 ESTANTERIA_VASOS_1Y = Partida_Azul_Y -250 
 ESTANTERIA_VASOS_2X = Partida_Azul_X + 850
-ESTANTERIA_VASOS_2Y =  ACTIVACION_EXPERIMENTOY_AZUL
+ESTANTERIA_VASOS_2Y = Partida_Azul_Y + 950
 ESTANTERIA_VASOS_3X = -ESTANTERIA_VASOS_2X
 ESTANTERIA_VASOS_3Y = ESTANTERIA_VASOS_2Y
 ESTANTERIA_VASOS_4X = -ESTANTERIA_VASOS_1X
@@ -67,7 +67,6 @@ ESTANTERIAS_NEUTRO_ENEMIGO = 4
 ESTANTERIAS_ENEMIGO = 5
 ACTUALIZAR_BRUJULA = 6
 CASA = 7
-
 VASO_4 = 8
 VASO_5 = 9
 VASO_6 = 10
@@ -86,13 +85,28 @@ POSAVASOS = 2
 # Lados
 AMARILLO = 1
 AZUL = 2
-#Vaso sobre el que se definen los demas:
+# Vasos:
 VASO_1X = -1200
 VASO_1Y = +50
-#Manga de viento sobre la que se definen las demas
+posiciones_vasos = [(VASO_1X,VASO_1Y),(VASO_1X + 150, VASO_1Y + 120 ),
+(VASO_1X,VASO_1Y + 800 ) ,(VASO_1X + 150, VASO_1Y + 490),
+(VASO_1X + 530, VASO_1Y + 1100 ),(VASO_1X +650,VASO_1Y + 800),
+(VASO_1X + 800, VASO_1Y + 400),(VASO_1X + 970,VASO_1Y),
+(VASO_1X + 705,VASO_1Y - 755),(VASO_1X + 765, VASO_1Y - 400),
+(VASO_1X + 1035 ,VASO_1Y - 400),(VASO_1X + 1095,VASO_1Y - 755)]
+vasos_lado_azul = [0]
+vasos_lado_amarillo = [0]
+
+#Mangas:
 MANGA_1X = 230
 MANGA_1Y = 600
+posiciones_mangas = [(MANGA_1X, MANGA_1Y),(MANGA_1X + 405, MANGA_1Y)]
+mangas_lado_azul = [0]
+mangas_lado_amarillo = [0]
 
+
+
+#Clases
 class robot:  # Clase tipo robot donde se almacenan todos los valores insteresantes del propio estado del robot
     def __init__(self, posx, posy, orientacion):
         self.disponible = True
@@ -112,35 +126,15 @@ class Parejitas:
         self.robot = robot(posx, posy, orientacion)  # Datos por concretar
         self.compuertas = False  # Estan abiertas
         self.actuador_banda = False
-
-posiciones_vasos = [(VASO_1X,VASO_1Y),(VASO_1X + 150, VASO_1Y + 120 ),
-(VASO_1X,VASO_1Y + 800 ) ,(VASO_1X + 150, VASO_1Y + 490),
-(VASO_1X + 530, VASO_1Y + 1100 ),(VASO_1X +650,VASO_1Y + 800),
-(VASO_1X + 800, VASO_1Y + 400),(VASO_1X + 970,VASO_1Y),
-(VASO_1X + 705,VASO_1Y - 755),(VASO_1X + 765, VASO_1Y - 400),
-(VASO_1X + 1035 ,VASO_1Y - 400),(VASO_1X + 1095,VASO_1Y - 755)]
-
 class vaso:
     def __init__(self,posx ,posy):
         self.pos = (posx, posy)
         self.estado = True
-
-vasos_lado_azul = [0]
-vasos_lado_amarillo = [0]
-for numero_vaso in range (1 , 12):
-    vasos_lado_azul += [vaso(posiciones_vasos[numero_vaso-1][0],posiciones_vasos [numero_vaso-1][1])]
-    vasos_lado_amarillo += [vaso(-1*posiciones_vasos[numero_vaso-1][0],posiciones_vasos [numero_vaso-1][1])]
-
-posiciones_mangas = [(MANGA_1X, MANGA_1Y),(MANGA_1X + 405, MANGA_1Y)]
 class manga:
     def __init__(self, posx, posy): 
         self.pos = (posx, posy)
         self.estado = True
-mangas_lado_azul = [0]
-mangas_lado_amarillo = [0]
-for numero_manga in range (1,2):
-    mangas_lado_azul += [manga(posiciones_mangas[numero_manga-1][0],posiciones_mangas [numero_manga-1][1])]
-    mangas_lado_amarillo += [-1*manga(posiciones_mangas [numero_manga-1][0],posiciones_mangas [numero_manga-1][1])]
+
 class estanterias():  #
     def __init__(self, estanteria_casa, estanteria_neutro_cerca, estanteria3, estanteria4):
         self.estanteria_casa = estanteria_casa
@@ -148,6 +142,17 @@ class estanterias():  #
         self.estanteria3 = estanteria3
         self.estanteria4 = estanteria4
 
+
+for numero_vaso in range (1 , 12):
+    vasos_lado_azul += [vaso(posiciones_vasos[numero_vaso-1][0],
+        posiciones_vasos [numero_vaso-1][1])]
+    vasos_lado_amarillo += [vaso(-1*posiciones_vasos[numero_vaso-1][0],
+        posiciones_vasos [numero_vaso-1][1])]
+for numero_manga in range (1,2):
+    mangas_lado_azul += [manga(posiciones_mangas[numero_manga-1][0],
+        posiciones_mangas [numero_manga-1][1])]
+    mangas_lado_amarillo += [-1*manga(posiciones_mangas [numero_manga-1][0],
+        posiciones_mangas [numero_manga-1][1])]
 
 class game:  # Clase tipo game, donde se almacenan toda la información del partido y con un vistazo obtienes toda la información
     def __init__(self, lado, pos_inicio_parejitasx, pos_inicio_parejitasy, pos_inicio_posavasosx, pos_inicio_posavasosy, orientacion_inicial):
@@ -163,6 +168,7 @@ class game:  # Clase tipo game, donde se almacenan toda la información del part
         self.estanterias = estanterias(True, True, True, True)
         self.experimento = True
         self.brujula = "D"
+
 
 
 # Revisa el estado de la clase juego y decide que hacer, hecho esto cede el contro a ejecutor
