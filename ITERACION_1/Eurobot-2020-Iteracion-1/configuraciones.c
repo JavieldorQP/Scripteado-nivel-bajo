@@ -70,11 +70,11 @@ void init_pwm(void)
 	
 	LPC_PWM1->TCR				=		(1<<3)			|		(1<<0);						//Se habilita el contador y la PWM.
 
-	LPC_GPIO2->FIODIR1	|=	(3<<3);														//Se configuran los GPIOS 2.11 y 2.12 como salida para los enable de
-																														//la controladora. el 2.11 es para la izquierda y el 2.12 para la derecha.
-																														
-	LPC_GPIO2->FIOCLR1	|=	(3<<3);														//Se ponen los pines a 0 como predeterminado.
-	
+	LPC_GPIO2->FIODIR1	|=	(3<<2);														//Se configuran los GPIOS 2.11 y 2.10 como salida para los enable de
+																													//la controladora. el 2.11 es para la izquierda y el 2.10 para la derecha.
+																																																	
+	LPC_GPIO2->FIOCLR1	|=	(3<<2);														//Se ponen los pines a 0 como predeterminado.
+		
 	LPC_GPIO3->FIODIR3	|=	(3<<1);														//Se confguran los pines 3.25 y 3.26 (pines de sentido de las ruedas)
 																														//como salidas. el 3.25 corresponde a la derecha y el 3.26 a la izquierda.
 																														//Los valores de sentido en Sebastian son 0 para el avance de ambas ruedas.

@@ -1,8 +1,9 @@
 #include "lpc17xx.h"
 #include "math.h"
 //defines PWM
-#define CLK 					25e6							//Frecuencia del reloj
-#define FPWM 					1000     					//Frecuencia de la PWM
+
+
+
 
 
 //FUNCION PWM2_SetDuty: Esta funci�n cambia la velocidad de la rueda derecha y acepta valores entre 800 y -800 (las controladoras
@@ -19,15 +20,18 @@ void PWM2_SetDuty (float velocidad)
 	LPC_PWM1->MR2				 = 	(uint32_t)(duty*LPC_PWM1->MR0);				//Se calcula el MR2 como el duty por el valor de MR0 convertido a uint32_t
 	
 	LPC_PWM1->LER 			|= 	(1<<2);																//Se actualiza el valor de MR2 desde el registro LER
-	
-	/*if(velocidad>=0)
-		LPC_GPIO3->FIOCLR	|=	(3<<25);															//Si la velocidad es positiva ponemos el bit de sentido derecho a 0 (avance)
+	/*
+	if(distancia>=0)
+		LPC_GPIO3->FIOCLR	|=	(1<<25);															//Si la velocidad es positiva ponemos el bit de sentido derecho a 0 (avance)
 	
 	else
-		LPC_GPIO3->FIOSET	|=	(3<<25);															//En caso contrario se pone a 1(retroceso)
+		LPC_GPIO3->FIOSET	|=	(1<<25);															//En caso contrario se pone a 1(retroceso)
 	*/
-	LPC_GPIO2->FIOSET1	|=	(2<<3);																//Se pone a 1 el bit de enable derecho(2.12).
-	
+	LPC_GPIO2->FIOSET1	|=	(1<<2);																//Se pone a 1 el bit de enable derecho(2.10).
+	/*
+	if (velocidad == 0)
+	LPC_GPIO2->FIOCLR1	|=	(1<<2);																//En el caso de velocidad cero desactivamos tambien el enable.
+	*/
 	return;
 }
 //FUNCION PWM3_SetDuty: Esta funci�n cambia la velocidad de la rueda izquierda y acepta valores entre 800 y -800 (las controladoras
@@ -41,17 +45,22 @@ void PWM3_SetDuty (float velocidad)
 																																//la velocidad entre mil. La funci�n fabs recibe y devuelve un double
 																																//y es por eso por lo que necesitamos las conversiones de tipo.
 	
+	
+	
 	LPC_PWM1->MR3	 			 = 	(uint32_t)(duty*LPC_PWM1->MR0);				//Se calcula el MR3 como el duty por el valor de MR0 convertido a uint32_t
 	
 	LPC_PWM1->LER 			|=	(1<<3);																//Se actualiza el valor de MR3 desde el registro LER
-	
-	/*if(velocidad>=0)
-		LPC_GPIO3->FIOCLR	|=	(3<<26);															//Si la velocidad es positiva ponemos el bit de sentido izquierdo a 0 (avance)
+	/*
+	if(distancia>=0)
+		LPC_GPIO3->FIOCLR	|=	(1<<26);															//Si la velocidad es positiva ponemos el bit de sentido izquierdo a 0 (avance)
 	
 	else
-		LPC_GPIO3->FIOSET	|=	(3<<26);															//En caso contrario se pone a 1(retroceso)
+		LPC_GPIO3->FIOSET	|=	(1<<26);															//En caso contrario se pone a 1(retroceso)
 	*/
 	LPC_GPIO2->FIOSET1	|=	(1<<3);																//Se pone a 1 el bit de enable izquierdo(2.11).
-	
+	/*
+	if (velocidad == 0)
+	LPC_GPIO2->FIOCLR1	|=	(1<<3);																//En el caso de velocidad cero desactivamos tambien el enable.
+	*/
 	return;
 }
