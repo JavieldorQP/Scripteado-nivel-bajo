@@ -21,7 +21,7 @@ def main():
             mensaje = instruccion[i] + '\0'
             MDK2_Port.write(mensaje.encode())
             c=0
-        elif mensaje_recibido[0] == b'S':
+        elif mensaje_recibido == b'S':
             print("A")
             i = i+1
             if(i == len(instruccion)):
