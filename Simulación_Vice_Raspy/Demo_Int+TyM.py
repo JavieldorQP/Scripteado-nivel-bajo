@@ -25,14 +25,13 @@ ACTIVACION_EXPERIMENTOY_AZUL = Partida_Azul_Y + 950                     #Teniend
 ACTIVACION_EXPERIMENTOX_AMARILLO = -ACTIVACION_EXPERIMENTOX_AZUL
 ACTIVACION_EXPERIMENTOY_AMARILLO = ACTIVACION_EXPERIMENTOY_AZUL
 # Estanterias:
-ESTANTERIA_VASOS_1X = Partida_Azul_X 
-ESTANTERIA_VASOS_1Y = Partida_Azul_Y -250 
-ESTANTERIA_VASOS_2X = Partida_Azul_X + 850
-ESTANTERIA_VASOS_2Y = Partida_Azul_Y + 950
-ESTANTERIA_VASOS_3X = -ESTANTERIA_VASOS_2X
-ESTANTERIA_VASOS_3Y = ESTANTERIA_VASOS_2Y
-ESTANTERIA_VASOS_4X = -ESTANTERIA_VASOS_1X
-ESTANTERIA_VASOS_4Y = ESTANTERIA_VASOS_1Y
+posiciones_estanterias = [
+        (Partida_Azul_X, Partida_Azul_Y -250 ),         # Estanteria 1, cerca de casa
+        (Partida_Azul_X + 850 , Partida_Azul_Y + 950)   # Estanteria 2, cerca del neutro
+        ]
+estanterias_lado_azul = [0]
+estanterias_lado_amarillo = [0]
+
 # Bahias laterales:
 BAHIA_AZULX = Partida_Azul_X
 BAHIA_AZULY = Partida_Azul_Y + 500
@@ -88,26 +87,37 @@ AZUL = 2
 # Vasos:
 VASO_1X = -1200
 VASO_1Y = +50
-posiciones_vasos = [(VASO_1X,VASO_1Y),(VASO_1X + 150, VASO_1Y + 120 ),
-(VASO_1X,VASO_1Y + 800 ) ,(VASO_1X + 150, VASO_1Y + 490),
-(VASO_1X + 530, VASO_1Y + 1100 ),(VASO_1X +650,VASO_1Y + 800),
-(VASO_1X + 800, VASO_1Y + 400),(VASO_1X + 970,VASO_1Y),
-(VASO_1X + 705,VASO_1Y - 755),(VASO_1X + 765, VASO_1Y - 400),
-(VASO_1X + 1035 ,VASO_1Y - 400),(VASO_1X + 1095,VASO_1Y - 755)]
+posiciones_vasos = [
+        (VASO_1X,VASO_1Y),                  # Vaso 1
+        (VASO_1X + 150, VASO_1Y + 120 ),    # Vaso 2
+        (VASO_1X,VASO_1Y + 800 ),           # Vaso 3
+        (VASO_1X + 150, VASO_1Y + 490),     # Vaso 4 
+        (VASO_1X + 530, VASO_1Y + 1100 ),   # Vaso 5
+        (VASO_1X +650,VASO_1Y + 800),       # Vaso 6
+        (VASO_1X + 800, VASO_1Y + 400),     # Vaso 7
+        (VASO_1X + 970,VASO_1Y),            # Vaso 8
+        (VASO_1X + 705,VASO_1Y - 755),      # Vaso 9
+        (VASO_1X + 765, VASO_1Y - 400),     # Vaso 10
+        (VASO_1X + 1035 ,VASO_1Y - 400),    # Vaso 11
+        (VASO_1X + 1095,VASO_1Y - 755)      # Vaso 12
+        ]
 vasos_lado_azul = [0]
 vasos_lado_amarillo = [0]
 
 #Mangas:
 MANGA_1X = 230
 MANGA_1Y = 600
-posiciones_mangas = [(MANGA_1X, MANGA_1Y),(MANGA_1X + 405, MANGA_1Y)]
+posiciones_mangas = [
+    (MANGA_1X, MANGA_1Y),           # Manga 1, cerca de la casa
+    (MANGA_1X + 405, MANGA_1Y)      # Manga 1, cerca del neutro
+    ]
 mangas_lado_azul = [0]
 mangas_lado_amarillo = [0]
 
 
 
-#Clases
-class robot:  # Clase tipo robot donde se almacenan todos los valores insteresantes del propio estado del robot
+#Clases:
+class robot:  # Clase tipo robot donde se almacenan todos los valores insteresantes del propio disponible del robot
     def __init__(self, posx, posy, orientacion):
         self.disponible = True
         self.pos = [posx, posy]
@@ -129,18 +139,16 @@ class Parejitas:
 class vaso:
     def __init__(self,posx ,posy):
         self.pos = (posx, posy)
-        self.estado = True
+        self.disponible = True
 class manga:
     def __init__(self, posx, posy): 
         self.pos = (posx, posy)
-        self.estado = True
+        self.disponible = True
 
-class estanterias():  #
-    def __init__(self, estanteria_casa, estanteria_neutro_cerca, estanteria3, estanteria4):
-        self.estanteria_casa = estanteria_casa
-        self.estanteria_neutro_cerca = estanteria_neutro_cerca
-        self.estanteria3 = estanteria3
-        self.estanteria4 = estanteria4
+class estanteria():  #
+    def __init__(self, posx, posy):
+        self.pos = (posx, posy)
+        self.disponible = True
 
 
 for numero_vaso in range (1 , 12):
@@ -153,7 +161,15 @@ for numero_manga in range (1,2):
         posiciones_mangas [numero_manga-1][1])]
     mangas_lado_amarillo += [-1*manga(posiciones_mangas [numero_manga-1][0],
         posiciones_mangas [numero_manga-1][1])]
-
+class campo:
+    def __init__(self):
+        self.vasos_lado_azul = vasos_lado_azul
+        self.vasos_lado_amarillo = vasos_lado_amarillo
+        self.mangas_lado_azul = mangas_lado_azul
+        self.mangas_lado_amarillo = mangas_lado_amarillo
+        self.estanterias = estanterias(True, True, True, True)
+        self.experimento = True
+        self.brujula = "D"
 class game:  # Clase tipo game, donde se almacenan toda la información del partido y con un vistazo obtienes toda la información
     def __init__(self, lado, pos_inicio_parejitasx, pos_inicio_parejitasy, pos_inicio_posavasosx, pos_inicio_posavasosy, orientacion_inicial):
         self.activo = True
@@ -164,14 +180,11 @@ class game:  # Clase tipo game, donde se almacenan toda la información del part
             pos_inicio_posavasosx, pos_inicio_posavasosy, orientacion_inicial)
         self.parejitas = Parejitas(
             pos_inicio_parejitasx, pos_inicio_parejitasy, orientacion_inicial)
-        #self.vasos = vasos(True, True, True, True)
-        self.estanterias = estanterias(True, True, True, True)
-        self.experimento = True
-        self.brujula = "D"
+        self.campo = campo
 
 
 
-# Revisa el estado de la clase juego y decide que hacer, hecho esto cede el contro a ejecutor
+# Revisa el disponible de la clase juego y decide que hacer, hecho esto cede el contro a ejecutor
 
 
 def planificador(juego):
@@ -204,28 +217,28 @@ def planificador(juego):
         if(juego.parejitas.robot.disponible):
             print("Parejitas es tu turno")
             if(juego.lado == AZUL):
-                if (vasos_lado_azul[4].estado):
+                if (vasos_lado_azul[4].disponible):
                     print("Vamos a por el vaso 4")
                     ejecutor(VASO_4,PAREJITAS,juego)
-                elif(vasos_lado_azul[5].estado):
+                elif(vasos_lado_azul[5].disponible):
                     print("Vamos a por el vaso 5")
                     ejecutor(VASO_5,PAREJITAS,juego)
-                elif(vasos_lado_azul[6].estado):
+                elif(vasos_lado_azul[6].disponible):
                     print("Vamos a por el vaso 6")
                     ejecutor(VASO_6,PAREJITAS,juego)
-                elif(vasos_lado_amarillo[7].estado):
+                elif(vasos_lado_amarillo[7].disponible):
                     print("Vamos a por el vaso 7")
                     ejecutor(VASO_7,PAREJITAS,juego)
-                elif(vasos_lado_amarillo[8].estado):
+                elif(vasos_lado_amarillo[8].disponible):
                     print("Vamos a por el vaso 8")
                     ejecutor(VASO_8,PAREJITAS,juego)
-                elif(vasos_lado_amarillo[9].estado):
+                elif(vasos_lado_amarillo[9].disponible):
                     print("Vamos a por el vaso 9 y a descargar")
                     ejecutor(DESCARGAR_NEUTRO,PAREJITAS,juego)
-                elif(mangas_lado_azul[1].estado):
+                elif(mangas_lado_azul[1].disponible):
                     print("Vamos a por a la manga 1")
                     ejecutor(MANGA_1,PAREJITAS,juego)
-                elif(mangas_lado_azul[2].estado):
+                elif(mangas_lado_azul[2].disponible):
                     print("Vamos a por a la manga 2")
                     ejecutor(MANGA_2,PAREJITAS,juego)   
                 else:
@@ -360,7 +373,7 @@ def ejecutor(orden, robot, juego):
         juego.parejitas.robot.pos[0] = Objx
         juego.parejitas.robot.pos[1] = Objy
         juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_azul[4].estado = False
+        vasos_lado_azul[4].disponible = False
     elif(orden == VASO_3):
         Objx = vasos_lado_azul[3].pos[0] 
         Objy = vasos_lado_azul[3].pos[1]
@@ -370,7 +383,7 @@ def ejecutor(orden, robot, juego):
         juego.parejitas.robot.pos[0] = Objx
         juego.parejitas.robot.pos[1] = Objy
         juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_azul[3].estado = False    
+        vasos_lado_azul[3].disponible = False    
     elif(orden == VASO_5):
         Objx = vasos_lado_azul[5].pos[0] 
         Objy = vasos_lado_azul[5].pos[1]
@@ -380,7 +393,7 @@ def ejecutor(orden, robot, juego):
         juego.parejitas.robot.pos[0] = Objx
         juego.parejitas.robot.pos[1] = Objy
         juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_azul[5].estado = False
+        vasos_lado_azul[5].disponible = False
     elif(orden == VASO_6):
         Objx = vasos_lado_azul[6].pos[0] 
         Objy = vasos_lado_azul[6].pos[1]
@@ -390,7 +403,7 @@ def ejecutor(orden, robot, juego):
         juego.parejitas.robot.pos[0] = Objx
         juego.parejitas.robot.pos[1] = Objy
         juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_azul[6].estado = False
+        vasos_lado_azul[6].disponible = False
     elif(orden == VASO_7):
         Objx = vasos_lado_amarillo[7].pos[0] 
         Objy = vasos_lado_amarillo[7].pos[1]
@@ -400,7 +413,7 @@ def ejecutor(orden, robot, juego):
         juego.parejitas.robot.pos[0] = Objx
         juego.parejitas.robot.pos[1] = Objy
         juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_amarillo[7].estado = False
+        vasos_lado_amarillo[7].disponible = False
     elif(orden == VASO_8):
         Objx = vasos_lado_amarillo[8].pos[0] 
         Objy = vasos_lado_amarillo[8].pos[1]
@@ -410,7 +423,7 @@ def ejecutor(orden, robot, juego):
         juego.parejitas.robot.pos[0] = Objx
         juego.parejitas.robot.pos[1] = Objy
         juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_amarillo[8].estado = False
+        vasos_lado_amarillo[8].disponible = False
     elif(orden == DESCARGAR_NEUTRO):
         Objx = BAHIA_CENTRAL_AZULX
         Objy = BAHIA_CENTRAL_AZULY
@@ -420,7 +433,7 @@ def ejecutor(orden, robot, juego):
         juego.parejitas.robot.pos[0] = Objx
         juego.parejitas.robot.pos[1] = Objy
         juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_amarillo[9].estado = False
+        vasos_lado_amarillo[9].disponible = False
     elif(orden == MANGA_1):
         Objx = mangas_lado_azul[1].pos[0]
         Objy = mangas_lado_azul[1].pos[1]
@@ -430,7 +443,7 @@ def ejecutor(orden, robot, juego):
         juego.parejitas.robot.pos[0] = Objx
         juego.parejitas.robot.pos[1] = Objy
         juego.parejitas.robot.orientacion = Orientacion_final
-        mangas_lado_azul[1].estado = False
+        mangas_lado_azul[1].disponible = False
     elif(orden == MANGA_2):
         Objx = mangas_lado_azul[2].pos[0]
         Objy = mangas_lado_azul[2].pos[1]
@@ -440,7 +453,7 @@ def ejecutor(orden, robot, juego):
         juego.parejitas.robot.pos[0] = Objx
         juego.parejitas.robot.pos[1] = Objy
         juego.parejitas.robot.orientacion = Orientacion_final
-        mangas_lado_azul[2].estado = False
+        mangas_lado_azul[2].disponible = False
         
     print(f"Posción actual {juego.posavasos.robot.pos[0]}, {juego.posavasos.robot.pos[1]}")
     print(f"Angulo actual {juego.posavasos.robot.orientacion}")
