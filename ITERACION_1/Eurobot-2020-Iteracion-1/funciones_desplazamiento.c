@@ -49,18 +49,21 @@ void velocidad_izquierda (double rad_por_s,param_mecanicos *mecanica)	//Esta fun
 void apaga_motores (void)
 {
 	LPC_GPIO2->FIOCLR1	|=	(3<<3);	
+	LPC_GPIO2->FIOCLR1	|=	(1<<2);
 }
 
 void enciende_motores (void)
 {
 	LPC_GPIO2->FIOSET1 |=	(3<<3);
+	LPC_GPIO2->FIOSET1 |= (1<<2);
 }
 
 void motores (cinematica *variable, param_mecanicos *mecanica)
 {
 	//Ponemos las velocidades en las ruedas
-	enciende_motores();
+	
 	velocidad_derecha(variable->velocidad_final, mecanica);
 	velocidad_izquierda(variable->velocidad_final, mecanica);
-
+	enciende_motores();
+	
 }

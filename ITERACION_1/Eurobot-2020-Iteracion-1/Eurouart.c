@@ -157,7 +157,7 @@ void Traduccion_Variables(cinematica *variable)
     {
     case ('G'):
         Instruccion_Codigo = T_INSTRUCCION;
-        Instruccion_Prioridad = 0;
+        Instruccion_Prioridad = BIT_PRIO-'0';
         grados_giro = (BIT_C_GRADOS - '0') * 100 + (BIT_D_GRADOS - '0') * 10 + (BIT_U_GRADOS - '0');
 				variable->angulo=grados_giro;
         if (BIT_SIGNO_GRADOS == '+')
@@ -176,7 +176,7 @@ void Traduccion_Variables(cinematica *variable)
         break;
     case ('D'):
         Instruccion_Codigo = T_INSTRUCCION;
-        Instruccion_Prioridad = 0;
+        Instruccion_Prioridad = BIT_PRIO-'0';
         distancia = (BIT_M_DISTANCIA - '0') * 1000 + (BIT_C_DISTANCIA - '0') * 100 + (BIT_D_DISTANCIA - '0') * 10 + (BIT_U_DISTANCIA - '0');
 				variable->distancia=distancia;
         velocidad_final = (BIT_M_V_FINAL - '0') * 1000 + (BIT_C_V_FINAL - '0') * 100 + (BIT_D_V_FINAL - '0') * 10 + (BIT_U_V_FINAL - '0');
@@ -190,7 +190,7 @@ void Traduccion_Variables(cinematica *variable)
         break;
     case ('C'):
         Instruccion_Codigo = T_INSTRUCCION;
-        Instruccion_Prioridad = 0;
+        Instruccion_Prioridad = BIT_PRIO-'0';
         distancia = (BIT_M_DISTANCIA_C - '0') * 1000 + (BIT_C_DISTANCIA_C - '0') * 100 + (BIT_D_DISTANCIA_C - '0') * 10 + (BIT_U_DISTANCIA_C - '0');
         velocidad_final = (BIT_M_V_FINAL_C - '0') * 1000 + (BIT_C_V_FINAL_C - '0') * 100 + (BIT_D_V_FINAL_C - '0') * 10 + (BIT_U_V_FINAL_C - '0');
         velocidad_maxima = (BIT_M_VMAX_C - '0') * 1000 + (BIT_C_VMAX_C - '0') * 100 + (BIT_D_VMAX_C - '0') * 10 + (BIT_U_VMAX_C - '0');
@@ -202,6 +202,7 @@ void Traduccion_Variables(cinematica *variable)
     case ('F'):
         Instruccion_Codigo = T_INSTRUCCION;
         Instruccion_Prioridad = 1; 
+				break;
     default:
         transmitir_cadenaUART0("EI");
     

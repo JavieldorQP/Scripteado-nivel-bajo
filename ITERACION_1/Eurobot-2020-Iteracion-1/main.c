@@ -36,6 +36,9 @@ int grados_giro = 0;
 
 char aux[100]={0};	//Buffer de transmisión de 100 caracteres
 
+
+static char Inicio = 1;
+
 /**** CINEMÁTICA ****/
 
 cinematica lazo_abierto;							//Estructura de variables cinemáticas
@@ -96,10 +99,10 @@ void reset_pose(void) {
 }
 
 void transmitir_estado(Caracterizacion *Robot){
-	sprintf(aux,"S%d.%d.%d.\n",Robot->Pos.X,Robot->Pos.Y,Robot->Orientacion);
-	transmitir_cadenaUART0(aux);
+	//sprintf(aux,"S%d.%d.%d.\n",Robot->Pos.X,Robot->Pos.Y,Robot->Orientacion);
+	//transmitir_cadenaUART0(aux);
 
-	//transmitir_cadenaUART0("S");
+	transmitir_cadenaUART0("S");
 }
 
 
@@ -135,7 +138,7 @@ void transmitir_estado(Caracterizacion *Robot){
 int CMD_Inicial(void){
 //En el bucle general se llama a esta función que inicializa la estructura Robot y espera instrucciones para arrancar hacia otro estado
 
-static char Inicio = 1;
+
 
 	if(Inicio){
 
@@ -158,7 +161,6 @@ int CMD_Parado(void){
 //Función de seguridad en el que llevamos todas las velocidades a 0 y miramos por la siguiente instrucción
 //Seguramente estamos aquí por un mensaje de FRENO
 
-static char Inicio = 1;
 static char flag_timer = 1;
 
 	if(Inicio){
@@ -170,12 +172,13 @@ static char flag_timer = 1;
 	}
 
 
-	if(contador > 15 && flag_timer){
+	if(contador > 30 && flag_timer){
 
 		flag_timer = 0;
 		apaga_motores();
 
-		transmitir_estado(&Robot);
+		//transmitir_estado(&Robot);
+		transmitir_cadenaUART0("P");
 		Robot.VelActual = 0;
 		reset_pose();
 		
@@ -195,7 +198,7 @@ static char flag_timer = 1;
 							}
 							*/
 	
-	if(Siguiente_Estado != Estado ){
+	if(Instruccion_Codigo != ST_PARADO){
 
 		Flag_EstadoFinalizado = 1;
 		Inicio = 1;
@@ -208,7 +211,7 @@ static char flag_timer = 1;
 int CMD_Recta(void){
 //Avanzamos una distancia en línea recta a velocidad máxima definida
 
-static char Inicio = 1;
+
 static char Flag_Frenada = 1;
 static char flag_timer = 1;
 
@@ -217,7 +220,7 @@ static char flag_timer = 1;
 		Inicio = 0;
 		contador = 0;
 		Flag_EstadoFinalizado = 0;
-		
+		flag_timer = 1;
 		reset_odometria();
 		
 		calcula_parametros_recta(&lazo_abierto,&maxon);
@@ -261,7 +264,6 @@ static char flag_timer = 1;
 int CMD_Giro(void){
 //Giramos sobre el eje del robot un ángulo definido a velocidad máxima definida
 
-static char Inicio = 1;
 static char Flag_Frenada = 1;
 static char flag_timer = 1;
 
@@ -270,7 +272,7 @@ static char flag_timer = 1;
 		Inicio = 0;
 		contador = 0;
 		Flag_EstadoFinalizado = 0;
-
+		flag_timer = 1;
 		reset_odometria();
 
 		calcula_parametros_giro(&lazo_abierto,&maxon);
@@ -321,18 +323,19 @@ int CMD_Curva(void){
 int CMD_Freno(void){
 //FRENA POR TU VIDA
 
-static int Inicio = 1;
 
-	if (Inicio)
+
+	if (!Inicio)
 	{
 
-		Inicio = 0;
-		Flag_EstadoFinalizado = 0;
+		Inicio = 1;
+		
 		calcula_parametros_freno_emergencia(&lazo_abierto,&maxon);
 		motores(&lazo_abierto,&maxon);
+		Flag_EstadoFinalizado = 0;
 		
 	}
-
+	
 	
 	//Evalúo el error que tengo en cada ciclo hasta que debería estar parado
 	if(lazo_abierto.error_posicion_actual_derecha_total < error_final || lazo_abierto.error_posicion_actual_izquierda_total < error_final){

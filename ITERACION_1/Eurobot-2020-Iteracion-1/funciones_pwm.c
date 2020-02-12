@@ -27,7 +27,7 @@ void PWM2_SetDuty (float velocidad)
 	else
 		LPC_GPIO3->FIOSET	|=	(1<<25);															//En caso contrario se pone a 1(retroceso)
 	*/
-	LPC_GPIO2->FIOSET1	|=	(1<<2);																//Se pone a 1 el bit de enable derecho(2.10).
+	//LPC_GPIO2->FIOSET1	|=	(1<<2);																//Se pone a 1 el bit de enable derecho(2.10).
 	/*
 	if (velocidad == 0)
 	LPC_GPIO2->FIOCLR1	|=	(1<<2);																//En el caso de velocidad cero desactivamos tambien el enable.
@@ -57,7 +57,7 @@ void PWM3_SetDuty (float velocidad)
 	else
 		LPC_GPIO3->FIOSET	|=	(1<<26);															//En caso contrario se pone a 1(retroceso)
 	*/
-	LPC_GPIO2->FIOSET1	|=	(1<<3);																//Se pone a 1 el bit de enable izquierdo(2.11).
+	//LPC_GPIO2->FIOSET1	|=	(1<<3);																//Se pone a 1 el bit de enable izquierdo(2.11).
 	/*
 	if (velocidad == 0)
 	LPC_GPIO2->FIOCLR1	|=	(1<<3);																//En el caso de velocidad cero desactivamos tambien el enable.

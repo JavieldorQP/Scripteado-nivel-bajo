@@ -19,17 +19,23 @@ extern int grados_giro;
 void calcula_parametros_freno_emergencia(cinematica *variable, param_mecanicos *mecanica){
 
 // la formula es d=|(v_fin^2-v_ini^2)/2a| donde v_fin vale 0 y la v_ini es la v_fin del anterior
+	variable->velocidad_final = 0;
+	variable->velocidad_inicial = 5;
 	variable->distancia_frenada = fabs ( pow(variable->velocidad_final,2) - pow(variable->velocidad_inicial,2) ) 
 		/ ( 2 * mecanica->deceleracion * PI / 30 * ( 1 / mecanica->reductora ) );
 	variable->velocidad_final = 0;
 	variable->distancia_total_rad = variable->distancia_frenada;
-
+	
+	variable->error_posicion_actual_derecha_total = 100;
+	variable->error_posicion_actual_izquierda_total = 100;
 }
 
 
 // Esta funcion calcula la distancia recorridad durante el periodo de frenado---------------------------------------------
 void calculo_de_frenada(cinematica *variable,param_mecanicos *mecanica)		
 {
+	variable->velocidad_inicial = 0;			//ELIMINAR CUANDO NO EMPIECE PARADO
+	
 	// la formula es d=|(v_fin^2-v_ini^2)/2a| donde v_fin vale 0 y la v_ini es la v_fin del anterior
 	variable->distancia_frenada = fabs ( pow(variable->velocidad_final,2) - pow(variable->velocidad_inicial,2) ) 
 		/ ( 2 * mecanica->deceleracion * PI / 30 * ( 1 / mecanica->reductora ) );
@@ -81,7 +87,7 @@ void Ajustar_distancia_giro (cinematica *variable)
 			break;
 		
 			case 7:
-				variable->ajustar_distancia = 0.25;
+				variable->ajustar_distancia = 0.2;
 			break;
 			
 		}
@@ -124,7 +130,7 @@ void Ajustar_distancia_recta (cinematica	*variable){
 			break;
 		
 			case 7:
-				variable->ajustar_distancia = 0.2;
+				variable->ajustar_distancia = 0.25;
 			break;
 			
 		}
@@ -150,8 +156,8 @@ void calcula_parametros_recta (cinematica *variable, param_mecanicos *mecanica)
 	variable->error_posicion_actual_derecha = 100;											//Le asigno un valor mayor que la comprobacion del if del main
 	variable->error_posicion_actual_izquierda = 100;										//Le asigno un valor mayor que la comprobacion del if del main
 	
-	variable->error_posicion_actual_derecha_total = 0;
-	variable->error_posicion_actual_izquierda_total = 0;
+	variable->error_posicion_actual_derecha_total = 100;
+	variable->error_posicion_actual_izquierda_total = 100;
 	
 	//Calcular la distancia que tiene que recorrer cuando acelere y vaya a velocidad constante
 	calculo_de_frenada(variable,mecanica);
