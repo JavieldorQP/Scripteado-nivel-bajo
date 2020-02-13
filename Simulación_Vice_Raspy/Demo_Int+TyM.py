@@ -32,16 +32,13 @@ posiciones_estanterias = [
 estanterias_lado_azul = [0]
 estanterias_lado_amarillo = [0]
 
-# Bahias laterales:
-BAHIA_AZULX = Partida_Azul_X
-BAHIA_AZULY = Partida_Azul_Y + 500
-BAHIA_AMARILLOX = -BAHIA_AZULX
-BAHIA_AMARILLOY = BAHIA_AZULY
-# Bahias centrales:
-BAHIA_CENTRAL_AZULX = Partida_Azul_X + 1650
-BAHIA_CENTRAL_AZULY = Partida_Azul_Y - 450
-BAHIA_CENTRAL_AMARILLOX = -BAHIA_CENTRAL_AZULX
-BAHIA_CENTRAL_AMARILLOY = -BAHIA_CENTRAL_AZULY
+# Bahias (ACTUALIZAR CON EL DIAMETRO DEL ROBOT):
+posiciones_bahias = [
+    (Partida_Azul_X, Partida_Azul_Y + 500),             # Bahia 1, cerca de casa
+    (Partida_Azul_X + 1650, Partida_Azul_Y - 450)       # Bahia 2, cerca del neutro
+    ]
+bahias_lado_azul = [0]
+bahias_lado_amarillo = [0]
 
 # Puertos Azules:
 PUERTO_SUR_AZULX = Partida_Azul_X 
@@ -150,26 +147,52 @@ class estanteria():  #
         self.pos = (posx, posy)
         self.disponible = True
 
+class bahia:
+    def __init__(self, posx, posy):
+        self.pos = (posx, posy)
+        self.disponible = True
 
 for numero_vaso in range (1 , 12):
     vasos_lado_azul += [vaso(posiciones_vasos[numero_vaso-1][0],
         posiciones_vasos [numero_vaso-1][1])]
     vasos_lado_amarillo += [vaso(-1*posiciones_vasos[numero_vaso-1][0],
         posiciones_vasos [numero_vaso-1][1])]
+
 for numero_manga in range (1,2):
     mangas_lado_azul += [manga(posiciones_mangas[numero_manga-1][0],
         posiciones_mangas [numero_manga-1][1])]
     mangas_lado_amarillo += [-1*manga(posiciones_mangas [numero_manga-1][0],
         posiciones_mangas [numero_manga-1][1])]
+
+for numero_estanterias in range (1,2):
+    estanterias_lado_azul += [estanteria(posiciones_estanterias[numero_estanterias-1][0],
+        posiciones_estanterias [numero_estanterias-1][1])]
+    estanterias_lado_amarillo += [-1*estanteria(posiciones_estanterias[numero_estanterias-1][0],
+        posiciones_estanterias [numero_estanterias-1][1])]
+
+for numero_bahias in range (1,2):
+    bahias_lado_azul += [bahia(posiciones_bahias[numero_bahias-1][0],
+        posiciones_bahias [numero_bahias-1][1])]
+    bahias_lado_amarillo += [-1*bahia(posiciones_bahias[numero_bahias-1][0],
+        posiciones_bahias [numero_bahias-1][1])]
+class objetivo:
+    def __init__(self,posx,posy,orientacion):
+        self.pos = [posx,posy]
+        self.orientacion = orientacion    
+
 class campo:
     def __init__(self):
         self.vasos_lado_azul = vasos_lado_azul
         self.vasos_lado_amarillo = vasos_lado_amarillo
         self.mangas_lado_azul = mangas_lado_azul
         self.mangas_lado_amarillo = mangas_lado_amarillo
-        self.estanterias = estanterias(True, True, True, True)
+        self.estanterias_lado_azul = estanterias_lado_azul
+        self.estanterias_lado_amarillo = estanterias_lado_amarillo
+        self.bahias_lado_azul = bahias_lado_azul
+        self.bahia_lado_amarillo = bahias_lado_amarillo
         self.experimento = True
         self.brujula = "D"
+
 class game:  # Clase tipo game, donde se almacenan toda la información del partido y con un vistazo obtienes toda la información
     def __init__(self, lado, pos_inicio_parejitasx, pos_inicio_parejitasy, pos_inicio_posavasosx, pos_inicio_posavasosy, orientacion_inicial):
         self.activo = True
@@ -181,6 +204,7 @@ class game:  # Clase tipo game, donde se almacenan toda la información del part
         self.parejitas = Parejitas(
             pos_inicio_parejitasx, pos_inicio_parejitasy, orientacion_inicial)
         self.campo = campo
+
 
 
 
@@ -250,7 +274,54 @@ def planificador(juego):
         print("Rapido pirate")
         ejecutor(CASA, POSAVASOS, juego)
 
+def moverse_giro_avanzo_giro(robot, objetivo_actual):
+    """
+        Acción de moverse del robot
+    """
+    instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(
+            robot.pos[0], 
+            robot.pos[1], 
+            objetivo_actual.pos[0], 
+            objetivo_actual.pos[1],
+            robot.orientacion,
+            objetivo_actual.orientacion)
+    envio_instrucciones_traccion (instruccion_giro1,instruccion_distancia,instruccion_giro2)
 
+def coger_vasos():
+    """
+        Baja el brazo y activa las ventosas
+    """
+    print("No hace nada de momento")
+
+def dejar_vasos():
+    """
+        Dejar el brazo y desactiva las ventosas
+    """
+    print("No hace nada de momento")
+
+
+acciones = {
+    1 : instrucciones_giro_avanzo_giro,
+    2 : coger_vasos,
+    3 : dejar_vasos
+}
+
+def activar_experimento(juego):
+    
+    if(juego.lado == AZUL):
+        objetivox = ACTIVACION_EXPERIMENTOX_AZUL
+        objetivoy = ACTIVACION_EXPERIMENTOY_AZUL
+    
+    elif(juego.lado == AMARILLO):
+        objetivox = ACTIVACION_EXPERIMENTOX_AMARILLO
+        objetivoy = ACTIVACION_EXPERIMENTOY_AMARILLO
+    orientacion_final = 90
+    objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+    acciones[1](juego.posavasos.robot, objetivo_actual)
+rutinas = {
+    1 : activar_experimento
+
+}
 # Ejecutor recrea TyM parcialmente, es decir recibe que ha de hacer y lo traduce en  instrucciones
 def ejecutor(orden, robot, juego):
     # (Falta por implementar la creación de los waypoints, asi que solo hace gira->avanza)

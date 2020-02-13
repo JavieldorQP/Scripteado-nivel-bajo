@@ -18,7 +18,6 @@ def envio_instrucciones_traccion(instruccion_1, instruccion_2, instruccion_3):
 
         if(c):
             # ENVIAMOS MENSAJE:
-            time.sleep(5)
             mensaje = instruccion[i] + '\0'
             MDK2_Port_traccion.write(mensaje.encode())
             c = 0
@@ -27,9 +26,7 @@ def envio_instrucciones_traccion(instruccion_1, instruccion_2, instruccion_3):
         
         elif (mensaje_recibido == b'S'):
             print("S")
-            time.sleep(1)
             i = i+1
-            #if(i < len(instruccion)-1):
             mensaje = instruccion[i] + '\0'
             MDK2_Port_traccion.write(mensaje.encode())
             print(f"Instrucción {mensaje}")
