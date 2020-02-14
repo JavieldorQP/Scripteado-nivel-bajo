@@ -10,6 +10,7 @@
 from Eurocomunicacion_raspy_funciones import envio_instrucciones_actuadores, envio_instrucciones_traccion
 from funcionesTyM import instrucciones_giro_avanzo_giro
 import time
+import random
 # Constantes
 # Definir vaso 1 como una tupla
 #El centro del campo es el centro del código aruco (1500,1250)
@@ -205,39 +206,218 @@ class game:  # Clase tipo game, donde se almacenan toda la información del part
             pos_inicio_parejitasx, pos_inicio_parejitasy, orientacion_inicial)
         self.campo = campo
 
+def moverse_giro_avanzo_giro(robot, objetivo):
+    """
+        Acción de moverse del robot
+    """
+    instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(
+            robot.pos[0], 
+            robot.pos[1], 
+            objetivo.pos[0], 
+            objetivo.pos[1],
+            robot.orientacion,
+            objetivo.orientacion)
+    envio_instrucciones_traccion (instruccion_giro1,instruccion_distancia,instruccion_giro2)
 
+def coger_vasos(game):
+    """
+        Baja el brazo y activa las ventosas
+    """
+    print("Cojo los vasos")
+    print("No hace nada de momento")
+    game.posavasos.ventosas_ocupada = True
 
+def dejar_vasos(game):
+    """
+        Dejar el brazo y desactiva las ventosas
+    """
+    print("Dejo los vasos")
+    print("No hace nada de momento")
+    game.posavasos.ventosas_ocupada = False
 
-# Revisa el disponible de la clase juego y decide que hacer, hecho esto cede el contro a ejecutor
+def golpear_experimento():
+    """
+        Saca el brazo y activa el experimento
+    """
+    print("Golpeo el experimento")
+    print("No hace nada de momento")
 
+def camara_brujula(game):
+    game.campo.brujula = random.choice(["N", "S"])
 
-def planificador(juego):
-    if(juego.tiempo <= 90):  # Hay tiempo
-        
+acciones = {
+    1 : moverse_giro_avanzo_giro,
+    2 : coger_vasos,
+    3 : dejar_vasos,
+    4 : golpear_experimento,
+    5 : camara_brujula
+}
+
+def activar_experimento(game, robot):         
+    """
+        Esta rutina recibe juego y un robot (POSAVASOS)
+        y lo que hace es desplazar el robot hacia la zona de 
+        activación del experimento, saca el actuador y lo activa.
+    """    
+    
+    if(game.lado == AZUL):
+        objetivox = ACTIVACION_EXPERIMENTOX_AZUL
+        objetivoy = ACTIVACION_EXPERIMENTOY_AZUL
+    
+    elif(game.lado == AMARILLO):
+        objetivox = ACTIVACION_EXPERIMENTOX_AMARILLO
+        objetivoy = ACTIVACION_EXPERIMENTOY_AMARILLO
+    orientacion_final = 90
+    objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+    acciones[1](robot, objetivo_actual)
+    acciones[4]()
+    game.campo.experimento = False
+
+def recoger_estanteria_neutro(game, robot):         
+    """
+        Esta rutina recibe juego y un robot (POSAVASOS)
+        y lo que hace es desplazar el robot hacia la zona de 
+        la estanteria del neutro, saca el actuador y recoge los
+        vasos.
+    """    
+    if(game.lado == AZUL):
+        objetivox = game.campo.estanterias_lado_azul[1].pos[0]
+        objetivoy = game.campo.estanterias_lado_azul[1].pos[1]
+    elif(game.lado == AMARILLO):
+        objetivox = game.campo.estanterias_lado_amarillo[1].pos[0]
+        objetivoy = game.campo.estanterias_lado_amarillo[1].pos[1]
+    orientacion_final = 90
+    objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+    acciones[1](robot, objetivo_actual)
+    acciones[2](game)
+    if(game.lado == AZUL):
+        game.estanterias_lado_azul[1].estado = False
+    elif(game.lado == AMARILLO):
+        game.estanterias_lado_amarillo[1].estado = False
+    
+
+def recoger_estanteria_casa(game, robot):         
+    """
+        Esta rutina recibe juego y un robot (POSAVASOS)
+        y lo que hace es desplazar el robot hacia la zona de 
+        la estanteria de casa, saca el actuador y recoge los
+        vasos.
+    """    
+    if(game.lado == AZUL):
+        objetivox = game.campo.estanterias_lado_azul[0].pos[0]
+        objetivoy = game.campo.estanterias_lado_azul[0].pos[1]
+        orientacion_final = 180
+
+    elif(game.lado == AMARILLO):
+        objetivox = game.campo.estanterias_lado_amarillo[0].pos[0]
+        objetivoy = game.campo.estanterias_lado_amarillo[0].pos[1]
+        orientacion_final = 0
+
+    objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+    acciones[1](robot, objetivo_actual)
+    acciones[2](game)
+    if(game.lado == AZUL):
+        game.estanterias_lado_azul[0].estado = False
+    elif(game.lado == AMARILLO):
+        game.estanterias_lado_amarillo[0].estado = False
+    
+def soltar_vasos_ventosas(game,robot):
+    """
+        Esta rutina recibe juego y un robot (POSAVASOS)
+        y lo que hace es desplazar el robot hacia la bahia de cerca
+        de casa, saca el actuador y deja los vasos.
+    """    
+    if(game.lado == AZUL):
+        objetivox = game.campo.estanterias_lado_azul[0].pos[0]
+        objetivoy = game.campo.estanterias_lado_azul[0].pos[1]
+        orientacion_final = 180
+    elif(game.lado == AMARILLO):
+        objetivox = game.campo.estanterias_lado_amarillo[0].pos[0]
+        objetivoy = game.campo.estanterias_lado_amarillo[0].pos[1]
+        orientacion_final = 0
+    objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+    acciones[1](robot, objetivo_actual)
+    acciones[3](game)
+
+def mirar_brujula(game,robot):
+    """
+        Esta rutina recibe juego y un robot (cualquiera)
+        y lo que hace es desplazar el robot hacia una posición
+        central y examina el estado de la brúluja .
+    """    
+    objetivox = CAMARA_X
+    objetivoy = CAMARA_Y
+    orientacion_final = 90
+    objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+    acciones[1](robot, objetivo_actual)
+    acciones[5](game)
+    
+def aparcar(game,robot):
+    """
+        Esta rutina recibe juego y un robot (cualquiera)
+        y lo que hace es desplazar el robot hacia  uno de 
+        los puertos .
+    """
+    if(game.lado == AZUL):
+        orientacion_final = 180
+        if(game.campo.brujula == "N"):
+            objetivox = PUERTO_NORTE_AZULX
+            objetivoy = PUERTO_NORTE_AZULY
+        else:
+            objetivox = PUERTO_SUR_AZULX
+            objetivoy = PUERTO_SUR_AZULY
+    elif(game.lado == AMARILLO):
+        orientacion_final = 0
+        if(game.campo.brujula == "N"):
+            objetivox = PUERTO_NORTE_AMARILLOX
+            objetivoy = PUERTO_NORTE_AMARILLOY
+        else:
+            objetivox = PUERTO_SUR_AMARILLOX
+            objetivoy = PUERTO_SUR_AMARILLOY
+    objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+    acciones[1](robot, objetivo_actual)
+
+def tirar_mangas(game,robot):
+    #Calcula cual es la manga más cerna
+    
+
+rutinas = {
+    1 : activar_experimento,
+    2 : recoger_estanteria_neutro,
+    3 : recoger_estanteria_casa,
+    4 : soltar_vasos_ventosas,
+    5 : mirar_brujula,
+    6 : aparcar,
+    7 : tirar_mangas,
+    8 : recoger_vaso
+}
+
+def planificador(juego):        # Revisa la clase juego y decide que hacer.
+
+    if(juego.tiempo <= 90):     # Hay tiempo        
         if(juego.posavasos.robot.disponible):  # Posavasos no esta ocupado
-            if(juego.experimento):
-                print("activo el experimento")
-                ejecutor(ACTIVAR_EXPERIMENTO, POSAVASOS, juego)
-                
+            if(juego.campo.experimento):
+                print("Activo el experimento")
+                rutinas[1](juego,juego.posavasos)
+                juego.puntos = juego.puntos+15
             elif(juego.posavasos.ventosas_ocupada):
                 print("Vamos a la bahia a descargar los vasos")
-                ejecutor(BAHIA_SOLTAR, POSAVASOS, juego)
-                
-            elif (juego.estanterias.estanteria_neutro_cerca):
-                print("Voy a la estanteria del medio")
-                ejecutor(ESTANTERIAS_NEUTRO_CERCA, POSAVASOS, juego)
-                #time.sleep(40)
-            elif (juego.estanterias.estanteria_casa):
+                rutinas[4](juego,juego.posavasos)
+                juego.puntos = juego.puntos+14
+            elif (juego.campo.estanterias_lado_azul[1].estado and juego.campo.estanterias_lado_amarillo[1].estado ):
+                print("Voy a la estanteria del neutro")
+                rutinas[2](juego,juego.posavasos)
+            elif (juego.campo.estanterias_lado_azul[0].estado and juego.campo.estanterias_lado_amarillo[0].estado):
                 print("Voy a la estanteria de mi lado")
-                ejecutor(ESTANTERIAS_CERCA, POSAVASOS, juego)
-                
-            elif (juego.brujula == 'N'):
+                rutinas[3](juego,juego.posavasos)
+            elif (juego.campo.brujula == 'N'):
                 print("Voy a mirar la brujula")
-                ejecutor(ACTUALIZAR_BRUJULA, POSAVASOS, juego)
-                #time.sleep(40)
+                rutinas[5](juego,juego.robot.posavasos)
             else:
                 print("No tengo que hacer nada")
-                ejecutor(CASA, POSAVASOS, juego)
+                rutinas[6](juego,juego.posavasos)
+                juego.puntos = juego.puntos+10
+
         if(juego.parejitas.robot.disponible):
             print("Parejitas es tu turno")
             if(juego.lado == AZUL):
@@ -272,170 +452,15 @@ def planificador(juego):
                 juego.activo = False
     else:
         print("Rapido pirate")
-        ejecutor(CASA, POSAVASOS, juego)
-
-def moverse_giro_avanzo_giro(robot, objetivo_actual):
-    """
-        Acción de moverse del robot
-    """
-    instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(
-            robot.pos[0], 
-            robot.pos[1], 
-            objetivo_actual.pos[0], 
-            objetivo_actual.pos[1],
-            robot.orientacion,
-            objetivo_actual.orientacion)
-    envio_instrucciones_traccion (instruccion_giro1,instruccion_distancia,instruccion_giro2)
-
-def coger_vasos():
-    """
-        Baja el brazo y activa las ventosas
-    """
-    print("No hace nada de momento")
-
-def dejar_vasos():
-    """
-        Dejar el brazo y desactiva las ventosas
-    """
-    print("No hace nada de momento")
-
-
-acciones = {
-    1 : instrucciones_giro_avanzo_giro,
-    2 : coger_vasos,
-    3 : dejar_vasos
-}
-
-def activar_experimento(juego):
-    
-    if(juego.lado == AZUL):
-        objetivox = ACTIVACION_EXPERIMENTOX_AZUL
-        objetivoy = ACTIVACION_EXPERIMENTOY_AZUL
-    
-    elif(juego.lado == AMARILLO):
-        objetivox = ACTIVACION_EXPERIMENTOX_AMARILLO
-        objetivoy = ACTIVACION_EXPERIMENTOY_AMARILLO
-    orientacion_final = 90
-    objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
-    acciones[1](juego.posavasos.robot, objetivo_actual)
-rutinas = {
-    1 : activar_experimento
-
-}
-# Ejecutor recrea TyM parcialmente, es decir recibe que ha de hacer y lo traduce en  instrucciones
-def ejecutor(orden, robot, juego):
-    # (Falta por implementar la creación de los waypoints, asi que solo hace gira->avanza)
-    if(orden == ACTIVAR_EXPERIMENTO):
-        if(juego.lado == AMARILLO):
-            print("activo faro amarillo")
-            Objx = ACTIVACION_EXPERIMENTOX_AMARILLO
-            Objy = ACTIVACION_EXPERIMENTOY_AMARILLO
-
-        elif(juego.lado == AZUL):
-            print("activo faro azul")
-            Objx = ACTIVACION_EXPERIMENTOX_AZUL
-            Objy = ACTIVACION_EXPERIMENTOY_AZUL
-
-        Orientacion_final = 90
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
-        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
-        juego.experimento = False
-        juego.puntos = juego.puntos+15
-        juego.posavasos.robot.pos[0] = Objx
-        juego.posavasos.robot.pos[1] = Objy
-        juego.posavasos.robot.orientacion = Orientacion_final
-        
-
-    elif(orden == BAHIA_SOLTAR):
-        if(juego.lado == AMARILLO):
-            Objx = BAHIA_AMARILLOX
-            Objy = BAHIA_AMARILLOY
-            Orientacion_final = 0
-        elif(juego.lado == AZUL):
-            Objx = BAHIA_AZULX
-            Objy = BAHIA_AZULY
-            Orientacion_final = 180
-        # Publicaria en un topic
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
-        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
-        #envio_instrucciones_actuadores("B250")
-        juego.puntos = juego.puntos+14
-        juego.posavasos.ventosas_ocupada = False
-        juego.posavasos.robot.pos[0] = Objx
-        juego.posavasos.robot.pos[1] = Objy
-        time.sleep(26)
-        juego.posavasos.robot.orientacion = Orientacion_final
-
-    elif(orden == ESTANTERIAS_CERCA):
-        if(juego.lado == AMARILLO):
-            Objx = ESTANTERIA_VASOS_4X
-            Objy = ESTANTERIA_VASOS_4Y
-            Orientacion_final = 0
-        elif(juego.lado == AZUL):
-            Objx = ESTANTERIA_VASOS_1X
-            Objy = ESTANTERIA_VASOS_1Y
-            Orientacion_final = 180
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
-        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
-        juego.posavasos.ventosas_ocupada = True
-        juego.estanterias.estanteria_casa = False
-        juego.posavasos.robot.pos[0]=Objx
-        juego.posavasos.robot.pos[1]=Objy
-        juego.posavasos.robot.orientacion = Orientacion_final
-    
-    elif(orden == ESTANTERIAS_NEUTRO_CERCA):
-        if(juego.lado == AMARILLO):
-            Objx = ESTANTERIA_VASOS_3X
-            Objy = ESTANTERIA_VASOS_3Y
-        elif(juego.lado == AZUL):
-            Objx = ESTANTERIA_VASOS_2X
-            Objy = ESTANTERIA_VASOS_2Y
-        Orientacion_final = 90
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
-        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
-        #envio_instrucciones_actuadores("S250")
-        juego.posavasos.ventosas_ocupada = True
-        juego.estanterias.estanteria_neutro_cerca = False
-        juego.posavasos.robot.pos[0] = Objx
-        juego.posavasos.robot.pos[1] = Objy
-        juego.posavasos.robot.orientacion = Orientacion_final
-        
-    elif(orden == ACTUALIZAR_BRUJULA):
-        Objx = CAMARA_X
-        Objy = CAMARA_Y
-        Orientacion_final = 90
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
-        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
-        juego.brujula = 'N'
-        juego.posavasos.robot.pos[0] = Objx
-        juego.posavasos.robot.pos[1] = Objy
-        juego.posavasos.robot.orientacion = Orientacion_final
-    
-    elif(orden == CASA):
-        if(juego.lado == AMARILLO):
-            if(juego.brujula == 'N'):
-                Objx = PUERTO_NORTE_AMARILLOX
-                Objy = PUERTO_NORTE_AMARILLOY
-            else:
-                Objx = PUERTO_SUR_AMARILLOX
-                Objy = PUERTO_SUR_AMARILLOY
-            Orientacion_final = 0
-        elif(juego.lado == AZUL):
-            if(juego.brujula == 'N'):
-                Objx = PUERTO_NORTE_AZULX
-                Objy = PUERTO_NORTE_AZULY
-            else:
-                Objx = PUERTO_SUR_AZULX
-                Objy = PUERTO_SUR_AZULY
-            Orientacion_final = 180
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.posavasos.robot.pos[0], juego.posavasos.robot.pos[1], Objx, Objy, juego.posavasos.robot.orientacion,Orientacion_final)
-        envio_instrucciones_traccion(instruccion_giro1,instruccion_distancia,instruccion_giro2)
+        rutinas[6](juego, juego.robot.posavasos)
+        rutinas[6](juego, juego.robot.parejitas)
         juego.puntos = juego.puntos+10
         juego.activo = False
-        juego.posavasos.robot.pos[0] = Objx
-        juego.posavasos.robot.pos[1] = Objy
-        juego.posavasos.robot.orientacion = Orientacion_final
-    elif(orden == VASO_4):
+
+# Ejecutor recrea TyM parcialmente, es decir recibe que ha de hacer y lo traduce en  instrucciones
+def ejecutor(orden, robot, juego):
+    # (Falta por implementar la creación de los waypoints, al
+    if(orden == VASO_4):
         Objx = vasos_lado_azul[4].pos[0] 
         Objy = vasos_lado_azul[4].pos[1]
         Orientacion_final = 120
