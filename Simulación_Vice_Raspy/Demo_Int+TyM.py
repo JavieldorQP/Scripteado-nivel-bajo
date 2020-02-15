@@ -133,7 +133,7 @@ class Parejitas:
     def __init__(self, posx, posy, orientacion):
         self.robot = robot(posx, posy, orientacion)  # Datos por concretar
         self.compuertas = False  # Estan abiertas
-        self.actuador_banda = False
+        self.actuador_manga = False
 class vaso:
     def __init__(self,posx ,posy):
         self.pos = (posx, posy)
@@ -219,7 +219,7 @@ def moverse_giro_avanzo_giro(robot, objetivo):
             objetivo.orientacion)
     envio_instrucciones_traccion (instruccion_giro1,instruccion_distancia,instruccion_giro2)
 
-def coger_vasos(game):
+def coger_vasos_estanteria(game):
     """
         Baja el brazo y activa las ventosas
     """
@@ -227,7 +227,7 @@ def coger_vasos(game):
     print("No hace nada de momento")
     game.posavasos.ventosas_ocupada = True
 
-def dejar_vasos(game):
+def dejar_vasos_estanteria(game):
     """
         Dejar el brazo y desactiva las ventosas
     """
@@ -245,12 +245,25 @@ def golpear_experimento():
 def camara_brujula(game):
     game.campo.brujula = random.choice(["N", "S"])
 
+def golpear_manga(Parjitas,manga):
+    """
+        Saca el brazo y tira la manga
+    """
+    print("Saco el brazo")
+    #envio_instrucciones_actuadores()
+    print("No hace nada de momento")
+    Parejitas.actuador_manga = True
+    manga.disponible = False
+    envio_instrucciones_traccion(0,100,0)
+    print(("Recojo el brazo"))
+
 acciones = {
     1 : moverse_giro_avanzo_giro,
-    2 : coger_vasos,
-    3 : dejar_vasos,
+    2 : coger_vasos_estanteria,
+    3 : dejar_vasos_estanteria,
     4 : golpear_experimento,
-    5 : camara_brujula
+    5 : camara_brujula,
+    6 : golpear_manga
 }
 
 def activar_experimento(game, robot):         
@@ -335,6 +348,9 @@ def soltar_vasos_ventosas(game,robot):
         objetivox = game.campo.estanterias_lado_amarillo[0].pos[0]
         objetivoy = game.campo.estanterias_lado_amarillo[0].pos[1]
         orientacion_final = 0
+    else:
+        print ("Lado no definido, ERROR")
+        raise Exception
     objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
     acciones[1](robot, objetivo_actual)
     acciones[3](game)
@@ -359,26 +375,129 @@ def aparcar(game,robot):
         los puertos .
     """
     if(game.lado == AZUL):
-        orientacion_final = 180
         if(game.campo.brujula == "N"):
             objetivox = PUERTO_NORTE_AZULX
             objetivoy = PUERTO_NORTE_AZULY
         else:
             objetivox = PUERTO_SUR_AZULX
             objetivoy = PUERTO_SUR_AZULY
+        orientacion_final = 180
     elif(game.lado == AMARILLO):
-        orientacion_final = 0
         if(game.campo.brujula == "N"):
             objetivox = PUERTO_NORTE_AMARILLOX
             objetivoy = PUERTO_NORTE_AMARILLOY
         else:
             objetivox = PUERTO_SUR_AMARILLOX
             objetivoy = PUERTO_SUR_AMARILLOY
+        orientacion_final = 0
+    else:
+        print ("Lado no definido, ERROR")
+        raise Exception
     objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
     acciones[1](robot, objetivo_actual)
 
 def tirar_mangas(game,robot):
-    #Calcula cual es la manga más cerna
+    """
+        Se le pasa a la función el estado del juego y un Robot (Parejitas),
+        desplaza el robot a la manga más cercana y la tira, después hace lo mismo
+        con la otra manga.
+    """
+    #Calcula cual es la manga más cerca
+    if(game.lado == AZUL):
+        orientacion_final = 0
+        distancia_manga_neutro = sqrt(
+            (robot.pos[0]-game.campo.mangas_lado_azul[0].pos[0])**2
+            +
+            (robot.pos[1]-game.campo.mangas_lado_azul[0].pos[1])**2
+            )
+        distancia_manga_casa = sqrt(
+            (robot.pos[0]-game.campo.mangas_lado_azul[0].pos[0])**2
+            +
+            (robot.pos[1]-game.campo.mangas_lado_azul[0].pos[1])**2
+            )
+        if(distancia_manga_casa >= distancia_manga_neutro):
+            objetivox = game.campo.mangas_lado_azul[1].pos[0]
+            objetivoy = game.campo.mangas_lado_azul[1].pos[1]
+            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+            acciones[1](robot, objetivo_actual)
+            acciones[6](game.parejitas, mangas_lado_azul[1])
+            objetivox = game.campo.mangas_lado_azul[0].pos[0]
+            objetivoy = game.campo.mangas_lado_azul[0].pos[1]
+            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+            acciones[1](robot, objetivo_actual)
+            acciones[6](game.parejitas, mangas_lado_azul[0])
+        else:
+            objetivox = game.campo.mangas_lado_azul[0].pos[0]
+            objetivoy = game.campo.mangas_lado_azul[0].pos[1]
+            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+            acciones[1](robot, objetivo_actual)
+            acciones[6](game.parejitas, mangas_lado_azul[0])
+            objetivox = game.campo.mangas_lado_azul[1].pos[0]
+            objetivoy = game.campo.mangas_lado_azul[1].pos[1]
+            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+            acciones[1](robot, objetivo_actual)
+            acciones[6](game.parejitas, mangas_lado_azul[1])
+        
+    elif(game.lado == AMARILLO):
+        orientacion_final = 180
+        distancia_manga_neutro = sqrt(
+            (robot.pos[0]-game.campo.mangas_lado_amarillo[0].pos[0])**2
+            +
+            (robot.pos[1]-game.campo.mangas_lado_amarillo[0].pos[1])**2
+            )
+        distancia_manga_casa = sqrt(
+            (robot.pos[0]-game.campo.mangas_lado_amarillo[0].pos[0])**2
+            +
+            (robot.pos[1]-game.campo.mangas_lado_amarillo[0].pos[1])**2
+            )
+        if(distancia_manga_casa >= distancia_manga_neutro):
+            objetivox = game.campo.mangas_lado_amarillo[1].pos[0]
+            objetivoy = game.campo.mangas_lado_amarillo[1].pos[1]
+            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+            acciones[1](robot, objetivo_actual)
+            acciones[6](game.parejitas, mangas_lado_amarillo[1])
+            objetivox = game.campo.mangas_lado_amarillo[0].pos[0]
+            objetivoy = game.campo.mangas_lado_amarillo[0].pos[1]
+            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+            acciones[1](robot, objetivo_actual)
+            acciones[6](game.parejitas, mangas_lado_amarillo[0])
+        else:
+            objetivox = game.campo.mangas_lado_amarillo[0].pos[0]
+            objetivoy = game.campo.mangas_lado_amarillo[0].pos[1]
+            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+            acciones[1](robot, objetivo_actual)
+            acciones[6](game.parejitas, mangas_lado_amarillo[0])
+            objetivox = game.campo.mangas_lado_amarillo[1].pos[0]
+            objetivoy = game.campo.mangas_lado_amarillo[1].pos[1]
+            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+            acciones[1](robot, objetivo_actual)
+            acciones[6](game.parejitas, mangas_lado_amarillo[1])    
+    else:
+        print ("Lado no definido, ERROR")
+        raise Exception
+
+def comer_vaso(game,vaso):
+    """
+        Se le pasa a la función el estado del juego y un Robot (Parejitas), con
+        esto calcula y maniobra para introducir un vaso en el interior de 
+        parejitas.
+    """
+    print("Hasta que Cesucio no me pase el plano de parejitas esto solo se mueve a algún lado")
+    if(game.lado == AZUL):
+        objetivox = game.campo.estanterias_lado_azul[0].pos[0]
+        objetivoy = game.campo.estanterias_lado_azul[0].pos[1]
+        orientacion_final = 180
+    elif(game.lado == AMARILLO):
+        objetivox = game.campo.estanterias_lado_amarillo[0].pos[0]
+        objetivoy = game.campo.estanterias_lado_amarillo[0].pos[1]
+        orientacion_final = 0
+    else:
+        print ("Lado no definido, ERROR")
+        raise Exception
+    objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+    acciones[1](robot, objetivo_actual)
+
+   
     
 
 rutinas = {
@@ -389,7 +508,7 @@ rutinas = {
     5 : mirar_brujula,
     6 : aparcar,
     7 : tirar_mangas,
-    8 : recoger_vaso
+    8 : comer_vaso
 }
 
 def planificador(juego):        # Revisa la clase juego y decide que hacer.
