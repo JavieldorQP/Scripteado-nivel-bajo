@@ -30,14 +30,19 @@ def envio_instrucciones_traccion(instruccion_1, instruccion_2, instruccion_3):
                 print("He salido a pensar")
                 acabado = 1
             else:
-            #if(i < len(instruccion)-1):
                 mensaje = instruccion[i] + '\0'
                 MDK2_Port_traccion.write(mensaje.encode())
                 print(f"Instrucción {mensaje}")
         
     MDK2_Port_traccion.close()  # Cierro el puerto al finalizar el programa
 
-# Funcion propia del protocolo
+def analizo_mensaje(mensaje):
+    mensaje = mensaje.decode()  #Es este formato el correcto
+    print(mensaje)
+    if (mensaje[0] == 'S'):
+         
+
+
 
 def envio_instrucciones_actuadores(instruccion):
     """
