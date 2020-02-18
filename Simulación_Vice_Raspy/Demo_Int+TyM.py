@@ -11,6 +11,7 @@ from Eurocomunicacion_raspy_funciones import envio_instrucciones_actuadores, env
 from funcionesTyM import instrucciones_giro_avanzo_giro
 import time
 import random
+import math
 # Constantes
 # Definir vaso 1 como una tupla
 #El centro del campo es el centro del código aruco (1500,1250)
@@ -205,10 +206,22 @@ class game:  # Clase tipo game, donde se almacenan toda la información del part
         self.parejitas = Parejitas(
             pos_inicio_parejitasx, pos_inicio_parejitasy, orientacion_inicial)
         self.campo = campo
-
-def moverse_giro_avanzo_giro(robot, objetivo):
+def moverse_giro_recta(robot, objetivo):
     """
-        Acción de moverse del robot
+        Acción de moverse del robot hacia unas coordenadas objetivo.
+    """
+    instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(
+            robot.pos[0], 
+            robot.pos[1], 
+            objetivo.pos[0], 
+            objetivo.pos[1],
+            robot.orientacion,
+            objetivo.orientacion)
+    envio_instrucciones_traccion (instruccion_giro1,instruccion_distancia,"0G+000")
+
+def moverse_giro_recta_giro(robot, objetivo):
+    """
+        Acción de moverse del robot hacia unas coordenadas objetivo y que acabe con un un ángulo final
     """
     instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(
             robot.pos[0], 
@@ -258,7 +271,8 @@ def golpear_manga(Parjitas,manga):
     print(("Recojo el brazo"))
 
 acciones = {
-    1 : moverse_giro_avanzo_giro,
+    0 : moverse_giro_recta,
+    1 : moverse_giro_recta_giro,
     2 : coger_vasos_estanteria,
     3 : dejar_vasos_estanteria,
     4 : golpear_experimento,
@@ -396,106 +410,61 @@ def aparcar(game,robot):
     objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
     acciones[1](robot, objetivo_actual)
 
-def tirar_mangas(game,robot):
+def tirar_manga_neutro(game,robot):
     """
         Se le pasa a la función el estado del juego y un Robot (Parejitas),
-        desplaza el robot a la manga más cercana y la tira, después hace lo mismo
-        con la otra manga.
+        desplaza el robot a la manga del neutro y la tira.
     """
-    #Calcula cual es la manga más cerca
     if(game.lado == AZUL):
+        objetivox = game.campo.mangas_lado_azul[1].pos[0]
+        objetivoy = game.campo.mangas_lado_azul[1].pos[1]
         orientacion_final = 0
-        distancia_manga_neutro = sqrt(
-            (robot.pos[0]-game.campo.mangas_lado_azul[0].pos[0])**2
-            +
-            (robot.pos[1]-game.campo.mangas_lado_azul[0].pos[1])**2
-            )
-        distancia_manga_casa = sqrt(
-            (robot.pos[0]-game.campo.mangas_lado_azul[0].pos[0])**2
-            +
-            (robot.pos[1]-game.campo.mangas_lado_azul[0].pos[1])**2
-            )
-        if(distancia_manga_casa >= distancia_manga_neutro):
-            objetivox = game.campo.mangas_lado_azul[1].pos[0]
-            objetivoy = game.campo.mangas_lado_azul[1].pos[1]
-            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
-            acciones[1](robot, objetivo_actual)
-            acciones[6](game.parejitas, mangas_lado_azul[1])
-            objetivox = game.campo.mangas_lado_azul[0].pos[0]
-            objetivoy = game.campo.mangas_lado_azul[0].pos[1]
-            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
-            acciones[1](robot, objetivo_actual)
-            acciones[6](game.parejitas, mangas_lado_azul[0])
-        else:
-            objetivox = game.campo.mangas_lado_azul[0].pos[0]
-            objetivoy = game.campo.mangas_lado_azul[0].pos[1]
-            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
-            acciones[1](robot, objetivo_actual)
-            acciones[6](game.parejitas, mangas_lado_azul[0])
-            objetivox = game.campo.mangas_lado_azul[1].pos[0]
-            objetivoy = game.campo.mangas_lado_azul[1].pos[1]
-            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
-            acciones[1](robot, objetivo_actual)
-            acciones[6](game.parejitas, mangas_lado_azul[1])
-        
-    elif(game.lado == AMARILLO):
-        orientacion_final = 180
-        distancia_manga_neutro = sqrt(
-            (robot.pos[0]-game.campo.mangas_lado_amarillo[0].pos[0])**2
-            +
-            (robot.pos[1]-game.campo.mangas_lado_amarillo[0].pos[1])**2
-            )
-        distancia_manga_casa = sqrt(
-            (robot.pos[0]-game.campo.mangas_lado_amarillo[0].pos[0])**2
-            +
-            (robot.pos[1]-game.campo.mangas_lado_amarillo[0].pos[1])**2
-            )
-        if(distancia_manga_casa >= distancia_manga_neutro):
-            objetivox = game.campo.mangas_lado_amarillo[1].pos[0]
-            objetivoy = game.campo.mangas_lado_amarillo[1].pos[1]
-            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
-            acciones[1](robot, objetivo_actual)
-            acciones[6](game.parejitas, mangas_lado_amarillo[1])
-            objetivox = game.campo.mangas_lado_amarillo[0].pos[0]
-            objetivoy = game.campo.mangas_lado_amarillo[0].pos[1]
-            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
-            acciones[1](robot, objetivo_actual)
-            acciones[6](game.parejitas, mangas_lado_amarillo[0])
-        else:
-            objetivox = game.campo.mangas_lado_amarillo[0].pos[0]
-            objetivoy = game.campo.mangas_lado_amarillo[0].pos[1]
-            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
-            acciones[1](robot, objetivo_actual)
-            acciones[6](game.parejitas, mangas_lado_amarillo[0])
-            objetivox = game.campo.mangas_lado_amarillo[1].pos[0]
-            objetivoy = game.campo.mangas_lado_amarillo[1].pos[1]
-            objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
-            acciones[1](robot, objetivo_actual)
-            acciones[6](game.parejitas, mangas_lado_amarillo[1])    
-    else:
-        print ("Lado no definido, ERROR")
-        raise Exception
+        objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+        acciones[1](robot, objetivo_actual)
+        acciones[6](game.parejitas, mangas_lado_azul[1])
 
-def comer_vaso(game,vaso):
+    elif(game.lado == AMARILLO):
+        objetivox = game.campo.mangas_lado_amarillo[1].pos[0]
+        objetivoy = game.campo.mangas_lado_amarillo[1].pos[1]
+        orientacion_final = 180
+        objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+        acciones[1](robot, objetivo_actual)
+        acciones[6](game.parejitas, mangas_lado_amarillo[1])
+
+def tirar_manga_casa(game,robot):
+    """
+        Se le pasa a la función el estado del juego y un Robot (Parejitas),
+        desplaza el robot a la manga del neutro y la tira.
+    """
+    if(game.lado == AZUL):
+        objetivox = game.campo.mangas_lado_azul[0].pos[0]
+        objetivoy = game.campo.mangas_lado_azul[0].pos[1]
+        orientacion_final = 0
+        objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+        acciones[1](robot, objetivo_actual)
+        acciones[6](game.parejitas, mangas_lado_azul[0])
+
+    elif(game.lado == AMARILLO):
+        objetivox = game.campo.mangas_lado_amarillo[0].pos[0]
+        objetivoy = game.campo.mangas_lado_amarillo[0].pos[1]
+        orientacion_final = 180
+        objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
+        acciones[1](robot, objetivo_actual)
+        acciones[6](game.parejitas, mangas_lado_amarillo[0])
+
+def comer_vasos(game,vaso):
     """
         Se le pasa a la función el estado del juego y un Robot (Parejitas), con
         esto calcula y maniobra para introducir un vaso en el interior de 
         parejitas.
     """
-    print("Hasta que Cesucio no me pase el plano de parejitas esto solo se mueve a algún lado")
-    if(game.lado == AZUL):
-        objetivox = game.campo.estanterias_lado_azul[0].pos[0]
-        objetivoy = game.campo.estanterias_lado_azul[0].pos[1]
-        orientacion_final = 180
-    elif(game.lado == AMARILLO):
-        objetivox = game.campo.estanterias_lado_amarillo[0].pos[0]
-        objetivoy = game.campo.estanterias_lado_amarillo[0].pos[1]
-        orientacion_final = 0
-    else:
-        print ("Lado no definido, ERROR")
-        raise Exception
+    print("Hasta que Cesucio no me pase el plano de parejitas esto solo se mueve a la posición del vaso")
+    objetivox = vaso.pos[0]
+    objetivoy = vaso.pos[1]
+    orientacion_final = 0
     objetivo_actual = objetivo(objetivox, objetivoy, orientacion_final)
-    acciones[1](robot, objetivo_actual)
+    acciones[0](robot, objetivo_actual)
+    vaso.disponible = False
 
    
     
@@ -507,14 +476,19 @@ rutinas = {
     4 : soltar_vasos_ventosas,
     5 : mirar_brujula,
     6 : aparcar,
-    7 : tirar_mangas,
-    8 : comer_vaso
+    7 : tirar_manga_neutro,
+    8 : tirar_manga_casa,
+    9 : comer_vasos
 }
 
 def planificador(juego):        # Revisa la clase juego y decide que hacer.
 
     if(juego.tiempo <= 90):     # Hay tiempo        
         if(juego.posavasos.robot.disponible):  # Posavasos no esta ocupado
+            
+            print(f"Posción actual {juego.posavasos.robot.pos[0]}, {juego.posavasos.robot.pos[1]}")
+            print(f"Angulo actual {juego.posavasos.robot.orientacion}")
+            
             if(juego.campo.experimento):
                 print("Activo el experimento")
                 rutinas[1](juego,juego.posavasos)
@@ -531,149 +505,117 @@ def planificador(juego):        # Revisa la clase juego y decide que hacer.
                 rutinas[3](juego,juego.posavasos)
             elif (juego.campo.brujula == 'N'):
                 print("Voy a mirar la brujula")
-                rutinas[5](juego,juego.robot.posavasos)
+                rutinas[5](juego,juego.posavasos)
             else:
                 print("No tengo que hacer nada")
                 rutinas[6](juego,juego.posavasos)
                 juego.puntos = juego.puntos+10
-
+            
         if(juego.parejitas.robot.disponible):
-            print("Parejitas es tu turno")
-            if(juego.lado == AZUL):
-                if (vasos_lado_azul[4].disponible):
-                    print("Vamos a por el vaso 4")
-                    ejecutor(VASO_4,PAREJITAS,juego)
-                elif(vasos_lado_azul[5].disponible):
-                    print("Vamos a por el vaso 5")
-                    ejecutor(VASO_5,PAREJITAS,juego)
-                elif(vasos_lado_azul[6].disponible):
-                    print("Vamos a por el vaso 6")
-                    ejecutor(VASO_6,PAREJITAS,juego)
-                elif(vasos_lado_amarillo[7].disponible):
-                    print("Vamos a por el vaso 7")
-                    ejecutor(VASO_7,PAREJITAS,juego)
-                elif(vasos_lado_amarillo[8].disponible):
-                    print("Vamos a por el vaso 8")
-                    ejecutor(VASO_8,PAREJITAS,juego)
-                elif(vasos_lado_amarillo[9].disponible):
-                    print("Vamos a por el vaso 9 y a descargar")
-                    ejecutor(DESCARGAR_NEUTRO,PAREJITAS,juego)
-                elif(mangas_lado_azul[1].disponible):
-                    print("Vamos a por a la manga 1")
-                    ejecutor(MANGA_1,PAREJITAS,juego)
-                elif(mangas_lado_azul[2].disponible):
-                    print("Vamos a por a la manga 2")
-                    ejecutor(MANGA_2,PAREJITAS,juego)   
+            
+            print(f"Posción actual {juego.posavasos.robot.pos[0]}, {juego.posavasos.robot.pos[1]}")
+            print(f"Angulo actual {juego.posavasos.robot.orientacion}")
+            
+            if(juego.campo.vasos_lado_amarillo[9].disponible and juego.campo.vasos_lado_azul[9].disponible):
+                if(juego.lado == AZUL):
+                    if (juego.campo.vasos_lado_azul[4].disponible):
+                        print("Vamos a por el vaso 4")
+                        rutinas[9](juego,juego.campo.vasos_lado_azul[4])
+                    elif(juego.campo.vasos_lado_azul[5].disponible):
+                        print("Vamos a por el vaso 5")
+                        rutinas[9](juego,juego.campo.vasos_lado_azul[5])
+                    elif(juego.campo.vasos_lado_azul[6].disponible):
+                        print("Vamos a por el vaso 6")
+                        rutinas[9](juego,juego.campo.vasos_lado_azul[6])
+                    elif(juego.campo.vasos_lado_amarillo[7].disponible):
+                        print("Vamos a por el vaso 7")
+                        rutinas[9](juego,juego.campo.vasos_lado_amarillo[7])
+                    elif(juego.campo.vasos_lado_amarillo[8].disponible):
+                        print("Vamos a por el vaso 8")
+                        rutinas[9](juego,juego.campo.vasos_lado_amarillo[8])
+                    elif(juego.campo.vasos_lado_amarillo[9].disponible):
+                        print("Vamos a por el vaso 9 y a descargar")
+                        rutinas[9](juego,juego.campo.vasos_lado_amarillo[9])
+                elif(juego.lado == AMARILLO):
+                    if (juego.campo.vasos_lado_amarillo[4].disponible):
+                        print("Vamos a por el vaso 4")
+                        rutinas[9](juego,juego.campo.vasos_lado_amarillo[4])
+                    elif(juego.campo.vasos_lado_amarillo[5].disponible):
+                        print("Vamos a por el vaso 5")
+                        rutinas[9](juego,juego.campo.vasos_lado_amarillo[5])
+                    elif(juego.campo.vasos_lado_amarillo[6].disponible):
+                        print("Vamos a por el vaso 6")
+                        rutinas[9](juego,juego.campo.vasos_lado_amarillo[6])
+                    elif(juego.campo.vasos_lado_azul[7].disponible):
+                        print("Vamos a por el vaso 7")
+                        rutinas[9](juego,juego.campo.vasos_lado_azul[7])
+                    elif(juego.campo.vasos_lado_azul[8].disponible):
+                        print("Vamos a por el vaso 8")
+                        rutinas[9](juego,juego.campo.vasos_lado_azul[8])
+                    elif(juego.campo.vasos_lado_azul[9].disponible):
+                        print("Vamos a por el vaso 9 y a descargar")
+                        rutinas[9](juego,juego.campo.vasos_lado_azul[9])
+                        juego.puntos = juego.puntos + 10    
                 else:
-                    juego.activo= False
-            elif(juego.lado == AMARILLO):
-                print("Nada preparado")
-                juego.activo = False
+                    print ("Lado no definido, ERROR")
+                    raise Exception
+            elif(juego.campo.mangas_lado_azul[1].disponible or juego.campo.mangas_lado_azul[1].disponible):
+                if(juego.lado == AZUL):
+                    orientacion_final = 0
+                    distancia_manga_neutro = math.sqrt(
+                        (juego.parejitas.robot.pos[0]-juego.campo.mangas_lado_azul[0].pos[0])**2
+                        +
+                        (juego.parejitas.robot.pos[1]-juego.campo.mangas_lado_azul[0].pos[1])**2
+                        )
+                    distancia_manga_casa = math.sqrt(
+                        (juego.parejitas.robot.pos[0]-juego.campo.mangas_lado_azul[0].pos[0])**2
+                        +
+                        (juego.parejitas.robot.pos[1]-juego.campo.mangas_lado_azul[0].pos[1])**2
+                        )
+                    if(distancia_manga_casa >= distancia_manga_neutro):
+                        rutinas[7](juego,juego.parejitas)
+                        rutinas[8] (juego,juego.parejitas)
+                    else:
+                        rutinas[8](juego,juego.parejitas)
+                        rutinas[7](juego,juego.parejitas)
+                elif(juego.lado == AMARILLO):
+                    orientacion_final = 180
+                    distancia_manga_neutro = math.sqrt(
+                        (juego.parejitas.robot.pos[0]-juego.campo.mangas_lado_amarillo[0].pos[0])**2
+                        +
+                        (juego.parejitas.robot.pos[1]-juego.campo.mangas_lado_amarillo[0].pos[1])**2
+                        )
+                    distancia_manga_casa = math.sqrt(
+                        (juego.parejitas.robot.pos[0]-juego.campo.mangas_lado_amarillo[0].pos[0])**2
+                        +
+                        (juego.parejitas.robot.pos[1]-juego.campo.mangas_lado_amarillo[0].pos[1])**2
+                        )
+                    if(distancia_manga_casa >= distancia_manga_neutro):
+                        rutinas[7](juego,juego.parejitas)
+                        rutinas[8] (juego,juego.parejitas)
+                    else:
+                        rutinas[8](juego,juego.parejitas)
+                        rutinas[7](juego,juego.parejitas)
+                else:
+                    print ("Lado no definido, ERROR")
+                    raise Exception
+
+            elif (juego.campo.brujula == 'N'):
+                print("Voy a mirar la brujula")
+                rutinas[5](juego,juego.parejitas)
+            
+            else:
+                print("No tengo que hacer nada")
+                rutinas[6](juego,juego.parejitas)
+                juego.puntos = juego.puntos+10
+        
     else:
         print("Rapido pirate")
         rutinas[6](juego, juego.robot.posavasos)
         rutinas[6](juego, juego.robot.parejitas)
         juego.puntos = juego.puntos+10
         juego.activo = False
-
-# Ejecutor recrea TyM parcialmente, es decir recibe que ha de hacer y lo traduce en  instrucciones
-def ejecutor(orden, robot, juego):
-    # (Falta por implementar la creación de los waypoints, al
-    if(orden == VASO_4):
-        Objx = vasos_lado_azul[4].pos[0] 
-        Objy = vasos_lado_azul[4].pos[1]
-        Orientacion_final = 120
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
-            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
-        juego.parejitas.robot.pos[0] = Objx
-        juego.parejitas.robot.pos[1] = Objy
-        juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_azul[4].disponible = False
-    elif(orden == VASO_3):
-        Objx = vasos_lado_azul[3].pos[0] 
-        Objy = vasos_lado_azul[3].pos[1]
-        Orientacion_final = 80
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
-            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
-        juego.parejitas.robot.pos[0] = Objx
-        juego.parejitas.robot.pos[1] = Objy
-        juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_azul[3].disponible = False    
-    elif(orden == VASO_5):
-        Objx = vasos_lado_azul[5].pos[0] 
-        Objy = vasos_lado_azul[5].pos[1]
-        Orientacion_final = 290
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
-            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
-        juego.parejitas.robot.pos[0] = Objx
-        juego.parejitas.robot.pos[1] = Objy
-        juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_azul[5].disponible = False
-    elif(orden == VASO_6):
-        Objx = vasos_lado_azul[6].pos[0] 
-        Objy = vasos_lado_azul[6].pos[1]
-        Orientacion_final = 300
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
-            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
-        juego.parejitas.robot.pos[0] = Objx
-        juego.parejitas.robot.pos[1] = Objy
-        juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_azul[6].disponible = False
-    elif(orden == VASO_7):
-        Objx = vasos_lado_amarillo[7].pos[0] 
-        Objy = vasos_lado_amarillo[7].pos[1]
-        Orientacion_final = 270
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
-            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
-        juego.parejitas.robot.pos[0] = Objx
-        juego.parejitas.robot.pos[1] = Objy
-        juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_amarillo[7].disponible = False
-    elif(orden == VASO_8):
-        Objx = vasos_lado_amarillo[8].pos[0] 
-        Objy = vasos_lado_amarillo[8].pos[1]
-        Orientacion_final = 270
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
-            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
-        juego.parejitas.robot.pos[0] = Objx
-        juego.parejitas.robot.pos[1] = Objy
-        juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_amarillo[8].disponible = False
-    elif(orden == DESCARGAR_NEUTRO):
-        Objx = BAHIA_CENTRAL_AZULX
-        Objy = BAHIA_CENTRAL_AZULY
-        Orientacion_final = 270
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
-            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
-        juego.parejitas.robot.pos[0] = Objx
-        juego.parejitas.robot.pos[1] = Objy
-        juego.parejitas.robot.orientacion = Orientacion_final
-        vasos_lado_amarillo[9].disponible = False
-    elif(orden == MANGA_1):
-        Objx = mangas_lado_azul[1].pos[0]
-        Objy = mangas_lado_azul[1].pos[1]
-        Orientacion_final = 0
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
-            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
-        juego.parejitas.robot.pos[0] = Objx
-        juego.parejitas.robot.pos[1] = Objy
-        juego.parejitas.robot.orientacion = Orientacion_final
-        mangas_lado_azul[1].disponible = False
-    elif(orden == MANGA_2):
-        Objx = mangas_lado_azul[2].pos[0]
-        Objy = mangas_lado_azul[2].pos[1]
-        Orientacion_final = 0
-        instruccion_giro1, instruccion_distancia, instruccion_giro2 = instrucciones_giro_avanzo_giro(juego.parejitas.robot.pos[0], 
-            juego.parejitas.robot.pos[1], Objx, Objy, juego.parejitas.robot.orientacion,Orientacion_final)
-        juego.parejitas.robot.pos[0] = Objx
-        juego.parejitas.robot.pos[1] = Objy
-        juego.parejitas.robot.orientacion = Orientacion_final
-        mangas_lado_azul[2].disponible = False
-        
-    print(f"Posción actual {juego.posavasos.robot.pos[0]}, {juego.posavasos.robot.pos[1]}")
-    print(f"Angulo actual {juego.posavasos.robot.orientacion}")
     
-
 def main():
     print("Este script es una demo de la estrategia de cada uno de los robots")
     #print("Seleccione el robot con el que simular la demo (1 para posavasos y 2 para parejitas):")
