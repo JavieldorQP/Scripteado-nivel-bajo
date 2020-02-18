@@ -6,6 +6,8 @@
 
 #define 	PI 							3.141592
 
+
+
 /****  Variables odometria  ****/
 #define 	AVANZA					1
 #define 	RETROCEDE				0
@@ -39,11 +41,11 @@ typedef struct								//Estructura para los parametros mecanicos (motor + contro
 {
 	double aceleracion,					//Aceleraci�n de la controladora de 3000 rpm/s
 				 deceleracion,				//Valor de deceleracion de los motores
-				 reductora,
+				 reductora,					//Reduccion de velocidad de 26
 				 vel_eje_max,					//Velocidad m�xima del eje del motor segun datasheet
 				 vel_max,							//Velocidad m�xima de la rueda
 				 pulsos_por_rev,			//Pulsos por revolucion del encoder
-				 L,
+				 L,							//Longitud del eje
 				 diametro;						//Diametro de la rueda
 	
 }param_mecanicos;
@@ -52,18 +54,24 @@ typedef struct								//Estructura para los parametros mecanicos (motor + contro
 
 typedef struct {
 
-	int X;																				// Coordenada X del robot en mm
-	int Y;																				// Coordenada Y del robot en mm
+	double X;																				// Coordenada X del robot en mm
+	double Y;																				// Coordenada Y del robot en mm
 
 }Posicion;
 
 typedef struct {
 	
 	Posicion Pos;																	// Coordenadas actuales del robot
-	int Orientacion;															// �ngulo con respecto a la orientaci�n del campo
-	int VelActual;																// Velocidad actual del robot en mm/s
+	double Orientacion;															// �ngulo con respecto a la orientaci�n del campo
+	double VelActual;																// Velocidad actual del robot en mm/s
 	
 }Caracterizacion;
 
+typedef struct 				
+											// definimos los valores de los contadores de los encoders
+{
+	int contador_derecho, contador_izquierdo;
+	int contador_derecho_total, contador_izquierdo_total;
+} T_Counter;			//Variable global que contiene los valores de posicion que se pasar�n a alto nivel
 
 #endif
