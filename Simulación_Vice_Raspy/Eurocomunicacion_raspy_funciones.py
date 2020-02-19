@@ -187,4 +187,3 @@ def angle_to_msg(Grados):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-
