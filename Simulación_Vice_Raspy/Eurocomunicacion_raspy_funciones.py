@@ -12,22 +12,23 @@ def envio_instrucciones_traccion(instruccion_1, instruccion_2, instruccion_3):
     instruccion = (instruccion_1, instruccion_2, instruccion_3)
     acabado = 0
     i = 0
-    c = 1
+    primera_vez = 1
     while acabado != 1:
-        mensaje_recibido = MDK2_Port_traccion.readline()  # Guardo lo que leo en un string
-
-        if(c):
-            # ENVIAMOS MENSAJE:
+        if(primera_vez):
+            # ENVIAMOS MENSAJE
             mensaje = instruccion[i] + '\0'
             MDK2_Port_traccion.write(mensaje.encode())
-            c = 0
+            primera_vez = 0
             print(f"Instrucción {mensaje}")
-
-        elif (mensaje_recibido == b'S'):
+            time.sleep(2)
+        mensaje_recibido = MDK2_Port_traccion.readline()  # Guardo lo que leo en un string
+        odom,siguiente_orden = analizo_mensaje(mensaje_recibido) 
+        print(odom)
+        if (siguiente_orden):
             print("S")
             i = i+1
             if (i == len(instruccion)):
-                print("He salido a pensar")
+                print("Instrucciones transmitidas")
                 acabado = 1
             else:
                 mensaje = instruccion[i] + '\0'
@@ -37,10 +38,55 @@ def envio_instrucciones_traccion(instruccion_1, instruccion_2, instruccion_3):
     MDK2_Port_traccion.close()  # Cierro el puerto al finalizar el programa
 
 def analizo_mensaje(mensaje):
-    mensaje = mensaje.decode()  #Es este formato el correcto
+    mensaje = str(mensaje, 'utf-8')   #Es este formato el correcto
     print(mensaje)
-    if (mensaje[0] == 'S'):
-         
+    msg_size = len(mensaje)
+    if (msg_size == 0):
+        odom = [0,0,0]
+        return odom, 0
+    else:
+        if (mensaje[0] == "S"):
+            bitx = mensaje.find("X")       
+            bity = mensaje.find("Y")  
+            bita = mensaje.find("A")     
+            bitfinal = len(mensaje)
+            odom_x = msg_to_odom(mensaje, bitx, bity)
+            odom_y = msg_to_odom(mensaje, bity, bita)
+            #odom_angle = msg_to_odom(mensaje, bita, bitfinal)
+            #print(f"ODOM ANGLE {odom_angle}")
+            odom_angle = 0
+            if (odom_angle>180):
+                odom_angle = -1 * (360 - odom_angle)
+            odom = [odom_x, odom_y, odom_angle]
+            return odom,1
+        else: 
+            odom = [0,0,0]
+            return odom, 0
+        
+             
+
+def msg_to_odom(mensaje,bitinicio, bitfinal):
+    """
+    msg_to_odom:: String -> Int
+        Recibe un string con el formato de comunicación de este año
+        y devuelve un int con la odometria resultante. 
+    """
+    odom = '0'
+    if (mensaje[bitinicio + 1] == "-"):
+        signo = -1
+        for numero_cifra in  range(bitinicio+2, bitfinal-1): 
+            odom = odom + mensaje[numero_cifra]    
+        odom = signo * int(odom)
+        return odom
+    
+    else:
+        signo = 1 
+        for numero_cifra in range(bitinicio+1, bitfinal-1): 
+            odom = odom + mensaje[numero_cifra]
+        odom = signo * int(odom)
+        return odom
+
+    
 
 
 
