@@ -6,15 +6,14 @@
 
 #define 	PI 							3.141592
 
-
-
 /****  Variables odometria  ****/
 #define 	AVANZA					1
 #define 	RETROCEDE				0
 
-
 extern uint8_t fl_fin_timer;
 extern int contador;
+
+
 typedef struct								//Estructura para los parametros de la cinematica
 {
 	double 	distancia_total_rad,			//distancia total a recorrer que se nos pasa desde alto nivel convertida a radianes

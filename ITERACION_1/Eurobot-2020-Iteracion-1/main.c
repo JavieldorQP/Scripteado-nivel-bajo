@@ -77,6 +77,8 @@ int Estado = ST_INICIAL;
 
 int contador = 0;
 
+
+
 /**** Funciones odometría ****/
 
 void reset_odometria(void){
@@ -219,9 +221,7 @@ static char flag_timer = 1;
 		contador = 0;
 		Flag_EstadoFinalizado = 0;
 		flag_timer = 1;
-		reset_odometria();
 		
-		calcula_parametros_recta(&lazo_abierto,&maxon);
 
 	}
 
@@ -230,13 +230,16 @@ static char flag_timer = 1;
 		flag_timer = 0;
 		transmitir_estado();
 		reset_pose();
+		reset_odometria();
+		
+		calcula_parametros_recta(&lazo_abierto,&maxon);
 		motores(&lazo_abierto,&maxon);
 
 	}
 
 	//Evalúo el error que tengo en cada ciclo hasta que me toca frenar
 	if ( (lazo_abierto.error_posicion_actual_derecha < lazo_abierto.ajustar_distancia || 
-	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada){
+	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada && !flag_timer){
 		
 		velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
 		velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
@@ -271,9 +274,7 @@ static char flag_timer = 1;
 		contador = 0;
 		Flag_EstadoFinalizado = 0;
 		flag_timer = 1;
-		reset_odometria();
 
-		calcula_parametros_giro(&lazo_abierto,&maxon);
 
 	}
 
@@ -283,13 +284,16 @@ static char flag_timer = 1;
 		flag_timer = 0;
 		transmitir_estado();
 		reset_pose();
+		reset_odometria();
+
+		calcula_parametros_giro(&lazo_abierto,&maxon);
 		motores(&lazo_abierto,&maxon);
 
 	}
 	
 	//Evalúo el error que tengo en cada ciclo hasta que me toca frenar
 	if ( (lazo_abierto.error_posicion_actual_derecha < lazo_abierto.ajustar_distancia || 
-	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada){
+	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada && !flag_timer){
 	
 		velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
 		velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
@@ -345,7 +349,7 @@ int CMD_Freno(void){
 			transmitir_estado();				//En este estado incluye la que se movió con el estado anterior, ya que no hubo flag_final al ser URGENTE
 			reset_pose();
 			reset_odometria();
-
+			
 		}
 	
 	
