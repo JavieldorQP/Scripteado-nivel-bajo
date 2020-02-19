@@ -97,7 +97,7 @@ void reset_pose(void) {
 }
 
 void transmitir_estado(){
-	sprintf(aux,"S X%d Y%d Th%d\n",(int)Robot.Pos.X,(int)Robot.Pos.Y,(int)Robot.Orientacion);
+	sprintf(aux,"S X%d Y%d A%d\n",(int)Robot.Pos.X,(int)Robot.Pos.Y,(int)Robot.Orientacion);
 	transmitir_cadenaUART0(aux);
 
 	//transmitir_cadenaUART0("S");
