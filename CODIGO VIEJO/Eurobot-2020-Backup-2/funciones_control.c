@@ -16,6 +16,16 @@ extern int radio;
 extern int grados_giro;
 
 
+void calcula_parametros_freno_emergencia(cinematica *variable, param_mecanicos *mecanica){
+
+// la formula es d=|(v_fin^2-v_ini^2)/2a| donde v_fin vale 0 y la v_ini es la v_fin del anterior
+	variable->distancia_frenada = fabs ( pow(variable->velocidad_final,2) - pow(variable->velocidad_inicial,2) ) 
+		/ ( 2 * mecanica->deceleracion * PI / 30 * ( 1 / mecanica->reductora ) );
+	variable->velocidad_final = 0;
+	variable->distancia_total_rad = variable->distancia_frenada;
+
+}
+
 
 // Esta funcion calcula la distancia recorridad durante el periodo de frenado---------------------------------------------
 void calculo_de_frenada(cinematica *variable,param_mecanicos *mecanica)		
@@ -124,7 +134,7 @@ void Ajustar_distancia_recta (cinematica	*variable){
 //Funcion que calcula los parametros de la cinematica, dicha funcion se llamara cuando tenga que avanzar o hacer un giro--
 void calcula_parametros_recta (cinematica *variable, param_mecanicos *mecanica)
 {	
-	variable->distancia_total_rad=	fabs(distancia*(1-variable->offset_lineal)/10)/(mecanica->diametro/2);					
+	variable->distancia_total_rad=	fabs(distancia/10)/(mecanica->diametro/2);					
 	variable->velocidad_final = velocidad_final/100;
 	
 	if(distancia>0)
@@ -162,12 +172,22 @@ void calcula_parametros_recta (cinematica *variable, param_mecanicos *mecanica)
 
 void calcula_parametros_giro (cinematica *variable, param_mecanicos *mecanica)
 {		
-	variable->distancia_total_rad = ( PI * fabs(grados_giro *(1-variable->offset_angular) )) * mecanica->L / (360 * ( mecanica->diametro /2 ) );
+	variable->distancia_total_rad = ( PI * fabs(grados_giro)) * mecanica->L / (360 * ( mecanica->diametro /2 ) );
 	variable->velocidad_final = 5;
 	
 	calculo_de_frenada(variable,mecanica);
 	variable->distancia_acel_vel_cte = variable->distancia_total_rad - variable->distancia_frenada; 
 	
+	if(vel_fin_cambiar)	//Si resulta que hay que cambiar la velocidad ejecutamos esto
+			{
+				//Calculamos la nueva velocidad que habria que meterle a las PWM
+				variable->distancia_frenada = 0.5 * variable->distancia_total_rad;
+				variable->velocidad_final = sqrt( ( ( 2 * mecanica->deceleracion * PI / 30 * ( 1 / mecanica->reductora ) ) 
+					* variable->distancia_frenada) + pow(variable->velocidad_inicial,2));
+				//Asignamos el nuevo valor a distancia_acel_vel_cte que ser� el 50 % de la distancia total
+				variable->distancia_acel_vel_cte = 0.5 * variable->distancia_total_rad;
+			}
+			
 	if(grados_giro>0)
 		{
 			sentido_motores(RETROCEDE,AVANZA);

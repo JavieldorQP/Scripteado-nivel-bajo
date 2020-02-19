@@ -13,6 +13,7 @@
 
 extern uint8_t fl_fin_timer;
 extern int contador;
+
 typedef struct								//Estructura para los parametros de la cinematica
 {
 	double 	distancia_total_rad,			//distancia total a recorrer que se nos pasa desde alto nivel convertida a radianes
@@ -32,8 +33,6 @@ typedef struct								//Estructura para los parametros de la cinematica
 					velocidad_inicial,	//velocidad inicial en rad/s
 					velocidad_final;		//velocidad final en rad/s
 	
-	float		offset_lineal,
-					offset_angular;
 	
 }cinematica;
 
@@ -54,18 +53,24 @@ typedef struct								//Estructura para los parametros mecanicos (motor + contro
 
 typedef struct {
 
-	int X;																				// Coordenada X del robot en mm
-	int Y;																				// Coordenada Y del robot en mm
+	double X;																				// Coordenada X del robot en mm
+	double Y;																				// Coordenada Y del robot en mm
 
 }Posicion;
 
 typedef struct {
 	
 	Posicion Pos;																	// Coordenadas actuales del robot
-	int Orientacion;															// �ngulo con respecto a la orientaci�n del campo
-	int VelActual;																// Velocidad actual del robot en mm/s
+	double Orientacion;															// �ngulo con respecto a la orientaci�n del campo
+	double VelActual;																// Velocidad actual del robot en mm/s
 	
 }Caracterizacion;
+
+
+typedef struct 														// definimos los valores de los contadores de los encoders
+{
+	int contador_derecho, contador_izquierdo;
+} T_Counter;			//Variable global que contiene los valores de posicion que se pasar�n a alto nivel
 
 
 #endif

@@ -91,9 +91,6 @@ void configuracion_parametros_mecanicos (param_mecanicos *mecanica,cinematica *v
 	mecanica->pulsos_por_rev = 256;
 	mecanica->L = 34.5;
 	
-	variable->offset_lineal = 0.0;
-	variable->offset_angular = 0.0;
-	
 	variable->velocidad_final = 5;																								//Velocidad final que queremos que alcancen los motores siempre
 	variable->velocidad_inicial = 0;	
 	//Formula que calcula la deceleracion, se ha obtenido de forma experimental calculando el error que cometia cuando le metia una velocidad y le decia que avanzara 1m, de esta forma 

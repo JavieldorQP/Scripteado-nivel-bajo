@@ -1,0 +1,12 @@
+.\funciones_timer.o: funciones_timer.c
+.\funciones_timer.o: C:\Keil\ARM\Inc\NXP\LPC17xx\lpc17xx.h
+.\funciones_timer.o: C:\Keil\ARM\CMSIS\Include\core_cm3.h
+.\funciones_timer.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+.\funciones_timer.o: C:\Keil\ARM\CMSIS\Include\core_cmInstr.h
+.\funciones_timer.o: C:\Keil\ARM\CMSIS\Include\core_cmFunc.h
+.\funciones_timer.o: C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h
+.\funciones_timer.o: C:\Keil\ARM\ARMCC\bin\..\include\math.h
+.\funciones_timer.o: funciones_pwm.h
+.\funciones_timer.o: variables.h
+.\funciones_timer.o: funciones_desplazamiento.h
+.\funciones_timer.o: funciones_control.h

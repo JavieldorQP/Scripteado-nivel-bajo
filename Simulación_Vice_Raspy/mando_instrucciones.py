@@ -1,3 +1,4 @@
 from Eurocomunicacion_raspy_funciones import envio_instrucciones_traccion
 
-envio_instrucciones_traccion("0G-033","0G+000","0G+000")
+envio_instrucciones_traccion("0D+050005000000","0G-010","0D-050005000000")
+

@@ -16,6 +16,7 @@
 
 
 #define FPCLK 25e6
+#define error_final 			0.2
 
 /**** Variables de la comunicación por UART (by Lesmus Trompiz) ****/
 
@@ -34,12 +35,12 @@ int radio = 0;
 int grados_giro = 0;
 
 char aux[100]={0};	//Buffer de transmisión de 100 caracteres
+
 /**** CINEMÁTICA ****/
 
-cinematica lazo_abierto;
-param_mecanicos maxon;
+cinematica lazo_abierto;							//Estructura de variables cinemáticas
+param_mecanicos maxon;								//Estructura de parámetros mecánicos
 
-//cinematica variable; 									// 31/01/2020: La declaro para eliminar errores
 
 /**** Estados de la máquina de estados ****/
 
@@ -57,12 +58,12 @@ param_mecanicos maxon;
 
 /**** Caracterización del robot ****/
 
-Caracterizacion Robot;
+Caracterizacion Robot;									//Estructura status del robot
 
 /**** Caracterización de los mensajes ****/
 
-char Instruccion_Codigo = ST_INICIAL;
-char Instruccion_Prioridad = NORMAL;
+char Instruccion_Codigo = ST_INICIAL;					//Aqui se guardan las los comandos
+char Instruccion_Prioridad = NORMAL;					//Aqui almacenamos la prioridad
 
 /****  Variables maquina estados  ****/
 
@@ -78,93 +79,71 @@ int Estado = ST_INICIAL;
 #define 	reduct					26
 #define 	p_a_cm					DIAMETRO*PI/(pulsos*reduct)				//Numero de cm recorrido por pulso  
 
-/**** Funciones odometría ****/
-/*
-void act_odom(int DIR_I, int DIR_D) 
-{
-	timer_counters TC;
-	float deltaO;
-	float avance;
-	float deltaX;							//definición de avance en recto del robot, incremento del ángulo, incremento en X e incremento en Y 
-	float deltaY;	
-
-	TC.timer_derecho=LPC_TIM2->TC;
-	TC.timer_izquierdo=LPC_TIM3->TC;
-	
-	avance=(DIR_D*TC.timer_derecho*p_a_cm	+	DIR_I*TC.timer_izquierdo*p_a_cm)	/	2;          					//cálculo del avance en recto del robot
-	deltaO=((DIR_D*TC.timer_derecho*p_a_cm	-	DIR_I*TC.timer_izquierdo*p_a_cm)	/	LONG_EJE)*180/PI;		//cálculo del incremento del ángulo en grados
-	
-	LPC_TIM2->TC = 0; // Manually Reset Timer 0 (forced)
-	LPC_TIM3->TC = 0; // Manually Reset Timer 0 (forced)
-	deltaX						=		avance*cosf(Robot.Orientacion*PI/180);   			//calculo del avance en X del robot  (funcion cos en radianes)
-	deltaY						=		avance*sinf(Robot.Orientacion*PI/180);				//calculo del avance en Y del robot  (funcion sin en radianes)
-	Robot.Pos.X	+=	deltaX;
-	Robot.Pos.Y	+=	deltaY;						//incrementar las variables globales con los datos calculados
-	Robot.Orientacion	+=	deltaO;
-
-	while (Robot.Orientacion >= 360)							// si se pasa de 360º convierte a rango 0
-		Robot.Orientacion -= 360;								// no se contempla que de mas de una vuelta en un tiempo de muestreo
-	while (Robot.Orientacion <0)									// si se pasa de 360º convierte a rango 0
-		Robot.Orientacion += 360;	
-
-}
-*/
 
 int contador = 0;
+
+/**** Funciones odometría ****/
 
 void reset_odometria(void){
 	LPC_TIM2->TC=0;
 	LPC_TIM3->TC=0;
 }
 
-void transmitir_estado(void){
-/*
-sprintf(aux,"%d\n",Estado),
-transmitir_cadenaUART0(aux);
-*/
-	transmitir_cadenaUART0("S");
+void reset_pose(void) {
+	Robot.Orientacion = 0;
+	Robot.Pos.X = 0;
+	Robot.Pos.Y = 0;
+}
+
+void transmitir_estado(Caracterizacion *Robot){
+	sprintf(aux,"S%d.%d.%d.\n",Robot->Pos.X,Robot->Pos.Y,Robot->Orientacion);
+	transmitir_cadenaUART0(aux);
+
+	//transmitir_cadenaUART0("S");
 }
 
 
-/**** Funciones de la máquina de estados ****/
-
-//ESTRUCTURA GENERAL DE LOS COMANDOS
-
-/*
-char Inicio = 1;
-
-if(Inicio){
-    Inicio = 0;
-    Flag_EstadoFinalizado = 0;
-	INFORMO A LESMUS QUE ESTOY EN ESTE ESTADO 
-    Cargo datos leídos por UART
-    Pongo el contador de odometría a 0
-    Habilito los motores y a movernos
-}
 
 
-Evalúo el error que tengo en cada ciclo hasta que "llego"
-    Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
-    Inicio = 1;
+							/**** Funciones de la máquina de estados ****/
 
-*/
+							//ESTRUCTURA GENERAL DE LOS COMANDOS
+
+							/*
+							char Inicio = 1;
+
+							if(Inicio){
+								Inicio = 0;
+								Flag_EstadoFinalizado = 0;
+								INFORMO A LESMUS QUE ESTOY EN ESTE ESTADO 
+								Cargo datos leídos por UART
+								Pongo el contador de odometría a 0
+								Habilito los motores y a movernos
+							}
+
+
+							Evalúo el error que tengo en cada ciclo hasta que "llego"
+								Flag_EstadoFinalizado = 1;             //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
+								Inicio = 1;
+
+							*/
+
+
+
+
 
 int CMD_Inicial(void){
 //En el bucle general se llama a esta función que inicializa la estructura Robot y espera instrucciones para arrancar hacia otro estado
 
-//strcpy(buffer, "D100");			//Prueba del correcto funcionamiento de la máquina de estados
-
 static char Inicio = 1;
-	if(Inicio)
-	{
+
+	if(Inicio){
+
 		Inicio=0;
 		//Flag_EstadoFinalizado=0			//En ST_INICIAL no hace falta ya que está deseoso de órdenes
-		
+		reset_pose();
 		Robot.VelActual = 0;
-		Robot.Orientacion = 0;
-		Robot.Pos.X = 0;
-		Robot.Pos.Y = 0;
-		//transmitir_estado();		//TRANSMITIR A LESMUS UNA S
+
 	}
 
 	//ESTE ESTADO NO HACE NADA APARTE DE INICIALIZAR
@@ -181,48 +160,47 @@ int CMD_Parado(void){
 
 static char Inicio = 1;
 static char flag_timer = 1;
-	if(Inicio)
-	{
+
+	if(Inicio){
+
 		contador = 0;
 		Inicio=0;
 		Flag_EstadoFinalizado=0;				//En ST_PARADO SÍ hay que hacerlo inicialmente ya que solemos llegar por ENEMIGO
 		
 	}
 
-		if(contador > 25 && flag_timer){
-			
+
+	if(contador > 15 && flag_timer){
+
 		flag_timer = 0;
 		apaga_motores();
+
+		transmitir_estado(&Robot);
 		Robot.VelActual = 0;
-		Robot.Orientacion = 0;
-		Robot.Pos.X = 0;
-		Robot.Pos.Y = 0;
-		//transmitir_estado();
+		reset_pose();
+		
 	}
 
+							//Analiza todo lo que necesite mientras esta en reposo
+						/*
+							if(sensor.laser)								//hay moros en la costa
+							{	
+								//analizo que cara es la que detecta
+								//informo arriba de que hay algo ahí
+								transmitir_sensor();
+							}
+							else
+							{
+								Flag_EstadoFinalizado = 1;
+							}
+							*/
 	
-	
-	
-	//Analiza todo lo que necesite mientras esta en reposo
-/*
-	if(sensor.laser)								//hay moros en la costa
-	{	
-		//analizo que cara es la que detecta
-		//informo arriba de que hay algo ahí
-		transmitir_sensor();
-	}
-	else
-	{
-		Flag_EstadoFinalizado = 1;
-	}
-	*/
-	
-	
-	if(Siguiente_Estado != Estado ) 
-	{
+	if(Siguiente_Estado != Estado ){
+
 		Flag_EstadoFinalizado = 1;
 		Inicio = 1;
 		flag_timer = 1;
+
 	}
 	return 0;
 }
@@ -233,48 +211,49 @@ int CMD_Recta(void){
 static char Inicio = 1;
 static char Flag_Frenada = 1;
 static char flag_timer = 1;
-if(Inicio){
-	Inicio = 0;
-	contador = 0;
-	Flag_EstadoFinalizado = 0;
-	
-	//reset_odometria();
-	
 
-	reset_odometria();
-	calcula_parametros_recta(&lazo_abierto,&maxon);
+	if(Inicio){
 
-	
-	
-	
-}
+		Inicio = 0;
+		contador = 0;
+		Flag_EstadoFinalizado = 0;
+		
+		reset_odometria();
+		
+		calcula_parametros_recta(&lazo_abierto,&maxon);
 
+	}
 
 	if( flag_timer && contador > 15 ){
+		
 		flag_timer = 0;
-		transmitir_estado();
+		transmitir_estado(&Robot);
+		reset_pose();
 		motores(&lazo_abierto,&maxon);
+
 	}
-	//Evalúo el error que tengo en cada ciclo hasta que "llego" con el TIMER1
+
+	//Evalúo el error que tengo en cada ciclo hasta que me toca frenar
 	if ( (lazo_abierto.error_posicion_actual_derecha < lazo_abierto.ajustar_distancia || 
-	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada)
-	{
-		//Actualmente esto frena al final, no encadena velocidades aún
+	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada){
 		
 		velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
 		velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
 		Flag_Frenada = 0;
+
 	}
 	
-
-	else if((lazo_abierto.error_posicion_actual_derecha_total < lazo_abierto.ajustar_distancia || lazo_abierto.error_posicion_actual_izquierda_total < lazo_abierto.ajustar_distancia) && !Flag_Frenada)
-	{
+	//Evalúo el error hasta que llega a la posición exacta que me piden alcanzar
+	else if((lazo_abierto.error_posicion_actual_derecha_total < error_final || 
+	lazo_abierto.error_posicion_actual_izquierda_total < error_final) && !Flag_Frenada){
 		//CUANDO LLEGA A LA POSICION FINAL SALE DEL ESTADO Y CARGA EL SIGUIENTE
-		//apaga_motores();
+		//en caso de que tenga error extraño puede ser por frenar y no esperar para cargar la siguiente instruccion
+
 		Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
 		Inicio = 1;
 		Flag_Frenada = 1;
 		flag_timer = 1;
+
 	}
 	return 0;
 }
@@ -285,51 +264,50 @@ int CMD_Giro(void){
 static char Inicio = 1;
 static char Flag_Frenada = 1;
 static char flag_timer = 1;
-if(Inicio){
-	Inicio = 0;
-	contador = 0;
-	Flag_EstadoFinalizado = 0;
-	reset_odometria();
-	
 
+	if(Inicio){
 
-	calcula_parametros_giro(&lazo_abierto,&maxon);
+		Inicio = 0;
+		contador = 0;
+		Flag_EstadoFinalizado = 0;
 
-	
-	
-	
-}
+		reset_odometria();
+
+		calcula_parametros_giro(&lazo_abierto,&maxon);
+
+	}
 
 
 	if( flag_timer && contador >15 ){
-	
+
 		flag_timer = 0;
-		transmitir_estado();
+		transmitir_estado(&Robot);
+		reset_pose();
 		motores(&lazo_abierto,&maxon);
+
 	}
 	
-	//Evalúo el error que tengo en cada ciclo hasta que "llego" con el TIMER1
+	//Evalúo el error que tengo en cada ciclo hasta que me toca frenar
 	if ( (lazo_abierto.error_posicion_actual_derecha < lazo_abierto.ajustar_distancia || 
-	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada)
-	{
-		//Actualmente esto frena al final, no encadena velocidades aún
-		
+	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada){
+	
 		velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
 		velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
 		Flag_Frenada = 0;
 	}
 
-	else if((lazo_abierto.error_posicion_actual_derecha_total < lazo_abierto.ajustar_distancia || lazo_abierto.error_posicion_actual_izquierda_total < lazo_abierto.ajustar_distancia) && !Flag_Frenada){
+	//Evalúo el error hasta que llega a la posición exacta que me piden alcanzar
+	else if((lazo_abierto.error_posicion_actual_derecha_total < error_final || 
+	lazo_abierto.error_posicion_actual_izquierda_total < error_final) && !Flag_Frenada){
 		//CUANDO LLEGA A LA POSICION FINAL SALE DEL ESTADO Y CARGA EL SIGUIENTE
 		//en caso de que tenga error extraño puede ser por frenar y no esperar para cargar la siguiente instruccion
-				velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
-				velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
-		
+
 				Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
 				Inicio = 1;
 				Flag_Frenada = 1;
 				flag_timer = 1;
-			}
+
+	}
 	
 return 0;
 }
@@ -347,30 +325,26 @@ static int Inicio = 1;
 
 	if (Inicio)
 	{
+
 		Inicio = 0;
 		Flag_EstadoFinalizado = 0;
-		calculo_de_frenada(&lazo_abierto,&maxon);									//REVISAR ANTES DE DORMIR
-		lazo_abierto.velocidad_final=0;
-
+		calcula_parametros_freno_emergencia(&lazo_abierto,&maxon);
 		motores(&lazo_abierto,&maxon);
-				
-		transmitir_estado();
 		
 	}
 
 	
-	//Evalúo el error que tengo en cada ciclo hasta que "llego" con el TIMER1
-	
-	
-	if(lazo_abierto.error_posicion_actual_derecha < 0.1 || lazo_abierto.error_posicion_actual_izquierda < 0.1){
+	//Evalúo el error que tengo en cada ciclo hasta que debería estar parado
+	if(lazo_abierto.error_posicion_actual_derecha_total < error_final || lazo_abierto.error_posicion_actual_izquierda_total < error_final){
+			
 			Flag_EstadoFinalizado = 1;                            //LEVANTO FLAG LLEGADA PARA CARGAR EL SIGUIENTE ESTADO 
 			Inicio = 1;
-			apaga_motores();
-			Instruccion_Codigo = ST_PARADO;		//Al no estar entre las opciones, se irá al default que es ST_PARADO
-		
-	//transmitir_odometria();				//Transmitimos la distancia que nos hemos movido. Esta funcion debería ser bloqueante
-										//En este estado incluye la que se movió con el estado anterior, ya que no hubo flag_final al ser URGENTE
-	//reset_odometria();
+			Instruccion_Codigo = ST_PARADO;			//Al no estar entre las opciones, se irá al default que es ST_PARADO
+			
+			transmitir_estado(&Robot);				//En este estado incluye la que se movió con el estado anterior, ya que no hubo flag_final al ser URGENTE
+			reset_pose();
+			reset_odometria();
+
 		}
 	
 	
