@@ -15,6 +15,7 @@ extern int velocidad_maxima ;
 extern int radio;
 extern int grados_giro;
 
+extern T_Counter cuadratura;
 
 void calcula_parametros_freno_emergencia(cinematica *variable, param_mecanicos *mecanica){
 
@@ -57,8 +58,8 @@ void Ajustar_distancia_giro (cinematica *variable)
 {
 	uint8_t caso;
 			
-		caso = 1 + (variable->angulo > 15) + (variable->angulo > 30) + (variable->angulo > 60) +
-		(variable->angulo > 90) + (variable->angulo > 120) + (variable->angulo > 150);
+		caso = 1 + (fabs(variable->angulo) > 15) + (fabs(variable->angulo) > 30) + (fabs(variable->angulo) > 60) +
+		(fabs(variable->angulo) > 90) + (fabs(variable->angulo) > 120) + (fabs(variable->angulo) > 150);
 	
 		switch (caso)
 		{
@@ -87,7 +88,7 @@ void Ajustar_distancia_giro (cinematica *variable)
 			break;
 		
 			case 7:
-				variable->ajustar_distancia = 0.2;
+				variable->ajustar_distancia = 0.25;
 			break;
 			
 		}
@@ -100,8 +101,8 @@ void Ajustar_distancia_recta (cinematica	*variable){
 	uint8_t caso;
 
 		
-		caso = 1 + (variable->distancia > 50) + (variable->distancia > 100) + (variable->distancia > 250) +
-		(variable->distancia > 500) + (variable->distancia > 750) + (variable->distancia >= 1000);
+		caso = 1 + (fabs(variable->distancia) > 50) + (fabs(variable->distancia) > 100) + (fabs(variable->distancia) > 250) +
+		(fabs(variable->distancia) > 500) + (fabs(variable->distancia) > 750) + (fabs(variable->distancia) >= 1000);
 	
 		switch (caso)
 		{
@@ -213,23 +214,23 @@ void calcula_parametros_giro (cinematica *variable, param_mecanicos *mecanica)
 
 void calcula_error_rueda_derecha (cinematica *variable, param_mecanicos *mecanica)
 {
-	variable->error_posicion_actual_derecha = variable->distancia_acel_vel_cte - ( ( (LPC_TIM2->TC) * 2 * PI ) /
+	variable->error_posicion_actual_derecha = variable->distancia_acel_vel_cte - ( ( (cuadratura.contador_derecho_total) * 2 * PI ) /
 	( mecanica->pulsos_por_rev * mecanica->reductora ) );
 }
 
 void calcula_error_rueda_izquierda (cinematica *variable, param_mecanicos *mecanica)
 {
-	variable->error_posicion_actual_izquierda = variable->distancia_acel_vel_cte - ( ( (LPC_TIM3->TC) * 2 * PI ) /
+	variable->error_posicion_actual_izquierda = variable->distancia_acel_vel_cte - ( ( (cuadratura.contador_izquierdo_total) * 2 * PI ) /
 	( mecanica->pulsos_por_rev * mecanica->reductora ) );
 }
 void calcula_error_rueda_derecha_final (cinematica *variable, param_mecanicos *mecanica)
 {
-	variable->error_posicion_actual_derecha_total = variable->distancia_total_rad - ( ( (LPC_TIM2->TC) * 2 * PI ) /
+	variable->error_posicion_actual_derecha_total = variable->distancia_total_rad - ( ( (cuadratura.contador_derecho_total) * 2 * PI ) /
 	( mecanica->pulsos_por_rev * mecanica->reductora ) );
 }
 
 void calcula_error_rueda_izquierda_final (cinematica *variable, param_mecanicos *mecanica)
 {
-	variable->error_posicion_actual_izquierda_total = variable->distancia_total_rad - ( ( (LPC_TIM3->TC) * 2 * PI ) /
+	variable->error_posicion_actual_izquierda_total = variable->distancia_total_rad - ( ( (cuadratura.contador_izquierdo_total) * 2 * PI ) /
 	( mecanica->pulsos_por_rev * mecanica->reductora ) );
 }

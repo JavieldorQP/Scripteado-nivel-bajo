@@ -62,6 +62,7 @@ param_mecanicos maxon;								//Estructura de parámetros mecánicos
 /**** Caracterización del robot ****/
 
 Caracterizacion Robot;									//Estructura status del robot
+T_Counter cuadratura;
 
 /**** Caracterización de los mensajes ****/
 
@@ -74,35 +75,32 @@ int Flag_EstadoFinalizado = 1;                           //La inicializo a 1 par
 int Siguiente_Estado = ST_INICIAL; 	
 int Estado = ST_INICIAL;
 
-
-
-#define 	LONG_EJE 				34										//Longitud del eje en cm
-#define 	DIAMETRO				12.2 									//Diametro en cm
-#define 	pulsos					256
-#define 	reduct					26
-#define 	p_a_cm					DIAMETRO*PI/(pulsos*reduct)				//Numero de cm recorrido por pulso  
-
-
 int contador = 0;
+
+
 
 /**** Funciones odometría ****/
 
 void reset_odometria(void){
 	LPC_TIM2->TC=0;
 	LPC_TIM3->TC=0;
+
+	cuadratura.contador_derecho_total=0;
+	cuadratura.contador_izquierdo_total=0;
+	
 }
 
 void reset_pose(void) {
-	Robot.Orientacion = 0;
-	Robot.Pos.X = 0;
-	Robot.Pos.Y = 0;
+	Robot.Orientacion = 0.0;
+	Robot.Pos.X = 0.0;
+	Robot.Pos.Y = 0.0;
 }
 
-void transmitir_estado(Caracterizacion *Robot){
-	//sprintf(aux,"S%d.%d.%d.\n",Robot->Pos.X,Robot->Pos.Y,Robot->Orientacion);
-	//transmitir_cadenaUART0(aux);
+void transmitir_estado(){
+	sprintf(aux,"S X%d Y%d Th%d\n",(int)Robot.Pos.X,(int)Robot.Pos.Y,(int)Robot.Orientacion);
+	transmitir_cadenaUART0(aux);
 
-	transmitir_cadenaUART0("S");
+	//transmitir_cadenaUART0("S");
 }
 
 
@@ -144,8 +142,9 @@ int CMD_Inicial(void){
 
 		Inicio=0;
 		//Flag_EstadoFinalizado=0			//En ST_INICIAL no hace falta ya que está deseoso de órdenes
+		reset_odometria();
 		reset_pose();
-		Robot.VelActual = 0;
+		Robot.VelActual = 0.0;
 
 	}
 
@@ -177,10 +176,11 @@ static char flag_timer = 1;
 		flag_timer = 0;
 		apaga_motores();
 
-		//transmitir_estado(&Robot);
-		transmitir_cadenaUART0("P");
-		Robot.VelActual = 0;
+		transmitir_estado();
+		//transmitir_cadenaUART0("P");
+		Robot.VelActual = 0.0;
 		reset_pose();
+		reset_odometria();
 		
 	}
 
@@ -221,24 +221,25 @@ static char flag_timer = 1;
 		contador = 0;
 		Flag_EstadoFinalizado = 0;
 		flag_timer = 1;
-		reset_odometria();
 		
-		calcula_parametros_recta(&lazo_abierto,&maxon);
 
 	}
 
 	if( flag_timer && contador > 15 ){
 		
 		flag_timer = 0;
-		transmitir_estado(&Robot);
+		transmitir_estado();
 		reset_pose();
+		reset_odometria();
+		
+		calcula_parametros_recta(&lazo_abierto,&maxon);
 		motores(&lazo_abierto,&maxon);
 
 	}
 
 	//Evalúo el error que tengo en cada ciclo hasta que me toca frenar
 	if ( (lazo_abierto.error_posicion_actual_derecha < lazo_abierto.ajustar_distancia || 
-	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada){
+	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada && !flag_timer){
 		
 		velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
 		velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
@@ -273,9 +274,7 @@ static char flag_timer = 1;
 		contador = 0;
 		Flag_EstadoFinalizado = 0;
 		flag_timer = 1;
-		reset_odometria();
 
-		calcula_parametros_giro(&lazo_abierto,&maxon);
 
 	}
 
@@ -283,15 +282,18 @@ static char flag_timer = 1;
 	if( flag_timer && contador >15 ){
 
 		flag_timer = 0;
-		transmitir_estado(&Robot);
+		transmitir_estado();
 		reset_pose();
+		reset_odometria();
+
+		calcula_parametros_giro(&lazo_abierto,&maxon);
 		motores(&lazo_abierto,&maxon);
 
 	}
 	
 	//Evalúo el error que tengo en cada ciclo hasta que me toca frenar
 	if ( (lazo_abierto.error_posicion_actual_derecha < lazo_abierto.ajustar_distancia || 
-	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada){
+	lazo_abierto.error_posicion_actual_izquierda < lazo_abierto.ajustar_distancia) && Flag_Frenada && !flag_timer){
 	
 		velocidad_derecha(lazo_abierto.velocidad_inicial,&maxon);
 		velocidad_izquierda(lazo_abierto.velocidad_inicial,&maxon);
@@ -344,10 +346,10 @@ int CMD_Freno(void){
 			Inicio = 1;
 			Instruccion_Codigo = ST_PARADO;			//Al no estar entre las opciones, se irá al default que es ST_PARADO
 			
-			transmitir_estado(&Robot);				//En este estado incluye la que se movió con el estado anterior, ya que no hubo flag_final al ser URGENTE
+			transmitir_estado();				//En este estado incluye la que se movió con el estado anterior, ya que no hubo flag_final al ser URGENTE
 			reset_pose();
 			reset_odometria();
-
+			
 		}
 	
 	
@@ -405,6 +407,7 @@ int main(){
 //Configuramos TODO lo configurable
 
 init_pwm();
+init_odom();
 config_TIMER1();
 config_TIMER2();
 config_TIMER3();
