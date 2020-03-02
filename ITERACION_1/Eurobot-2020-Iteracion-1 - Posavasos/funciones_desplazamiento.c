@@ -17,20 +17,20 @@ void sentido_motores (int m_izquierdo, int m_derecho)
 
 	if(m_izquierdo)
 	{
-		LPC_GPIO3->FIOPIN3&=~(0x01<<2);			//AVANZA EL IZQUIERDO
+		LPC_GPIO3->FIOPIN3&=~(1<<2);			//AVANZA EL IZQUIERDO
 	}
 	else 
 	{
-		LPC_GPIO3->FIOPIN3|=(0x01<<2);			//RETROCEDE EL IZQUIERDO
+		LPC_GPIO3->FIOPIN3|=(1<<2);			//RETROCEDE EL IZQUIERDO
 	}
 
 	if(m_derecho)
 	{
-		LPC_GPIO3->FIOPIN3&=~(0x01<<1);			//AVANZA EL DERECHO
+		LPC_GPIO3->FIOPIN3&=~(1<<1);			//AVANZA EL DERECHO
 	}
 	else
 	{
-		LPC_GPIO3->FIOPIN3|=(0x01<<1);			//RETROCEDE EL DERECHO
+		LPC_GPIO3->FIOPIN3|=(1<<1);			//RETROCEDE EL DERECHO
 	}
 	
 }
@@ -48,13 +48,13 @@ void velocidad_izquierda (double rad_por_s,param_mecanicos *mecanica)	//Esta fun
 
 void apaga_motores (void)
 {
-	LPC_GPIO2->FIOCLR1	|=	(3<<3);	
+	LPC_GPIO2->FIOCLR1	|=	(1<<3);	
 	LPC_GPIO2->FIOCLR1	|=	(1<<2);
 }
 
 void enciende_motores (void)
 {
-	LPC_GPIO2->FIOSET1 |=	(3<<3);
+	LPC_GPIO2->FIOSET1 |=	(1<<3);
 	LPC_GPIO2->FIOSET1 |= (1<<2);
 }
 

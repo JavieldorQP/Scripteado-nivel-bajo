@@ -63,8 +63,6 @@ void init_pwm(void)
 {
 	LPC_PINCON->PINSEL3 |=	(2<<8)			|		(2<<10);					//Se configuran lso pines 1.20 y 1.21 como PWM1.2 y PWM1.3 respectivamente.
 	
-	LPC_PINCON->PINSEL4 |= (1<<2);
-	
 	LPC_SC->PCONP				|=	(1<<6);														//Se activa la alimentaci�n de las PWM mediante su pin del registro PCONP.
 	
 	LPC_PWM1->MCR 			= 	(1<<1);														//Se configura para que no se genere interrupci�n pero si se resetee en MR0.
@@ -90,7 +88,7 @@ void init_pwm(void)
 																																																	
 	LPC_GPIO2->FIOCLR1	|=	(3<<2);														//Se ponen los pines a 0 como predeterminado.
 		
-	LPC_GPIO3->FIODIR	|=	(3<<25);														//Se confguran los pines 3.25 y 3.26 (pines de sentido de las ruedas)
+	LPC_GPIO3->FIODIR3	|=	(3<<1);														//Se confguran los pines 3.25 y 3.26 (pines de sentido de las ruedas)
 																														//como salidas. el 3.25 corresponde a la derecha y el 3.26 a la izquierda.
 																														//Los valores de sentido en Sebastian son 0 para el avance de ambas ruedas.
 }
@@ -115,12 +113,12 @@ void init_odom(void){					//Esta funci�n inicializa las interrupciones externa
 void configuracion_parametros_mecanicos (param_mecanicos *mecanica,cinematica *variable)
 {
 	mecanica->aceleracion = 3000;
-	mecanica->reductora = 25.24;
-	mecanica->diametro = /*5.2;*/ 12.2;
-	mecanica->vel_eje_max = 8100;																										//	6380;
+	mecanica->reductora = 25;
+	mecanica->diametro = 4.0;
+	mecanica->vel_eje_max = 6380;
 	mecanica->vel_max = mecanica->vel_eje_max * PI / 30 / mecanica->reductora;
 	mecanica->pulsos_por_rev = 256;
-	mecanica->L = /*20;*/	34.5;
+	mecanica->L = 9.6;
 	
 	variable->velocidad_final = 5;																								//Velocidad final que queremos que alcancen los motores siempre
 	variable->velocidad_inicial = 0;	

@@ -69,7 +69,7 @@ void EINT2_IRQHandler (void){			//C�digo de la interrupci�n del encoder de l
 	LPC_SC->EXTINT = (1 << 2);
 	cuadratura.contador_derecho_total++;
 	
-	if ((LPC_GPIO0->FIOPIN >> 11/*23*/) & 0x1)			//Valor del pin 0.23
+	if ((LPC_GPIO0->FIOPIN >> 11) & 0x1)			//Valor del pin 0.23
 	{
 		cuadratura.contador_derecho--;		//Si al cambiar a alto el canal A el canal B esta en alto vamos hacia alante
 	}
@@ -84,7 +84,7 @@ void EINT3_IRQHandler (void){			//C�digo de la interrupci�n del encoder de l
 	LPC_SC->EXTINT = (1 << 3);
 	cuadratura.contador_izquierdo_total++;
 	
-	if ((LPC_GPIO0->FIOPIN >> 10/*4*/) & 0x1)					//Valor del pin 0.4
+	if ((LPC_GPIO0->FIOPIN >> 10) & 0x1)					//Valor del pin 0.4
 	{
 		cuadratura.contador_izquierdo--;											//Si al cambiar a alto el canal A el canal B esta en alto vamos hacia alante
 	}

@@ -16,7 +16,7 @@
 
 
 #define FPCLK 25e6
-#define error_final 			0.2
+#define error_final 			-2.0
 
 /**** Variables de la comunicación por UART (by Lesmus Trompiz) ****/
 
@@ -97,10 +97,10 @@ void reset_pose(void) {
 }
 
 void transmitir_estado(){
-/*	sprintf(aux,"S X%d Y%d A%d\n",(int)Robot.Pos.X,(int)Robot.Pos.Y,(int)Robot.Orientacion);
+	sprintf(aux,"S X%d Y%d A%d\n",(int)Robot.Pos.X,(int)Robot.Pos.Y,(int)Robot.Orientacion);
 	transmitir_cadenaUART0(aux);
-*/
-	transmitir_cadenaUART0("S");
+
+	//transmitir_cadenaUART0("S");
 }
 
 
@@ -405,7 +405,6 @@ int Maquina_Estados(void){
 int main(){
 
 //Configuramos TODO lo configurable
-
 
 init_pwm();
 init_odom();

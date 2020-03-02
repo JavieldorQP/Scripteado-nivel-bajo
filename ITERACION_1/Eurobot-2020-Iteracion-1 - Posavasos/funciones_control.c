@@ -64,34 +64,36 @@ void Ajustar_distancia_giro (cinematica *variable)
 		switch (caso)
 		{
 			case 1:
-				variable->ajustar_distancia = 0.002;
-			break;
-		
-			case 2:
 				variable->ajustar_distancia = 0.005;
 			break;
 		
-			case 3:
+			case 2:
 				variable->ajustar_distancia = 0.01;
 			break;
 		
-			case 4:
-				variable->ajustar_distancia = 0.05;
+			case 3:
+				variable->ajustar_distancia = 0.015;
 			break;
 		
-			case 5:
+			case 4:
 				variable->ajustar_distancia = 0.08;
 			break;
 		
+			case 5:
+				variable->ajustar_distancia = 0.1;
+			break;
+		
 			case 6:
-				variable->ajustar_distancia = 0.12;
+				variable->ajustar_distancia = 0.15;
 			break;
 		
 			case 7:
-				variable->ajustar_distancia = 0.2;
+				variable->ajustar_distancia = 0.25;
 			break;
 			
 		}
+						variable->ajustar_distancia = -1.000;
+
 	}
 	
 	
@@ -107,15 +109,15 @@ void Ajustar_distancia_recta (cinematica	*variable){
 		switch (caso)
 		{
 			case 1:
-				variable->ajustar_distancia = 0.002;
-			break;
-		
-			case 2:
 				variable->ajustar_distancia = 0.005;
 			break;
 		
-			case 3:
+			case 2:
 				variable->ajustar_distancia = 0.01;
+			break;
+		
+			case 3:
+				variable->ajustar_distancia = 0.015;
 			break;
 		
 			case 4:
@@ -123,18 +125,20 @@ void Ajustar_distancia_recta (cinematica	*variable){
 			break;
 		
 			case 5:
-				variable->ajustar_distancia = 0.08;
+				variable->ajustar_distancia = 0.1;
 			break;
 		
 			case 6:
-				variable->ajustar_distancia = 0.12;
+				variable->ajustar_distancia = 0.15;
 			break;
 		
 			case 7:
-				variable->ajustar_distancia = 0.2;
+				variable->ajustar_distancia = 0.25;
 			break;
 			
 		}
+						variable->ajustar_distancia = -1.000;
+
 	}
 	
 
@@ -180,7 +184,7 @@ void calcula_parametros_recta (cinematica *variable, param_mecanicos *mecanica)
 void calcula_parametros_giro (cinematica *variable, param_mecanicos *mecanica)
 {		
 	variable->distancia_total_rad = ( PI * fabs(grados_giro)) * mecanica->L / (360 * ( mecanica->diametro /2 ) );
-	variable->velocidad_final = 	5;														//	5;
+	variable->velocidad_final = 5;
 	
 	calculo_de_frenada(variable,mecanica);
 	variable->distancia_acel_vel_cte = variable->distancia_total_rad - variable->distancia_frenada; 
